@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WRISTO — Your Time. Your Style. | Premium Watch Marketplace & AI Discovery</title>
+  <meta name="description" content="Discover curated luxury, automatic, and minimalist timepieces from trusted global watchmakers. Intelligent AI-powered watch styling for every wrist and occasion.">
+  <link rel="icon" type="image/png" href="./assets/brand/app-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body data-current-view="home">
+
+  <!-- ==========================================================================
+       Top Navigation Bar
+       ========================================================================== -->
+  <header class="site-header" id="site-header">
+    <div class="container">
+      <div class="header-inner">
+        <!-- Logo -->
+        <div class="brand-logo-wrap" onclick="navigateTo('home')">
+          <img src="./assets/brand/logo-horizontal-dark.png" alt="WRISTO" class="brand-logo-img logo-theme-dark">
+          <img src="./assets/brand/logo-horizontal-light.png" alt="WRISTO" class="brand-logo-img logo-theme-light">
+        </div>
+
+        <!-- Desktop Navigation -->
+        <nav class="main-nav" id="main-nav">
+          <a href="javascript:void(0)" class="nav-link active" data-view="home" onclick="navigateTo('home')">Home</a>
+          <a href="javascript:void(0)" class="nav-link" data-view="men" onclick="filterByGender('Men')">Men</a>
+          <a href="javascript:void(0)" class="nav-link" data-view="women" onclick="filterByGender('Women')">Women</a>
+          <a href="javascript:void(0)" class="nav-link" data-view="collections" onclick="navigateTo('collections')">Collections</a>
+          <a href="javascript:void(0)" class="nav-link" data-view="brands" onclick="navigateTo('brands')">Brands</a>
+          <a href="javascript:void(0)" class="nav-link" data-view="accessories" onclick="showToast('Curated straps and accessories collection coming soon.')">Accessories</a>
+        </nav>
+
+        <!-- Header Utilities -->
+        <div class="header-actions">
+          <!-- Search -->
+          <button class="header-action-btn" onclick="openSearchModal()" title="Search Catalog">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </button>
+
+          <!-- Compare -->
+          <button class="header-action-btn" id="header-compare-btn" onclick="navigateTo('comparison')" title="Compare Watches">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+            <span class="action-badge" style="display: none;">0</span>
+          </button>
+
+          <!-- Wishlist -->
+          <button class="header-action-btn" onclick="navigateTo('wishlist')" title="Saved Favorites">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            <span class="action-badge" id="header-wishlist-count" style="display: none;">0</span>
+          </button>
+
+          <!-- User Profile -->
+          <button class="header-action-btn" onclick="navigateTo('profile')" title="My Account">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </button>
+
+          <!-- Shopping Cart -->
+          <button class="header-action-btn" onclick="openCartDrawer()" title="View Cart">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+            <span class="action-badge" id="header-cart-count" style="display: none;">0</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       Main Dynamic View Container
+       ========================================================================== -->
+  <main id="main-content-view">
+    <!-- Rendered dynamically by app.js (Home, Discovery, AI Finder, PDP, Collections, Brands, Wishlist, Compare, Cart, Checkout, Order Success, Profile) -->
+  </main>
+
+  <!-- ==========================================================================
+       Global Luxury Footer
+       ========================================================================== -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top-grid">
+        <!-- Brand Summary -->
+        <div class="footer-brand-col">
+          <div class="brand-logo-wrap" onclick="navigateTo('home')">
+            <img src="./assets/brand/logo-light-full.png" alt="WRISTO" style="height: 38px; width: auto;">
+          </div>
+          <p>
+            WRISTO is an AI-powered multi-brand watch marketplace bringing curated discovery, horological integrity, and verified brand warranties under one boutique destination.
+          </p>
+          <div style="margin-top: 18px; display: flex; gap: 12px; align-items: center;">
+            <img src="./assets/brand/brand-seal.png" alt="WRISTO Certified" style="width: 44px; height: 44px; border-radius: 50%;">
+            <span style="font-size: 11px; color: var(--color-accent-champagne); letter-spacing: 0.08em; font-weight: 600;">
+              CERTIFIED HOROLOGY DIRECT
+            </span>
+          </div>
+        </div>
+
+        <!-- Shop Links -->
+        <div>
+          <div class="footer-heading">Collections</div>
+          <div class="footer-links-list">
+            <a href="javascript:void(0)" onclick="navigateTo('collections', 'quiet-luxury')">Quiet Luxury</a>
+            <a href="javascript:void(0)" onclick="navigateTo('collections', 'everyday-icons')">Everyday Icons</a>
+            <a href="javascript:void(0)" onclick="navigateTo('collections', 'mechanical-souls')">Mechanical Souls</a>
+            <a href="javascript:void(0)" onclick="navigateTo('collections', 'built-for-weekend')">Built for Weekend</a>
+            <a href="javascript:void(0)" onclick="navigateTo('collections', 'minimal-by-design')">Minimal by Design</a>
+            <a href="javascript:void(0)" onclick="navigateTo('collections', 'under-20k')">Under ₹20,000</a>
+          </div>
+        </div>
+
+        <!-- Brands -->
+        <div>
+          <div class="footer-heading">Watch Houses</div>
+          <div class="footer-links-list">
+            <a href="javascript:void(0)" onclick="navigateTo('brands', 'AUREN')">Auren Boutique</a>
+            <a href="javascript:void(0)" onclick="navigateTo('brands', 'VELA')">Vela Elegance</a>
+            <a href="javascript:void(0)" onclick="navigateTo('brands', 'ORBITA')">Orbita Nordic</a>
+            <a href="javascript:void(0)" onclick="navigateTo('brands', 'VANTA')">Vanta Performance</a>
+            <a href="javascript:void(0)" onclick="navigateTo('brands', 'NORDEN')">Norden Horology</a>
+            <a href="javascript:void(0)" onclick="navigateTo('brands', 'PULSE')">Pulse Connected</a>
+          </div>
+        </div>
+
+        <!-- Customer Care & Contact -->
+        <div>
+          <div class="footer-heading">Boutique Care</div>
+          <div class="footer-links-list">
+            <a href="javascript:void(0)" onclick="showToast('Authenticity Certificate included with every order.')">100% Brand Authenticity</a>
+            <a href="javascript:void(0)" onclick="showToast('All orders shipped insured via BlueDart Air.')">Insured Shipping Policy</a>
+            <a href="javascript:void(0)" onclick="showToast('7-day no-questions-asked inspection window.')">7-Day Easy Returns</a>
+            <a href="javascript:void(0)" onclick="showToast('Official 2-Year Manufacturer Warranty included.')">Warranty & Service</a>
+            <a href="javascript:void(0)">support@wristo.com</a>
+            <a href="javascript:void(0)">+91 98705 43210 (Pune, MH)</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Bar -->
+      <div class="footer-bottom-bar">
+        <div>
+          &copy; 2026 WRISTO Technologies Inc. All rights reserved. <em>Your Time. Your Style.</em>
+        </div>
+        <div style="display: flex; gap: 16px;">
+          <span>Privacy Policy</span>
+          <span>Terms of Horology Service</span>
+          <span>Security & Escrow</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==========================================================================
+       Mobile Sticky Bottom Navigation (App Spec)
+       ========================================================================== -->
+  <nav class="mobile-bottom-nav">
+    <div class="mob-nav-item active" data-view="home" onclick="navigateTo('home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>Home</span>
+    </div>
+    <div class="mob-nav-item" data-view="discovery" onclick="navigateTo('discovery')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      <span>Watches</span>
+    </div>
+    <div class="mob-nav-item" data-view="ai-finder" onclick="navigateTo('ai-finder')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+      <span style="color: var(--color-accent-gold);">AI Finder</span>
+    </div>
+    <div class="mob-nav-item" data-view="wishlist" onclick="navigateTo('wishlist')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      <span>Saved</span>
+      <span class="action-badge" id="mob-wishlist-count" style="display: none; top: -2px; right: 8px;">0</span>
+    </div>
+    <div class="mob-nav-item" data-view="profile" onclick="navigateTo('profile')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span>Account</span>
+    </div>
+  </nav>
+
+  <!-- ==========================================================================
+       Cart Slide-over Drawer
+       ========================================================================== -->
+  <div class="cart-drawer-overlay" id="cart-drawer-overlay" onclick="closeCartDrawer()">
+    <div class="cart-drawer" onclick="event.stopPropagation()">
+      <div class="drawer-header">
+        <div class="drawer-title">Shopping Bag</div>
+        <button onclick="closeCartDrawer()" style="font-size: 20px; line-height: 1; color: var(--color-text-muted);">&times;</button>
+      </div>
+
+      <div class="drawer-body" id="cart-drawer-items">
+        <!-- Rendered by updateCartDrawerUI() -->
+      </div>
+
+      <div class="drawer-footer" id="cart-drawer-footer">
+        <div class="cart-totals-row">
+          <span style="color: var(--color-text-secondary);">Subtotal</span>
+          <span id="drawer-subtotal-val" style="font-weight: 700;">₹0</span>
+        </div>
+        <div class="cart-totals-row" style="font-size: 12px; color: var(--color-text-muted); margin-bottom: 12px;">
+          <span>Insured Express Shipping</span>
+          <span style="color: var(--color-success); font-weight: 600;">FREE</span>
+        </div>
+        <button class="btn btn-champagne" style="width: 100%;" onclick="closeCartDrawer(); navigateTo('checkout');">
+          Proceed to Checkout &rarr;
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       Search Overlay Modal
+       ========================================================================== -->
+  <div class="search-modal-overlay" id="search-modal-overlay" onclick="closeSearchModal()">
+    <div class="search-modal-box" onclick="event.stopPropagation()">
+      <div class="search-input-wrap">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--color-accent-gold);"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="search-modal-input" class="search-main-input" placeholder="Search by brand, movement, style, or dial color..." oninput="handleLiveSearch(this.value)">
+        <button onclick="closeSearchModal()" style="font-size: 13px; color: var(--color-text-muted); font-weight: 600;">ESC</button>
+      </div>
+      <div class="search-results-panel" id="search-modal-results">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       Confetti Celebration Canvas (Order Success)
+       ========================================================================== -->
+  <canvas id="confetti-canvas" style="position: fixed; inset: 0; pointer-events: none; z-index: 3000;"></canvas>
+
+  <!-- ==========================================================================
+       Toast Container
+       ========================================================================== -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Application Scripts -->
+  <script src="./js/products.js"></script>
+  <script src="./js/app.js"></script>
+</body>
+</html>

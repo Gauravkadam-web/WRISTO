@@ -1,0 +1,49 @@
+# Dependencies
+node_modules/
+wristo-next/node_modules/
+.pnp
+.pnp.js
+
+# Next.js Build Output
+.next/
+wristo-next/.next/
+wristo-next/out/
+wristo-next/build/
+dist/
+
+# Scratch & Browser Testing Cache
+wristo-next/scratch_chrome/
+scratch/
+
+# Verification Screenshots (Ignored per user request)
+screenshots/
+
+# Environment Variables & Secrets
+.env
+.env*.local
+wristo-next/.env*
+
+# IDE & Editor Files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# System & OS Junk
+.DS_Store
+Thumbs.db
+ehthumbs.db
+[Dd]esktop.ini
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Vercel Deployment Cache
+.vercel/
+
+# TypeScript Cache
+*.tsbuildinfo
