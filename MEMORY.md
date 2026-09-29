@@ -3,25 +3,66 @@
 **Brand:** WRISTO  
 **Tagline:** Your Time. Your Style.  
 **Platform:** Ultra-Luxury Multi-Brand Watch E-Commerce Experience  
-**Core Technologies:** Vanilla HTML5, Vanilla CSS3 (Custom Design Tokens), ES6+ JavaScript (State & Router Engine)  
+**Core Technologies:** Next.js 16+ (App Router, Turbopack, React 19, TypeScript), Vanilla CSS Custom Tokens, Decoupled Service Architecture (Spring Boot-Ready)  
+**GitHub Remote:** `https://github.com/Gauravkadam-web/WRISTO.git` (Branch: `main`)  
 **Last Updated:** September 2026
 
 ---
 
-## 1. Architectural Philosophy
+## 1. Architectural Philosophy & Strategy
 
-WRISTO is designed as an ultra-luxury editorial watch boutique — pairing the aesthetic caliber of Swiss horological publications (*A Collected Man*, *Hodinkee*, *Revolution Magazine*) with instantaneous client-side performance, zero framework overhead, and responsive fluidity across mobile, tablet, and ultra-wide desktop.
+WRISTO is designed as an ultra-luxury editorial watch boutique — pairing the aesthetic caliber of Swiss horological publications (*A Collected Man*, *Hodinkee*, *Revolution Magazine*) with instantaneous client-side performance and responsive fluidity across mobile, tablet, and ultra-wide desktop.
 
-### Foundational Invariants:
-1. **Zero Framework Bloat:** Pure semantic HTML5, Vanilla CSS3, and ES6+ modules without React/Next.js/Tailwind abstractions.
+### Core Architectural Invariants:
+1. **Decoupled Service Contracts:** *"Presentation should not know where content comes from."* All catalog, filtering, and search operations pass through `src/services/productService.ts`. Swapping from local mock data to Java + Spring Boot REST APIs requires zero UI component edits.
 2. **Photography-First Contrast:** Dark, cinematic horological surfaces contrasted against warm, tactile ivory/paper backgrounds (`#F7F3EC`, `#FFFDF9`).
 3. **No Unrequested Layout Shifts:** Section ordering and component hierarchy must strictly respect established positioning.
+4. **URL-First State Synchronization:** All catalog filter selections (`brand`, `movement`, `style`, `maxPrice`, `sort`, `q`) synchronize 2-way with Next.js `searchParams` (`/watches?brand=AUREN&movement=Automatic`).
 
 ---
 
-## 2. Global Homepage Section Order & Component Flow
+## 2. Repository Structure & Workspace Layout
 
-The homepage architecture follows a deliberate rhythm of dark cinematic heroics, tactile light product curation, and contained editorial moments:
+```
+WRISTO/
+├── wristo-next/                       # Production Next.js Application
+│   ├── src/
+│   │   ├── app/                       # Next.js 16 App Router
+│   │   │   ├── layout.tsx             # Root Layout (Fonts, Cart/Wishlist Providers)
+│   │   │   ├── globals.css            # Master Design Tokens, Reset & Responsive Rules
+│   │   │   ├── page.tsx               # Home / Discover Page
+│   │   │   └── watches/               # Catalog PLP Route (/watches)
+│   │   │       ├── page.tsx           # Server Component with Suspense & Metadata
+│   │   │       └── WatchesClient.tsx  # Client State Shell (URL Sync, Filters, Grid)
+│   │   ├── components/
+│   │   │   ├── layout/                # Header (Dual-Theme Lockup), Footer, CartDrawer
+│   │   │   ├── home/                  # Hero, TrustStrip, EditorialBanner
+│   │   │   └── catalog/               # CategoryNav, FilterSidebar, FilterDrawer, ProductCard,
+│   │   │                              # ProductGrid, ActiveFilterBar, SortSelect, Pagination
+│   │   ├── data/                      # 40-Watch Master Typed Dataset, Brands, Categories
+│   │   ├── services/                  # productService.ts (Spring Boot Data Contract)
+│   │   ├── context/                   # CartContext, WishlistContext (LocalStorage sync)
+│   │   └── types/                     # product.ts, filter.ts
+│   ├── public/assets/                 # 40 Watch Images, Brand Logos, Editorial Banners
+│   ├── package.json                   # Dependencies
+│   └── tsconfig.json                  # Strict TypeScript Configuration
+├── assets/                            # Original Image & Brand Identity Assets
+├── css/                               # Original Vanilla CSS Stylesheet
+├── js/                                # Original Vanilla JS Prototype Scripts
+├── docs/                              # Master Specifications & Session Summaries
+│   ├── WRISTO_MASTER_DEVELOPMENT_PROMPT.md
+│   ├── WRISTO_Design_Tokens_and_Interactions.md
+│   └── session_summary.md
+├── screenshots/                       # Centralized Multi-Viewport QA Regression Captures (.gitignored)
+├── MEMORY.md                          # Repository Architectural Memory (This File)
+├── PROGRESS.md                        # Milestones & Roadmap Tracker
+├── TECHNICALDEBT.md                   # Known Technical Debt & Future Refactoring Plan
+└── .gitignore                         # Production Clean Ignore Rules
+```
+
+---
+
+## 3. Global Homepage Section Order & Invariants
 
 ```
 ┌────────────────────────────────────────────────────────┐
@@ -45,7 +86,7 @@ The homepage architecture follows a deliberate rhythm of dark cinematic heroics,
 │    - Best Sellers, Editorial Picks, Automatic calibers │
 ├────────────────────────────────────────────────────────┤
 │ 6. Editorial Campaign Banner ("Modern Looks")          │
-│    - Original Contained Card Structure (.container)    │
+│    - Contained Card Structure (.container)             │
 │    - 2-Column: Left Editorial Text / Right Photo Visual│
 │    - "NEW ARRIVALS" + "Modern Looks. Timeless Feel."   │
 │    - "Explore Now →" Champagne CTA                     │
@@ -64,30 +105,30 @@ The homepage architecture follows a deliberate rhythm of dark cinematic heroics,
 
 > [!IMPORTANT]
 > **Position Invariant for "Modern Looks. Timeless Feel."**:  
-> This section is strictly positioned **after Trending Timepieces** and **before Curated Collections**. It must **never** be placed as the second section of the whole page (directly under the hero). It is designed as a contained card inside `.container`, not a full-bleed window.
+> Strictly positioned **after Trending Timepieces** and **before Curated Collections**. Designed as a contained card inside `.container`, not a full-bleed window.
 
 ---
 
-## 3. Brand Identity & Asset Architecture
+## 4. Phase 3: Catalog (PLP) Architecture & Responsive Behavior
 
-### Official Brand Logo Treatment
-- **Dark Theme (`logo-theme-dark`)**: `assets/brand/logo-horizontal-dark.png`
-  - High-resolution, anti-aliased transparent PNG.
-  - Ivory wordmark (`#F7F3EC`) + bronze stylized W monogram (`#B08D6B`) + bronze tagline *"YOUR TIME. YOUR STYLE."*.
-  - Used on dark headers, hero section, and dark banners. Zero white bounding box.
-- **Light Theme (`logo-theme-light`)**: `assets/brand/logo-horizontal-light.png`
-  - Charcoal wordmark (`#1A1A1A`) + bronze stylized W monogram (`#B08D6B`).
-  - Used on scrolled/sticky white headers or light modal surfaces.
-
-### Editorial Banner Asset
-- **Source**: `assets/banners/banner-modern-looks.png` (470×218 clean crop, navbar artifacts removed).
-- **Desktop/Tablet Implementation**: Right column of `.banner-editorial-card` with `background-position: right center; background-size: cover;`.
-- **Seam Blending**: Handled via `.banner-editorial-visual-overlay` with a dark `#0E0E0E` gradient (`linear-gradient(to right, #0E0E0E 0%, #0E0E0E 16%, rgba(14, 14, 14, 0.9) 28%, transparent 48%)`) to guarantee no ghost raster text is visible.
-- **Mobile Implementation**: `order: -1; min-height: 230px; background-position: 96% center; background-size: 190% auto;` to isolate the watch on wrist and jacket cuff.
+### Responsive Layout Strategy:
+* **Desktop (≥1024px):**
+  * `.filter-sidebar`: Left sticky facet rail (width: 270px) displaying live facet counts for Brands, Calibers, Styles, Diameters, and Straps.
+  * `.product-grid`: 4-column responsive grid with interactive 3D mouse tilt cards and instant wishlist toggles.
+  * `.mobile-filter-trigger`: Hidden (`display: none !important`).
+* **Tablet (768px - 1023px):**
+  * `.filter-sidebar`: Hidden (`display: none !important`).
+  * `.mobile-filter-trigger`: Displayed (`display: inline-flex !important`).
+  * `.product-grid`: 2-column luxury card layout.
+* **Mobile (<768px):**
+  * `.filter-sidebar`: Hidden.
+  * `.mobile-filter-trigger`: Prominent luxury button next to total piece count.
+  * Tapping trigger opens `.mobile-filter-drawer-overlay` with backdrop blur, sliding in the 380px drawer sheet with body scroll lock.
+  * `.mobile-bottom-nav`: 5-destination bottom navigation bar for quick thumb reach.
 
 ---
 
-## 4. Design Tokens & Color Palettes
+## 5. Design Tokens & Color Palettes
 
 ### Primary Brand Palette
 - `--brand-charcoal`: `#1A1A1A` (Primary typography & dark accents)
@@ -100,59 +141,31 @@ The homepage architecture follows a deliberate rhythm of dark cinematic heroics,
 
 ### Typography Hierarchy
 - **Serif Display (`var(--font-serif)`)**: Playfair Display, Cormorant Garamond, Georgia, serif.
-  - Hero Headline: 56px, line-height 1.08, letter-spacing -0.02em.
-  - Editorial Banner Headline: 42px, line-height 1.12, letter-spacing -0.015em.
 - **Sans Body (`var(--font-body)`)**: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif.
-  - Eyebrows: 11px, weight 600, letter-spacing 0.22em, uppercase.
-  - Body: 14.5px – 15px, weight 400, line-height 1.6, color `#B3B3B3` or `#5F5F5F`.
 
 ---
 
-## 5. Key Code Signatures
+## 6. Development, Server & Verification Commands
 
-### Editorial Banner Markup (`js/app.js`):
-```html
-<section class="section" style="padding-top: 0; padding-bottom: var(--space-16);">
-  <div class="container">
-    <div class="banner-editorial-card">
-      <div class="banner-editorial-content">
-        <div class="banner-eyebrow">NEW ARRIVALS</div>
-        <h2 class="banner-title">
-          <span class="banner-title-line">Modern Looks.</span>
-          <span class="banner-title-line">Timeless Feel.</span>
-        </h2>
-        <p class="banner-desc">
-          Discover the latest watches from top brands, designed for every mood.
-        </p>
-        <div class="banner-actions">
-          <button class="btn btn-banner-primary" onclick="navigateTo('discovery')">
-            Explore Now <span class="btn-arrow">&rarr;</span>
-          </button>
-        </div>
-        <div class="banner-carousel-indicator" aria-hidden="true">
-          <span class="carousel-num active">01</span>
-          <span class="carousel-divider"></span>
-          <span class="carousel-num">02</span>
-          <span class="carousel-divider"></span>
-          <span class="carousel-num">03</span>
-        </div>
-      </div>
-      <div class="banner-editorial-visual">
-        <div class="banner-editorial-visual-overlay"></div>
-        <span class="banner-editorial-badge">
-          STYLE IN EVERY DETAIL
-        </span>
-      </div>
-    </div>
-  </div>
-</section>
-```
-
----
-
-## 6. Development & Verification Commands
-- **Local Dev Server**: `python -m http.server 3333` (accessible at `http://localhost:3333/`)
-- **Visual Regression Verification**:
+- **Next.js Dev Server**:
   ```powershell
-  Start-Process -FilePath "C:\Program Files\Google\Chrome\Application\chrome.exe" -ArgumentList "--headless --disable-gpu --screenshot=e:\WRISTO\preview.png --window-size=1440,3200 http://localhost:3333/" -Wait
+  cd e:\WRISTO\wristo-next
+  npm run dev
+  # Accessible at http://localhost:3000/ and http://localhost:3000/watches
+  ```
+- **Next.js Production Build Test**:
+  ```powershell
+  cd e:\WRISTO\wristo-next
+  npm run build
+  ```
+- **Multi-Viewport Headless Chrome QA (saved to `screenshots/`)**:
+  ```powershell
+  # Desktop (1440px)
+  Start-Process -FilePath "C:\Program Files\Google\Chrome\Application\chrome.exe" -ArgumentList "--headless --disable-gpu --screenshot=E:\WRISTO\screenshots\watches_desktop_1440.png --window-size=1440,2400 http://localhost:3000/watches" -Wait
+  
+  # Tablet (768px)
+  Start-Process -FilePath "C:\Program Files\Google\Chrome\Application\chrome.exe" -ArgumentList "--headless --disable-gpu --screenshot=E:\WRISTO\screenshots\watches_tablet_768.png --window-size=768,2000 http://localhost:3000/watches" -Wait
+  
+  # Mobile (375px)
+  Start-Process -FilePath "C:\Program Files\Google\Chrome\Application\chrome.exe" -ArgumentList "--headless --disable-gpu --screenshot=E:\WRISTO\screenshots\watches_mobile_375.png --window-size=375,2000 http://localhost:3000/watches" -Wait
   ```
