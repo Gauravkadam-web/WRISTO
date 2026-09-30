@@ -2,9 +2,11 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { CartProvider } from '@/context/CartContext';
 import { WishlistProvider } from '@/context/WishlistContext';
+import { SearchProvider } from '@/context/SearchContext';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import CartDrawer from '@/components/layout/CartDrawer';
+import SearchModal from '@/components/search/SearchModal';
 
 export const metadata: Metadata = {
   title: 'WRISTO — Your Time. Your Style. | Ultra-Luxury Watch Marketplace',
@@ -33,10 +35,13 @@ export default function RootLayout({
       <body>
         <CartProvider>
           <WishlistProvider>
-            <Header />
-            <main id="main-content-view">{children}</main>
-            <Footer />
-            <CartDrawer />
+            <SearchProvider>
+              <Header />
+              <main id="main-content-view">{children}</main>
+              <Footer />
+              <CartDrawer />
+              <SearchModal />
+            </SearchProvider>
           </WishlistProvider>
         </CartProvider>
       </body>

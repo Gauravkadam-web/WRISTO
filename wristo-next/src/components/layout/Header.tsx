@@ -6,11 +6,13 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { useWishlist } from '@/context/WishlistContext';
+import { useSearch } from '@/context/SearchContext';
 
 export default function Header() {
   const pathname = usePathname();
   const { cartCount, openCartDrawer } = useCart();
   const { wishlistCount } = useWishlist();
+  const { openSearch } = useSearch();
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
@@ -70,12 +72,19 @@ export default function Header() {
           {/* Header Utilities */}
           <div className="header-actions">
             {/* Search Trigger */}
-            <Link href="/watches?search=open" className="header-action-btn" title="Search Timepieces" aria-label="Search">
+            <button
+              type="button"
+              className="header-action-btn search-trigger-btn"
+              onClick={openSearch}
+              title="Search Timepieces (⌘K or /)"
+              aria-label="Search Timepieces"
+            >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="11" cy="11" r="8" />
                 <line x1="21" y1="21" x2="16.65" y2="16.65" />
               </svg>
-            </Link>
+              <span className="header-search-badge">⌘K</span>
+            </button>
 
             {/* Wishlist */}
             <Link href="/wishlist" className="header-action-btn" title="Saved Wishlist" aria-label="Wishlist">

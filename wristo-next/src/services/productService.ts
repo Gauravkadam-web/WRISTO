@@ -1,7 +1,15 @@
-import { Product, CategoryItem } from '@/types/product';
+import { Product, CategoryItem, Brand } from '@/types/product';
 import { ProductQueryFilters, SortOption, CatalogQueryResult, CatalogFacetCounts } from '@/types/filter';
 import { PRODUCTS } from '@/data/products';
 import { CATEGORIES } from '@/data/categories';
+import { BRANDS } from '@/data/brands';
+
+export interface SearchSuggestionsResult {
+  products: Product[];
+  brands: Brand[];
+  totalMatches: number;
+  popularSearches: string[];
+}
 
 /**
  * WRISTO Product Service
@@ -190,3 +198,51 @@ export async function getSimilarProducts(productId: string, limit: number = 4): 
     .filter(p => p.id !== productId && (p.movement === current.movement || p.brand === current.brand || p.style === current.style))
     .slice(0, limit);
 }
+
+export async function getSearchSuggestions(query: string): Promise<SearchSuggestionsResult> {
+  const cleanQ = query.toLowerCase().trim();
+  const popularSearches = [
+    'Automatic',
+    'Chronograph',
+    'Emerald Green',
+    'Skeleton',
+    'Minimal Leather',
+    'AUREN',
+    'Mesh Strap',
+    'Titanium'
+  ];
+
+  if (!cleanQ) {
+    return {
+      products: PRODUCTS.slice(0, 3), // trending fallback
+      brands: [],
+      totalMatches: 0,
+      popularSearches
+    };
+  }
+
+  const matchedProducts = PRODUCTS.filter(p =>
+    p.brand.toLowerCase().includes(cleanQ) ||
+    p.model.toLowerCase().includes(cleanQ) ||
+    p.movement.toLowerCase().includes(cleanQ) ||
+    p.style.toLowerCase().includes(cleanQ) ||
+    p.dial.toLowerCase().includes(cleanQ) ||
+    p.strap.toLowerCase().includes(cleanQ) ||
+    p.material.toLowerCase().includes(cleanQ) ||
+    p.tagline.toLowerCase().includes(cleanQ) ||
+    p.occasion.some(o => o.toLowerCase().includes(cleanQ))
+  );
+
+  const matchedBrands = BRANDS.filter(b =>
+    b.name.toLowerCase().includes(cleanQ) ||
+    b.styles.some(s => s.toLowerCase().includes(cleanQ))
+  );
+
+  return {
+    products: matchedProducts.slice(0, 6),
+    brands: matchedBrands,
+    totalMatches: matchedProducts.length,
+    popularSearches
+  };
+}
+

@@ -18,6 +18,7 @@ WRISTO is designed as an ultra-luxury editorial watch boutique — pairing the a
 2. **Photography-First Contrast:** Dark, cinematic horological surfaces contrasted against warm, tactile ivory/paper backgrounds (`#F7F3EC`, `#FFFDF9`).
 3. **No Unrequested Layout Shifts:** Section ordering and component hierarchy must strictly respect established positioning.
 4. **URL-First State Synchronization:** All catalog filter selections (`brand`, `movement`, `style`, `maxPrice`, `sort`, `q`) synchronize 2-way with Next.js `searchParams` (`/watches?brand=AUREN&movement=Automatic`).
+5. **Explicit Permission for Git Commits & Pushes:** NEVER execute `git commit` or `git push` without obtaining explicit prior confirmation from the user. Always present changes/diffs and ask for approval first.
 
 ---
 
@@ -148,7 +149,22 @@ WRISTO/
 
 ---
 
-## 6. Design Tokens & Color Palettes
+## 6. Phase 5: Instant Search & Autocomplete Overlay Architecture
+
+### State & Context Management:
+* **`SearchContext.tsx` (`useSearch()`):** Coordinates global search overlay state. Handles keyboard shortcuts (`Cmd+K`/`Ctrl+K`, `/`, and `Escape`), outside backdrop dismissal, and automatic body scroll locking when active.
+* **Header Integration:** Header search icon transformed into interactive button displaying a discrete `⌘K` badge on desktop.
+
+### Modal & Component Suite (`wristo-next/src/components/search/`):
+* **`SearchModal.tsx`:** Primary overlay container. Manages query debounce (150ms), keyboard navigation index, and persistence of recent searches in `localStorage` (`wristo_recent_searches`).
+* **`SearchInput.tsx`:** Auto-focus search input with gold magnifying glass, quick clear `✕`, and `ESC` key pill badge.
+* **`SearchRecentAndPopular.tsx`:** Idle state displaying recently searched queries with per-item remove and clear all history, trending horology queries, and curated trending timepiece cards.
+* **`SearchSuggestionsList.tsx`:** Matching brand pills with piece counts, suggested timepieces with query highlighting in gold, horology specs, INR pricing, discount indicators, arrow key (`↑`/`↓`) navigation, and "View all in catalog" footer link.
+* **`SearchEmptyState.tsx`:** Graceful empty state with horological recovery guidance and clickable fallback chips.
+
+---
+
+## 7. Design Tokens & Color Palettes
 
 ### Primary Brand Palette
 - `--brand-charcoal`: `#1A1A1A` (Primary typography & dark accents)

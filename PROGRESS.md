@@ -112,11 +112,53 @@
 
 ---
 
+---
+
+### Milestone 7: Phase 5 — Instant Search & Autocomplete Overlay ✅
+- **Objective:** Build enterprise-grade, Spring Boot-ready Instant Search modal overlay with keyboard shortcuts (`⌘K` / `Ctrl+K`, `/`, `ESC`), debounced autocomplete suggestions, query highlighting, recent search history persistence, brand pills, empty state recovery, and multi-viewport responsive luxury styling.
+- **Achievements:**
+  - **Decoupled Search Engine:** Added `getSearchSuggestions(query)` in `productService.ts` returning typed `SearchSuggestionsResult` (products, matching brands, total count, popular queries). Ready for Elasticsearch/PostgreSQL full-text backend transition with zero UI alterations.
+  - **Global Search Context & Shortcuts:** Built `SearchContext.tsx` with `useSearch()`, global `Cmd+K` / `Ctrl+K`, `/`, and `Escape` listeners, with automatic body scroll locking.
+  - **Header Trigger & Shortcut Badge:** Replaced static link in `Header.tsx` with interactive `<button>` displaying subtle `⌘K` keyboard badge on desktop viewports.
+  - **Search Modal & Subcomponents:**
+    - `SearchInput.tsx`: Auto-focus, debounce, gold magnifying glass icon, clear `✕` button, `ESC` badge.
+    - `SearchRecentAndPopular.tsx`: `localStorage` search history with individual removal and "Clear History" actions, popular horological query chips, and curated trending timepiece cards.
+    - `SearchSuggestionsList.tsx`: Matching brand pills with model count badges, suggested timepieces with query highlighting in gold, horology specs, INR pricing, discount indicators, arrow key (`↑`/`↓`) navigation, and "View all in catalog" footer link.
+    - `SearchEmptyState.tsx`: Gold icon badge, no-results recovery advice, and quick-click popular query chips.
+  - **Luxury Glassmorphism Styling:** Deep obsidian backdrop (`rgba(8,8,8,0.78)` with `backdrop-filter: blur(16px)`), gold border accents, custom gold scrollbar, and responsive mobile layout.
+- **Verification Outputs (stored in `screenshots/`):**
+  - `screenshots/search_desktop_1440.png`: 1440px desktop idle search modal with recents, popular chips, and trending cards.
+  - `screenshots/search_suggestions_1440.png`: 1440px desktop suggestions with brand match, query highlighting, and prices.
+  - `screenshots/search_empty_1440.png`: 1440px desktop empty state with horological recovery guidance.
+  - `screenshots/search_mobile_375.png`: 375px mobile idle search modal.
+  - `screenshots/search_mobile_suggestions_375.png`: 375px mobile suggestions with vertically stacked price column and zero horizontal overflow.
+
+---
+
+## 2. Current Architecture & File Manifest
+
+| File / Folder | Role & Status |
+|---|---|
+| `wristo-next/` | Production Next.js 16+ application (App Router, React 19, TypeScript). |
+| `wristo-next/src/context/SearchContext.tsx` | Global search state & shortcut coordinator (`Cmd+K`, `/`, `ESC`). |
+| `wristo-next/src/components/search/` | Complete Phase 5 search overlay suite (`SearchModal`, `SearchInput`, `SearchRecentAndPopular`, `SearchSuggestionsList`, `SearchEmptyState`). |
+| `wristo-next/src/app/product/[id]/` | Product Detail Page route (`page.tsx` + `ProductDetailClient.tsx`). |
+| `wristo-next/src/app/watches/[id]/` | SEO alias redirecting to `/product/[id]`. |
+| `wristo-next/src/components/product/` | Modular PDP components (Gallery, Header, Pricing, Variants, Actions, SpecsGrid, AIInsight, TrustAccordions, StickyBar, CoordinatedWatches). |
+| `wristo-next/src/app/watches/` | Catalog PLP route (`page.tsx` + `WatchesClient.tsx`). |
+| `wristo-next/src/services/` | Decoupled data contracts (`productService.ts` - Spring Boot ready). |
+| `wristo-next/src/components/catalog/` | Modular catalog UI (Sidebar, Drawer, Grid, Card, ActiveFilterBar, CategoryNav, SortSelect, Pagination). |
+| `screenshots/` | Centralized repository for all visual QA regression captures (21 screenshots). |
+| `index.html` | Vanilla HTML/CSS/JS prototype host. |
+| `MEMORY.md` | Core repository memory documenting architectural invariants and design tokens. |
+| `PROGRESS.md` | This project tracker and roadmap. |
+
+---
+
 ## 3. Next Milestones & Roadmap
 
 - [x] **Milestone 6: Phase 4 — Product Detail Experience (PDP)** ✅
-- [ ] **Milestone 7: Phase 5 — Instant Search & Autocomplete Overlay**
-  - Connect search modal with keyboard navigation, recent searches, and instant product suggestions.
+- [x] **Milestone 7: Phase 5 — Instant Search & Autocomplete Overlay** ✅
 - [ ] **Milestone 8: Phase 6 — Full Cart Drawer & Checkout Sequence**
   - Expand client-side cart drawer, promo code application, and simulated luxury checkout.
 - [ ] **Milestone 9: Phase 8 — AI Watch Concierge Integration**
