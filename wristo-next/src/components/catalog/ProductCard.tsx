@@ -82,12 +82,14 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
         </button>
 
         {/* Direct Watch Image matching CSS specifications */}
-        <img
-          src={product.image}
-          alt={`${product.brand} ${product.model} - ${product.caseSize} ${product.movement} Watch`}
-          className="card-watch-img"
-          loading={priority ? 'eager' : 'lazy'}
-        />
+        <Link href={`/product/${product.id}`} className="card-media-link" tabIndex={-1} aria-hidden="true">
+          <img
+            src={product.image}
+            alt={`${product.brand} ${product.model} - ${product.caseSize} ${product.movement} Watch`}
+            className="card-watch-img"
+            loading={priority ? 'eager' : 'lazy'}
+          />
+        </Link>
 
         {/* Quick Actions Hover Layer */}
         <div className="card-quick-actions">

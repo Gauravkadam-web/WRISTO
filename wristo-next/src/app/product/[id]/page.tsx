@@ -1,0 +1,70 @@
+import React from 'react';
+import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import { getProductById, getSimilarProducts, getAllProductIds } from '@/services/productService';
+import ProductDetailClient from '@/components/product/ProductDetailClient';
+
+interface ProductPageProps {
+  params: Promise<{ id: string }>;
+}
+
+export async function generateStaticParams() {
+  const ids = await getAllProductIds();
+  return ids.map((id) => ({ id }));
+}
+
+export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
+  const { id } = await params;
+  const product = await getProductById(id);
+
+  if (!product) {
+    return {
+      title: 'Timepiece Not Found | WRISTO Luxury Watches',
+      description: 'The requested luxury watch could not be located in our horological archive.'
+    };
+  }
+
+  const title = `${product.brand} ${product.model} — ${product.movement} ${product.caseSize} | WRISTO`;
+  const description = `${product.tagline} ${product.description.slice(0, 140)}... Free insured shipping & 2-year international warranty.`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      images: [
+        {
+          url: product.image,
+          width: 800,
+          height: 800,
+          alt: `${product.brand} ${product.model}`
+        }
+      ]
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [product.image]
+    }
+  };
+}
+
+export default async function ProductDetailPage({ params }: ProductPageProps) {
+  const { id } = await params;
+  const product = await getProductById(id);
+
+  if (!product) {
+    notFound();
+  }
+
+  const similarProducts = await getSimilarProducts(product.id, 4);
+
+  return (
+    <ProductDetailClient
+      product={product}
+      similarProducts={similarProducts}
+    />
+  );
+}

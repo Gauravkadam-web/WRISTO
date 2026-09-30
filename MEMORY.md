@@ -128,7 +128,27 @@ WRISTO/
 
 ---
 
-## 5. Design Tokens & Color Palettes
+## 5. Phase 4: Product Detail Experience (PDP) Architecture
+
+### Route & Pre-rendering Strategy:
+* **Route:** `/product/[id]` with `generateStaticParams()` pre-rendering all 40 watches statically for instantaneous TTFB.
+* **SEO Redirect:** `/watches/[id]` server-side redirecting to `/product/[id]`.
+* **Dynamic OpenGraph Metadata:** Title, description, and high-res imagery generated dynamically via `generateMetadata()`.
+
+### Layout & Component Architecture:
+* **Interactive 3D Stage (`ProductGallery.tsx`):** Level 3 depth tracking cursor (`perspective: 1200px`, `rotateX: 1-3deg`, `rotateY: 2-4deg`, `scale: 1.01`, spring reset on leave). Vertical thumbnail rail with official authenticity seal.
+* **Macro Lightbox Modal:** Click-to-enlarge modal with zoom-in, zoom-out, and reset controls with keyboard `Escape` dismissal.
+* **Content Hierarchy (`ProductHeader.tsx` & `ProductPricing.tsx`):** Serif title (`Playfair Display`), tracked brand eyebrow, rating verification, INR currency formatting with savings badge (`SAVE ₹X (Y% OFF)`), and tax notes.
+* **AI Style Concierge Insight (`AIConciergeInsight.tsx`):** Distinctive ivory card with gold accent bar grounded in `product.aiReason`, compatibility score (`98% Style Match`), and occasion chips.
+* **Technical Horology Matrix (`ProductSpecsGrid.tsx`):** 6-cell tactile grid (Caliber Movement, Case Diameter, Case Material, Dial & Finish, Strap & Clasp, Water Resistance).
+* **Luxury Trust Disclosures (`ProductTrustAccordions.tsx`):** 4 expandable accordions for Authenticity, Insured Shipping, 30-Day Returns, and 2-Year International Warranty.
+* **Purchase Actions (`ProductActions.tsx`):** Quantity stepper, `[ Add to Cart ]` with cart drawer slide-over, `[ Buy Now → ]` champagne CTA, and wishlist toggle.
+* **Coordinated Timepieces (`CoordinatedWatches.tsx`):** 4-card companion timepieces grid powered by `getSimilarProducts()`.
+* **Mobile Sticky Purchase Bar (`StickyMobilePurchaseBar.tsx`):** Fixed bottom bar on viewports `< 768px` revealing on scroll with watch thumbnail, price, and instant Add/Buy buttons.
+
+---
+
+## 6. Design Tokens & Color Palettes
 
 ### Primary Brand Palette
 - `--brand-charcoal`: `#1A1A1A` (Primary typography & dark accents)
@@ -145,7 +165,7 @@ WRISTO/
 
 ---
 
-## 6. Development, Server & Verification Commands
+## 7. Development, Server & Verification Commands
 
 - **Next.js Dev Server**:
   ```powershell

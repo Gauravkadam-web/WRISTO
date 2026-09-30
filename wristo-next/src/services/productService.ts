@@ -159,7 +159,15 @@ export async function getCatalogProducts(
 }
 
 export async function getProductById(id: string): Promise<Product | undefined> {
-  return PRODUCTS.find(p => p.id === id);
+  const normalized = id.toLowerCase().trim();
+  return PRODUCTS.find(p => 
+    p.id.toLowerCase() === normalized ||
+    p.model.toLowerCase().replace(/[^a-z0-9]+/g, '-') === normalized
+  );
+}
+
+export async function getAllProductIds(): Promise<string[]> {
+  return PRODUCTS.map(p => p.id);
 }
 
 export async function getCategories(): Promise<CategoryItem[]> {

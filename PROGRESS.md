@@ -73,15 +73,39 @@
 
 ---
 
+### Milestone 6: Phase 4 — Product Detail Experience (PDP) Architecture ✅
+- **Objective:** Build enterprise-grade, Spring Boot-ready Product Detail Page (`/product/[id]`) with dynamic SSG, Level 3 3D tilt, zoom gallery, technical horology matrix, AI concierge styling, and mobile sticky thumb purchase bar.
+- **Achievements:**
+  - **Dynamic Route & SSG Pre-rendering:** Implemented `/product/[id]` with `generateStaticParams()` pre-rendering all 40 watches at build time with dynamic OpenGraph meta tags. Added `/watches/[id]` SEO redirect.
+  - **Level 3 3D Tilt Gallery:** Main watch stage features subtle 3D cursor-tracking tilt (`perspective: 1200px`, `rotateX: 1-3deg`, `rotateY: 2-4deg`, spring reset) with vertical thumbnail rail and official WRISTO Authenticity Seal.
+  - **Lightbox Macro Inspection:** Click-to-enlarge modal with zoom-in, zoom-out, and reset controls with keyboard `Escape` support.
+  - **Content Hierarchy & Indian Pricing:** Serif headline (`Playfair Display`), tracked brand eyebrow, rating verification, INR currency formatting with savings badge (`SAVE ₹X (Y% OFF)`), and tax notes.
+  - **AI Style Concierge Insight:** Contextual horological style reasoning card grounded in `product.aiReason`, compatibility score (`98% Style Match`), and occasion chips.
+  - **Technical Horology Matrix:** 6-cell tactile specifications grid covering Caliber Movement, Case Diameter, Case Material, Dial & Crystal, Strap & Clasp, and Water Resistance.
+  - **Luxury Trust Disclosures:** 4 expandable accordion cards covering 100% Authenticity, Insured Shipping, 30-Day Returns, and 2-Year International Warranty.
+  - **Cart & Wishlist Integration:** Stepper (`− 1 +`), `[ Add to Cart ]` with cart drawer slide-over, `[ Buy Now → ]` champagne CTA, and wishlist toggle.
+  - **Coordinated Watches:** 4-card companion timepieces grid powered by `getSimilarProducts()`.
+  - **Mobile Sticky Purchase Bar:** Fixed thumb-zone bar on viewports `< 768px` revealing on scroll with watch thumbnail, price, and instant Add/Buy buttons.
+- **Verification Outputs (stored in `screenshots/`):**
+  - `screenshots/pdp_desktop_1440.png`: 1440px desktop PDP view (WRT-001 Atlas Black).
+  - `screenshots/pdp_tablet_768.png`: 768px tablet PDP view.
+  - `screenshots/pdp_mobile_375.png`: 375px mobile PDP view with stacked action ergonomics.
+  - `screenshots/pdp_wrt005_desktop.png`: 1440px desktop PDP view (WRT-005 Regent Green Automatic).
+
+---
+
 ## 2. Current Architecture & File Manifest
 
 | File / Folder | Role & Status |
 |---|---|
 | `wristo-next/` | Production Next.js 16+ application (App Router, React 19, TypeScript). |
+| `wristo-next/src/app/product/[id]/` | Product Detail Page route (`page.tsx` + `ProductDetailClient.tsx`). |
+| `wristo-next/src/app/watches/[id]/` | SEO alias redirecting to `/product/[id]`. |
+| `wristo-next/src/components/product/` | Modular PDP components (Gallery, Header, Pricing, Variants, Actions, SpecsGrid, AIInsight, TrustAccordions, StickyBar, CoordinatedWatches). |
 | `wristo-next/src/app/watches/` | Catalog PLP route (`page.tsx` + `WatchesClient.tsx`). |
 | `wristo-next/src/services/` | Decoupled data contracts (`productService.ts` - Spring Boot ready). |
 | `wristo-next/src/components/catalog/` | Modular catalog UI (Sidebar, Drawer, Grid, Card, ActiveFilterBar, CategoryNav, SortSelect, Pagination). |
-| `screenshots/` | Centralized repository for all visual QA regression captures (13 screenshots). |
+| `screenshots/` | Centralized repository for all visual QA regression captures (17 screenshots). |
 | `index.html` | Vanilla HTML/CSS/JS prototype host. |
 | `MEMORY.md` | Core repository memory documenting architectural invariants and design tokens. |
 | `PROGRESS.md` | This project tracker and roadmap. |
@@ -90,12 +114,12 @@
 
 ## 3. Next Milestones & Roadmap
 
-- [ ] **Milestone 6: Phase 4 — Product Detail Experience (PDP)**
-  - Implement full-screen image zoom gallery, technical horological specifications, caliber breakdown, and strap customizer.
+- [x] **Milestone 6: Phase 4 — Product Detail Experience (PDP)** ✅
 - [ ] **Milestone 7: Phase 5 — Instant Search & Autocomplete Overlay**
   - Connect search modal with keyboard navigation, recent searches, and instant product suggestions.
 - [ ] **Milestone 8: Phase 6 — Full Cart Drawer & Checkout Sequence**
   - Expand client-side cart drawer, promo code application, and simulated luxury checkout.
 - [ ] **Milestone 9: Phase 8 — AI Watch Concierge Integration**
   - Connect natural language recommendation prompt to Gemini API / local mock intelligence for smart filtering.
+
 
