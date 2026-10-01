@@ -9,6 +9,7 @@ import CartDrawer from '@/components/layout/CartDrawer';
 import SearchModal from '@/components/search/SearchModal';
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://wristo-luxury.vercel.app'),
   title: 'WRISTO — Your Time. Your Style. | Ultra-Luxury Watch Marketplace',
   description: 'Curated luxury, automatic, minimalist, and connected timepieces from trusted global watchmakers. Intelligent AI-powered watch styling for every wrist and occasion.',
   keywords: ['luxury watches', 'automatic watches', 'chronographs', 'WRISTO', 'minimalist watches', 'timepieces'],
