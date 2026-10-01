@@ -71,6 +71,9 @@ export default function Header() {
             <Link href="/watches?category=chronograph" className="nav-link">
               Chronographs
             </Link>
+            <Link href="/journal" className={`nav-link ${pathname.startsWith('/journal') ? 'active' : ''}`}>
+              Journal
+            </Link>
             <Link href="/concierge" className={`nav-link ${pathname === '/concierge' ? 'active' : ''}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
               <span>AI Concierge</span>
               <span style={{ fontSize: '9px', background: 'var(--color-gold, #DEC095)', color: '#111', padding: '1px 5px', borderRadius: '8px', fontWeight: 700, letterSpacing: '0.05em' }}>AI</span>
