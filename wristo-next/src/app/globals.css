@@ -49,10 +49,55 @@
   --color-error: #B94A48;
   --color-info: #527A9E;
 
-  /* Typography Families */
+  /* Typography Families (2-Family System: Section 3.1) */
   --font-serif: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
-  --font-heading: 'Sora', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-heading: var(--font-serif); /* Legacy alias mapped to authoritative serif display */
+
+  /* Typography Scale Tokens (Section 3.2) */
+  --type-display-xl-size: 64px;
+  --type-display-xl-lh: 0.98;
+  --type-display-xl-weight: 500;
+
+  --type-display-lg-size: 52px;
+  --type-display-lg-lh: 1.00;
+  --type-display-lg-weight: 500;
+
+  --type-heading-xl-size: 40px;
+  --type-heading-xl-lh: 1.05;
+  --type-heading-xl-weight: 600;
+
+  --type-heading-lg-size: 32px;
+  --type-heading-lg-lh: 1.10;
+  --type-heading-lg-weight: 600;
+
+  --type-heading-md-size: 26px;
+  --type-heading-md-lh: 1.15;
+  --type-heading-md-weight: 600;
+
+  --type-heading-sm-size: 22px;
+  --type-heading-sm-lh: 1.20;
+  --type-heading-sm-weight: 600;
+
+  --type-body-lg-size: 18px;
+  --type-body-lg-lh: 1.55;
+  --type-body-lg-weight: 400;
+
+  --type-body-md-size: 16px;
+  --type-body-md-lh: 1.50;
+  --type-body-md-weight: 400;
+
+  --type-body-sm-size: 14px;
+  --type-body-sm-lh: 1.45;
+  --type-body-sm-weight: 400;
+
+  --type-caption-size: 12px;
+  --type-caption-lh: 1.35;
+  --type-caption-weight: 500;
+
+  --type-label-size: 11px;
+  --type-label-lh: 1.20;
+  --type-label-weight: 600;
 
   /* Spacing Grid (8px base) */
   --space-1: 4px;
@@ -98,6 +143,91 @@
   /* Max Widths */
   --max-content: 1360px;
   --max-reading: 720px;
+}
+
+/* ==========================================================================
+   Typography Scale Utility Classes & Reusable Titles (Section 3.2)
+   ========================================================================== */
+.type-display-xl {
+  font-family: var(--font-serif);
+  font-size: var(--type-display-xl-size);
+  line-height: var(--type-display-xl-lh);
+  font-weight: var(--type-display-xl-weight);
+  letter-spacing: -0.03em;
+}
+.type-display-lg {
+  font-family: var(--font-serif);
+  font-size: var(--type-display-lg-size);
+  line-height: var(--type-display-lg-lh);
+  font-weight: var(--type-display-lg-weight);
+  letter-spacing: -0.025em;
+}
+.type-heading-xl {
+  font-family: var(--font-serif);
+  font-size: var(--type-heading-xl-size);
+  line-height: var(--type-heading-xl-lh);
+  font-weight: var(--type-heading-xl-weight);
+  letter-spacing: -0.02em;
+}
+.type-heading-lg {
+  font-family: var(--font-serif);
+  font-size: var(--type-heading-lg-size);
+  line-height: var(--type-heading-lg-lh);
+  font-weight: var(--type-heading-lg-weight);
+  letter-spacing: -0.015em;
+}
+.type-heading-md {
+  font-family: var(--font-serif);
+  font-size: var(--type-heading-md-size);
+  line-height: var(--type-heading-md-lh);
+  font-weight: var(--type-heading-md-weight);
+}
+.type-heading-sm {
+  font-family: var(--font-serif);
+  font-size: var(--type-heading-sm-size);
+  line-height: var(--type-heading-sm-lh);
+  font-weight: var(--type-heading-sm-weight);
+}
+.type-body-lg {
+  font-family: var(--font-body);
+  font-size: var(--type-body-lg-size);
+  line-height: var(--type-body-lg-lh);
+  font-weight: var(--type-body-lg-weight);
+}
+.type-body-md {
+  font-family: var(--font-body);
+  font-size: var(--type-body-md-size);
+  line-height: var(--type-body-md-lh);
+  font-weight: var(--type-body-md-weight);
+}
+.type-body-sm {
+  font-family: var(--font-body);
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-lh);
+  font-weight: var(--type-body-sm-weight);
+}
+.type-caption {
+  font-family: var(--font-body);
+  font-size: var(--type-caption-size);
+  line-height: var(--type-caption-lh);
+  font-weight: var(--type-caption-weight);
+}
+.type-label {
+  font-family: var(--font-body);
+  font-size: var(--type-label-size);
+  line-height: var(--type-label-lh);
+  font-weight: var(--type-label-weight);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.catalog-empty-title {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--color-brand-black);
+  margin-bottom: 8px;
 }
 
 /* ==========================================================================
@@ -516,12 +646,13 @@ body:not([data-current-view="home"]) .site-header {
 
 .hero-title {
   font-family: var(--font-serif);
-  font-size: 58px;
-  font-weight: 500;
-  line-height: 1.08;
-  letter-spacing: -0.015em;
+  font-size: var(--type-display-xl-size, 64px);
+  font-weight: var(--type-display-xl-weight, 500);
+  line-height: var(--type-display-xl-lh, 0.98);
+  letter-spacing: -0.03em;
   color: #FFFFFF;
   margin-bottom: 20px;
+  max-width: 520px;
 }
 
 .hero-title-line {
@@ -997,6 +1128,112 @@ body:not([data-current-view="home"]) .site-header {
   font-weight: 600;
   text-transform: uppercase;
 }
+
+.hero-video-title {
+  font-family: var(--font-serif);
+  font-size: 28px;
+  font-weight: 500;
+  color: #FFFFFF;
+  margin: 12px 0 8px 0;
+  line-height: 1.2;
+}
+
+/* ==========================================================================
+   Trust Strip (Minimalist, Non-Carded Luxury Row)
+   ========================================================================== */
+.trust-strip-minimal {
+  padding: 32px 0;
+  border-bottom: 1px solid var(--color-border-light);
+  background-color: var(--color-brand-cream);
+  margin-bottom: var(--space-8);
+}
+
+.trust-strip-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 28px;
+  align-items: center;
+}
+
+.trust-strip-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.trust-strip-accent {
+  color: var(--brand-bronze, #B08D6B);
+  font-size: 15px;
+  line-height: 1.2;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.trust-strip-title {
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--color-brand-black);
+  margin-bottom: 2px;
+}
+
+.trust-strip-subtitle {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+
+@media (max-width: 1024px) {
+  .trust-strip-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (max-width: 600px) {
+  .trust-strip-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+/* ==========================================================================
+   AI Concierge Teaser Banner
+   ========================================================================== */
+.ai-teaser-banner {
+  background: linear-gradient(135deg, #111111 0%, #1A1A1A 100%);
+  border: 1px solid rgba(217, 201, 184, 0.22);
+  border-radius: var(--radius-xl, 20px);
+  padding: 44px 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 36px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.16);
+}
+
+@media (max-width: 900px) {
+  .ai-teaser-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 32px 24px;
+  }
+}
+
+@media (max-width: 600px) {
+  .ai-teaser-banner {
+    padding: 24px 18px;
+    border-radius: var(--radius-lg, 16px);
+  }
+  .ai-teaser-title {
+    font-size: 20px;
+    line-height: 1.25;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+}
+
 /* ==========================================================================
    Editorial Campaign Banner (Modern Looks. Timeless Feel.)
    Original Contained Card Structure with Refined Editorial Detailing
@@ -1252,11 +1489,30 @@ body:not([data-current-view="home"]) .site-header {
 }
 
 .section-title {
-  font-family: var(--font-heading);
-  font-size: 36px;
-  font-weight: 600;
+  font-family: var(--font-serif);
+  font-size: var(--type-heading-xl-size, 40px);
+  font-weight: 500;
   letter-spacing: -0.02em;
-  line-height: 1.15;
+  line-height: var(--type-heading-xl-lh, 1.05);
+  color: var(--color-brand-black);
+}
+
+.section-dark .section-title {
+  color: #FFFFFF;
+}
+
+@media (max-width: 768px) {
+  .section-title {
+    font-size: 30px;
+    line-height: 1.12;
+  }
+}
+
+@media (max-width: 480px) {
+  .section-title {
+    font-size: 26px;
+    line-height: 1.15;
+  }
 }
 
 .section-subtitle {
@@ -1452,11 +1708,11 @@ body:not([data-current-view="home"]) .site-header {
 }
 
 .card-title {
-  font-family: var(--font-heading);
+  font-family: var(--font-body);
   font-size: 15px;
   font-weight: 600;
   color: var(--color-text-primary);
-  line-height: 1.25;
+  line-height: 1.3;
   margin-bottom: 6px;
   display: -webkit-box;
   -webkit-line-clamp: 1;
@@ -1541,10 +1797,19 @@ body:not([data-current-view="home"]) .site-header {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-heading);
+  font-family: var(--font-serif);
   font-weight: 700;
   font-size: 20px;
   box-shadow: 0 4px 15px rgba(200, 155, 91, 0.4);
+}
+
+.ai-teaser-title {
+  font-family: var(--font-serif);
+  font-size: var(--type-heading-lg-size, 32px);
+  font-weight: 500;
+  line-height: var(--type-heading-lg-lh, 1.1);
+  color: #FFFFFF;
+  margin-bottom: 12px;
 }
 
 .ai-prompt-box {
@@ -1818,10 +2083,10 @@ body:not([data-current-view="home"]) .site-header {
 }
 
 .collection-title {
-  font-family: var(--font-heading);
-  font-size: 24px;
-  font-weight: 600;
-  line-height: 1.2;
+  font-family: var(--font-serif);
+  font-size: var(--type-heading-md-size, 26px);
+  font-weight: 500;
+  line-height: var(--type-heading-md-lh, 1.15);
   margin-bottom: 8px;
 }
 
@@ -1877,8 +2142,8 @@ body:not([data-current-view="home"]) .site-header {
 }
 
 .brand-logo-title {
-  font-family: var(--font-heading);
-  font-size: 20px;
+  font-family: var(--font-body);
+  font-size: 18px;
   font-weight: 700;
   letter-spacing: 0.15em;
   margin-bottom: 4px;
@@ -2287,8 +2552,8 @@ body:not([data-current-view="home"]) .site-header {
 }
 
 .pdp-lightbox-title {
-  font-family: var(--font-heading);
-  font-size: 18px;
+  font-family: var(--font-body);
+  font-size: 17px;
   font-weight: 600;
 }
 
@@ -2399,10 +2664,11 @@ body:not([data-current-view="home"]) .site-header {
 }
 
 .pdp-model-title {
-  font-family: var(--font-heading);
-  font-size: 36px;
+  font-family: var(--font-serif);
+  font-size: var(--type-heading-xl-size, 40px);
   font-weight: 600;
-  line-height: 1.15;
+  line-height: var(--type-heading-xl-lh, 1.05);
+  letter-spacing: -0.02em;
   color: var(--color-brand-black);
   margin-bottom: 8px;
 }
@@ -3197,7 +3463,7 @@ body:not([data-current-view="home"]) .site-header {
 }
 
 .drawer-title {
-  font-family: var(--font-heading);
+  font-family: var(--font-body);
   font-size: 18px;
   font-weight: 600;
 }
@@ -3483,10 +3749,10 @@ body:not([data-current-view="home"]) .site-header {
 }
 
 .footer-heading {
-  font-family: var(--font-heading);
-  font-size: 14px;
+  font-family: var(--font-body);
+  font-size: 13px;
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   margin-bottom: 20px;
   color: #FFFFFF;
@@ -4230,9 +4496,9 @@ body:not([data-current-view="home"]) .site-header {
 }
 
 .search-empty-title {
-  font-family: var(--font-heading);
-  font-size: 20px;
-  font-weight: 600;
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 500;
   color: #FFFFFF;
   margin: 0;
 }

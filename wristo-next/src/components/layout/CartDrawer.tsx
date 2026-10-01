@@ -26,7 +26,7 @@ export default function CartDrawer() {
         {/* Drawer Header */}
         <div className="cart-drawer-header">
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-            <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '18px', fontWeight: 600 }}>
+            <h3 className="drawer-title">
               Shopping Bag
             </h3>
             <span style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>

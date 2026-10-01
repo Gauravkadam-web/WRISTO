@@ -175,13 +175,25 @@ WRISTO/
 - `--color-brand-black`: `#111111` (Deep night sections)
 - `--color-accent-champagne`: `#DEC095` / `#E8C89A` (Primary interactive CTA buttons)
 
-### Typography Hierarchy
-- **Serif Display (`var(--font-serif)`)**: Playfair Display, Cormorant Garamond, Georgia, serif.
-- **Sans Body (`var(--font-body)`)**: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif.
+### Typography Hierarchy (Section 3.1 & 3.2 Single Source of Truth)
+- **Serif Display (`var(--font-serif)`)**: Playfair Display, Cormorant Garamond, Georgia, serif. (Used for Hero headlines, luxury editorial statements, PDP watch model titles, campaign banners, and empty state guidance).
+- **Sans Body (`var(--font-body)`)**: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif. (Used for Navigation, product card titles, prices, buttons, filters, facets, and technical horology specs).
+- **11-Step Scale Tokens**:
+  - `type.display.xl`: 64px, weight 500, line-height 0.98, tracking -0.03em (`--type-display-xl`)
+  - `type.display.lg`: 52px, weight 500, line-height 1.00 (`--type-display-lg`)
+  - `type.heading.xl`: 40px, weight 600, line-height 1.05 (`--type-heading-xl`)
+  - `type.heading.lg`: 32px, weight 600, line-height 1.10 (`--type-heading-lg`)
+  - `type.heading.md`: 26px, weight 600, line-height 1.15 (`--type-heading-md`)
+  - `type.heading.sm`: 22px, weight 600, line-height 1.20 (`--type-heading-sm`)
+  - `type.body.lg`: 18px, weight 400, line-height 1.55 (`--type-body-lg`)
+  - `type.body.md`: 16px, weight 400, line-height 1.50 (`--type-body-md`)
+  - `type.body.sm`: 14px, weight 400, line-height 1.45 (`--type-body-sm`)
+  - `type.caption`: 12px, weight 500, line-height 1.35 (`--type-caption`)
+  - `type.label`: 11px, weight 600, line-height 1.20 (`--type-label`)
 
 ---
 
-## 7. Development, Server & Verification Commands
+## 8. Development, Server & Verification Commands
 
 - **Next.js Dev Server**:
   ```powershell

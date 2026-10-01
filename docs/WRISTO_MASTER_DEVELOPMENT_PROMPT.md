@@ -145,68 +145,118 @@ unnecessarily.
 
 ------------------------------------------------------------------------
 
-# 5. BRAND COLORS
+# 5. BRAND COLORS & DESIGN TOKENS
 
-Use the established WRISTO palette:
+The authoritative single source-of-truth for all design tokens, surfaces, and micro-interactions is:
+**`docs/WRISTO_Design_Tokens_and_Interactions.md`**
 
-  Token        Color
-  ------------ -----------
-  Charcoal     `#1A1A1A`
-  Ivory        `#F7F3EC`
-  Sand         `#D9C9B8`
-  Bronze       `#B08D6B`
-  Soft Black   `#0F0F0F`
+Use the established WRISTO design token hierarchy:
 
-Create semantic design tokens rather than scattering raw hex values
-throughout components.
+### 5.1 Primary Brand Surfaces
+| Token | CSS Variable | Hex | Usage |
+|---|---|---|---|
+| `color.brand.black` | `--color-brand-black` | `#111111` | Primary brand background & deep night surfaces |
+| `color.brand.ink` | `--color-brand-ink` | `#171717` | Main dark surfaces & hero contrast |
+| `color.brand.charcoal` | `--color-brand-charcoal` | `#242424` | Secondary dark surfaces & elevated dark cards |
+| `color.brand.cream` | `--color-brand-cream` | `#F6F1E9` | Primary warm background |
+| `color.brand.paper` | `--color-brand-paper` | `#FFFDF9` | Product cards and clean editorial surfaces |
+| `color.brand.white` | `--color-brand-white` | `#FFFFFF` | Text and pure clean backgrounds |
 
-Example token groups:
+### 5.2 Brand Identity & Accents
+| Token | CSS Variable | Hex | Usage |
+|---|---|---|---|
+| `brand.bronze` | `--brand-bronze` | `#B08D6B` | Official brand monogram, category eyebrows, badges |
+| `color.accent.champagne` | `--color-accent-champagne` | `#E8C89A` | Primary interactive CTA buttons & highlights |
+| `color.accent.gold` | `--color-accent-gold` | `#C89B5B` | Luxury horology details & rating stars |
+| `color.accent.tan` | `--color-accent-tan` | `#D8B58A` | Secondary warm accents |
+| `color.accent.blush` | `--color-accent-blush` | `#F0DDD0` | Soft promotional card surfaces |
+| `brand.charcoal` | `--brand-charcoal` | `#1A1A1A` | Primary typography & dark logo wordmark |
+| `brand.ivory` | `--brand-ivory` | `#F7F3EC` | Warm luxury text & dark-mode logo wordmark |
+| `brand.sand` | `--brand-sand` | `#D9C9B8` | Subtle warm borders & divider lines |
+| `brand.soft-black` | `--brand-soft-black` | `#0F0F0F` | Editorial card backgrounds ("Modern Looks" card) |
 
--   background
--   foreground
--   muted foreground
--   border
--   surface
--   elevated surface
--   accent
--   accent-hover
--   success
--   warning
--   error
+### 5.3 Typography Colors
+| Token | CSS Variable | Hex | Usage |
+|---|---|---|---|
+| `color.text.primary` | `--color-text-primary` | `#171717` | Main interface & heading text |
+| `color.text.secondary` | `--color-text-secondary` | `#5F5F5F` | Supporting copy & descriptions |
+| `color.text.muted` | `--color-text-muted` | `#8A8A8A` | Metadata, breadcrumbs, horology specs |
+| `color.text.inverse` | `--color-text-inverse` | `#FFFFFF` | Text on dark surfaces & hero banners |
+| `color.text.accent` | `--color-text-accent` | `#A8793D` | Premium accent text & category tags |
+
+### 5.4 Borders & Dividers
+| Token | CSS Variable | Hex | Usage |
+|---|---|---|---|
+| `color.border.light` | `--color-border-light` | `#E8E3DC` | Light UI borders & subtle dividers |
+| `color.border.medium` | `--color-border-medium` | `#D7D1C8` | Form inputs & active facet borders |
+| `color.border.dark` | `--color-border-dark` | `#3A3A3A` | Dark surface borders |
+| `color.border.accent` | `--color-border-accent` | `#D6B27E` | Premium selected states & gold borders |
+
+### 5.5 Semantic Status Colors
+| Token | CSS Variable | Hex | Usage |
+|---|---|---|---|
+| `color.success` | `--color-success` | `#3F8A62` | In-stock indicators & order confirmations |
+| `color.warning` | `--color-warning` | `#C58A38` | Low-stock alerts & pending states |
+| `color.error` | `--color-error` | `#B94A48` | Form errors & out-of-stock badges |
+| `color.info` | `--color-info` | `#527A9E` | Informational callouts & tooltips |
 
 ------------------------------------------------------------------------
 
 # 6. TYPOGRAPHY
 
-The supplied brand reference establishes:
+The typography hierarchy is grounded in Swiss horological editorial standards as specified in `docs/WRISTO_Design_Tokens_and_Interactions.md`:
 
--   **Sora** for headings/display typography.
--   **Inter** for body/interface typography.
+### 6.1 Font Families (2-Family System: Section 3.1)
+- **Display / Editorial (`--font-serif`):**
+  `Playfair Display`, `Cormorant Garamond`, `DM Serif Display`, Georgia, serif.
+  *Usage:* Hero headlines (*"Your Time. Your Style."*), luxury statements, PDP watch model names, editorial campaign headings, curated collections, and guidance empty states.
+- **UI / Commerce / Body (`--font-body`):**
+  `Inter`, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif.
+  *Usage:* Product card titles, prices, caliber specifications, navigation links, buttons, filter facets, drawer titles, and metadata.
+- *Note:* `--font-heading` is maintained in CSS as a legacy alias pointing directly to `var(--font-serif)`.
 
-Typography must be implemented consistently through design tokens.
+### 6.2 Typography Token Scale
+| Token | Size | Weight | Line Height | Usage |
+|---|---:|---:|---:|---|
+| `type.display.xl` | 64px | 500 | 0.98 | Main desktop hero headline |
+| `type.display.lg` | 52px | 500 | 1.00 | Major section & editorial display |
+| `type.heading.xl` | 40px | 600 | 1.05 | PDP watch model title, campaign titles |
+| `type.heading.lg` | 32px | 600 | 1.10 | Section titles (Trending, Catalog) |
+| `type.heading.md` | 26px | 600 | 1.15 | Drawer titles, modal headers |
+| `type.heading.sm` | 22px | 600 | 1.20 | Product card titles, facet group headers |
+| `type.body.lg` | 18px | 400 | 1.55 | Editorial lead paragraphs, hero descriptions |
+| `type.body.md` | 16px | 400 | 1.50 | Standard body copy, descriptions |
+| `type.body.sm` | 14px | 400 | 1.45 | Spec matrix values, filter option labels |
+| `type.caption` | 12px | 500 | 1.35 | Brand eyebrows, badges, tax notes |
+| `type.label` | 11px | 600 | 1.20 | Micro-labels, SKU tags, shortcut pills |
 
-Create clear levels for:
-
--   display
--   H1
--   H2
--   H3
--   H4
--   body large
--   body
--   body small
--   caption
--   label
--   button
--   navigation
-
-Avoid arbitrary font sizes per component.
+Avoid arbitrary font sizes per component; strictly use the token scale above.
 
 ------------------------------------------------------------------------
 
-# 7. DESIGN SYSTEM
+# 7. DESIGN SYSTEM & INTERACTION SPECIFICATIONS
 
-Create a reusable WRISTO design system.
+The authoritative implementation specification for all UI components, micro-interactions, and 3D effects is documented in **`docs/WRISTO_Design_Tokens_and_Interactions.md`**.
+
+### 7.1 Spacing Grid (8px Base)
+- Scale: `space.1` (4px), `space.2` (8px), `space.3` (12px), `space.4` (16px), `space.5` (20px), `space.6` (24px), `space.8` (32px), `space.10` (40px), `space.12` (48px), `space.16` (64px), `space.20` (80px), `space.24` (96px), `space.32` (128px).
+- Desktop Section Spacing: `80px` standard, `96px` hero-to-next, `120px` major editorial.
+- Mobile Section Spacing: `48px` standard, `64px` major.
+
+### 7.2 Corner Radii
+- `radius.xs` (4px): Tags, micro-badges.
+- `radius.sm` (8px): Inputs, buttons, quantity steppers.
+- `radius.md` (12px): Standard product cards, facet boxes.
+- `radius.lg` (16px): Promotional cards, modal overlays.
+- `radius.xl` (24px): Large contained editorial cards ("Modern Looks" banner).
+- `radius.pill` (999px): Filter chips, search shortcut pills, category pills.
+
+### 7.3 Shadows & Depth
+- Subtle, expensive horological depth: `--shadow-xs` to `--shadow-product` (`0 18px 40px rgba(0,0,0,0.14)`), avoiding cheap dark halos.
+
+### 7.4 3D Tilt & Micro-interactions
+- Product Cards & PDP Stage: Cursor-tracking 3D depth tilt (`perspective: 1200px`, `rotateX: 1-3deg`, `rotateY: 2-4deg`, `scale: 1.01-1.02`), spring reset on mouse leave.
+- Motion Timing: Restrained, non-bouncy luxury curves (`250ms`, `cubic-bezier(0.2, 0.8, 0.2, 1)`).
 
 ## Components should include
 

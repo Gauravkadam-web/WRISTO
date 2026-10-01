@@ -123,7 +123,7 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
         <div className="card-brand">
           {product.brand} &bull; {product.movement} &bull; {product.caseSize}
         </div>
-        <h3 className="card-title" style={{ fontSize: '15px', fontWeight: 600 }}>
+        <h3 className="card-title">
           <Link href={`/product/${product.id}`}>
             {product.model}
           </Link>

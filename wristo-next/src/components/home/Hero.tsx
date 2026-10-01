@@ -85,7 +85,7 @@ export default function Hero() {
                 />
                 <div className="hero-video-play-layer">
                   <span className="hero-video-badge">WRISTO CINEMA &bull; 4K HOROLOGY</span>
-                  <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '28px', color: '#FFF', margin: '12px 0 8px 0' }}>
+                  <h3 className="hero-video-title">
                     Precision in Motion
                   </h3>
                   <p style={{ fontSize: '14px', color: '#CCC', maxWidth: '440px', textAlign: 'center', marginBottom: '20px' }}>

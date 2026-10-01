@@ -135,11 +135,36 @@
 
 ---
 
+### Milestone 8: Typography & Design Token Scale Alignment (Section 3 Parity) ✅
+- **Objective:** Eliminate typography divergence from Section 3 of `WRISTO_Design_Tokens_and_Interactions.md`, establish the complete 11-step scale tokens system, retire SaaS `Sora` headings in favor of Swiss editorial `Playfair Display` (`--font-serif`) and commerce `Inter` (`--font-body`), and eliminate all manual inline font style band-aids across TSX components.
+- **Achievements:**
+  - **11-Step Token Scale System:** Added `--type-display-xl` (64px) to `--type-label` (11px) custom properties in `:root` with full size, line-height, and weight declarations, plus utility classes (`.type-display-xl`, `.type-heading-xl`, etc.).
+  - **Authoritative 2-Family Restoration:**
+    - `.section-title`: Migrated from Sora to `var(--font-serif)` (40px desktop, 30px tablet, 26px mobile, weight 500, line-height 1.05).
+    - `.pdp-model-title`: Migrated from Sora to `var(--font-serif)` (40px desktop, 27px mobile, weight 600, line-height 1.05).
+    - `.card-title`: Migrated from Sora to `var(--font-body)` (`Inter`, 15px, weight 600, line-height 1.3).
+    - `.collection-title`: Migrated to `var(--font-serif)` (26px, weight 500, line-height 1.15).
+    - `.drawer-title` & `.footer-heading`: Migrated to `var(--font-body)` (`Inter`).
+  - **Eliminated All Inline Band-Aids:** Removed inline font family and font size overrides from `WatchesClient.tsx`, `page.tsx`, `Hero.tsx`, `ProductCard.tsx`, `CartDrawer.tsx`, and `ProductGrid.tsx`.
+  - **Component Styling Additions:** Added responsive styles for `.trust-strip-minimal` (4-column horizontal grid with bronze star accents) and `.ai-teaser-banner` (dark luxury container card with responsive mobile scaling).
+  - **Multi-Viewport Visual QA Verification:**
+    - `screenshots/home_typography_1440.png`: 1440px desktop homepage verification.
+    - `screenshots/home_typography_768.png`: 768px tablet homepage verification.
+    - `screenshots/home_typography_375.png`: 375px mobile homepage verification.
+    - `screenshots/watches_typography_1440.png`: 1440px desktop catalog verification.
+    - `screenshots/watches_typography_768.png`: 768px tablet catalog verification.
+    - `screenshots/watches_typography_375.png`: 375px mobile catalog verification.
+    - `screenshots/pdp_typography_1440.png`: 1440px desktop PDP verification.
+    - `screenshots/pdp_typography_375.png`: 375px mobile PDP verification.
+
+---
+
 ## 2. Current Architecture & File Manifest
 
 | File / Folder | Role & Status |
 |---|---|
 | `wristo-next/` | Production Next.js 16+ application (App Router, React 19, TypeScript). |
+| `wristo-next/src/app/globals.css` | Master design tokens, 11-step typography scale tokens, responsive rules. |
 | `wristo-next/src/context/SearchContext.tsx` | Global search state & shortcut coordinator (`Cmd+K`, `/`, `ESC`). |
 | `wristo-next/src/components/search/` | Complete Phase 5 search overlay suite (`SearchModal`, `SearchInput`, `SearchRecentAndPopular`, `SearchSuggestionsList`, `SearchEmptyState`). |
 | `wristo-next/src/app/product/[id]/` | Product Detail Page route (`page.tsx` + `ProductDetailClient.tsx`). |
@@ -148,7 +173,7 @@
 | `wristo-next/src/app/watches/` | Catalog PLP route (`page.tsx` + `WatchesClient.tsx`). |
 | `wristo-next/src/services/` | Decoupled data contracts (`productService.ts` - Spring Boot ready). |
 | `wristo-next/src/components/catalog/` | Modular catalog UI (Sidebar, Drawer, Grid, Card, ActiveFilterBar, CategoryNav, SortSelect, Pagination). |
-| `screenshots/` | Centralized repository for all visual QA regression captures (21 screenshots). |
+| `screenshots/` | Centralized repository for all visual QA regression captures (29 screenshots). |
 | `index.html` | Vanilla HTML/CSS/JS prototype host. |
 | `MEMORY.md` | Core repository memory documenting architectural invariants and design tokens. |
 | `PROGRESS.md` | This project tracker and roadmap. |
@@ -159,9 +184,10 @@
 
 - [x] **Milestone 6: Phase 4 — Product Detail Experience (PDP)** ✅
 - [x] **Milestone 7: Phase 5 — Instant Search & Autocomplete Overlay** ✅
-- [ ] **Milestone 8: Phase 6 — Full Cart Drawer & Checkout Sequence**
+- [x] **Milestone 8: Typography & Design Token Scale Alignment** ✅
+- [ ] **Milestone 9: Phase 6 — Full Cart Drawer & Checkout Sequence**
   - Expand client-side cart drawer, promo code application, and simulated luxury checkout.
-- [ ] **Milestone 9: Phase 8 — AI Watch Concierge Integration**
+- [ ] **Milestone 10: Phase 8 — AI Watch Concierge Integration**
   - Connect natural language recommendation prompt to Gemini API / local mock intelligence for smart filtering.
 
 

@@ -24,7 +24,7 @@ export default function ProductGrid({ products, onResetFilters }: ProductGridPro
         }}
       >
         <div style={{ fontSize: '40px', marginBottom: '16px' }}>⌚</div>
-        <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: '20px', fontWeight: 600, marginBottom: '8px' }}>
+        <h3 className="catalog-empty-title">
           No Matching Timepieces Found
         </h3>
         <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)', maxWidth: '440px', margin: '0 auto 24px auto', lineHeight: 1.6 }}>

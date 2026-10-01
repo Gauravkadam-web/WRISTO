@@ -146,7 +146,7 @@ export default function WatchesClient({ categories, initialResult }: WatchesClie
         <div className="section-label" style={{ color: 'var(--brand-bronze)' }}>
           CURATED CATALOGUE &bull; {queryResult.total} PIECES
         </div>
-        <h1 className="section-title" style={{ fontFamily: 'var(--font-serif)', fontSize: '40px', fontWeight: 500, letterSpacing: '-0.02em', margin: '4px 0 12px 0' }}>
+        <h1 className="section-title" style={{ margin: '4px 0 12px 0' }}>
           {currentCategoryItem.title}
         </h1>
         <p className="section-subtitle" style={{ maxWidth: '680px', color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>

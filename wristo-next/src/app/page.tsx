@@ -28,7 +28,7 @@ export default async function HomePage() {
               <div className="pill-badge gold" style={{ marginBottom: '12px' }}>
                 INTELLIGENT STYLING ASSISTANT
               </div>
-              <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', fontWeight: 500, color: '#FFFFFF', marginBottom: '12px' }}>
+              <h2 className="ai-teaser-title">
                 Find Your Watch with AI Concierge
               </h2>
               <p style={{ fontSize: '14px', color: '#CCCCCC', lineHeight: 1.6, marginBottom: '20px' }}>
