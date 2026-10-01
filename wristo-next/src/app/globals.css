@@ -6653,5 +6653,971 @@ body:not([data-current-view="home"]) .site-header {
   }
 }
 
+/* ==========================================================================
+   Phase 8: AI Watch Concierge & Interactive Horological Advisor (/concierge)
+   ========================================================================== */
+
+.concierge-page-wrapper {
+  background-color: var(--color-bg-primary, #FAF8F5);
+  min-height: 100vh;
+  padding: 48px 0 100px;
+}
+
+.concierge-header-banner {
+  text-align: center;
+  max-width: 860px;
+  margin: 0 auto 40px;
+}
+
+.concierge-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.concierge-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(222, 192, 149, 0.12);
+  border: 1px solid rgba(222, 192, 149, 0.35);
+  color: var(--color-gold, #DEC095);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.concierge-pulse-dot {
+  width: 7px;
+  height: 7px;
+  background: var(--color-gold, #DEC095);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--color-gold, #DEC095);
+  animation: pulseConcierge 1.8s infinite ease-in-out;
+}
+
+@keyframes pulseConcierge {
+  0% { transform: scale(0.9); opacity: 0.7; }
+  50% { transform: scale(1.3); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.7; }
+}
+
+.concierge-reset-btn {
+  font-size: 12px;
+  padding: 5px 12px;
+}
+
+.concierge-main-title {
+  font-family: var(--font-playfair, serif);
+  font-size: 42px;
+  font-weight: 700;
+  color: var(--color-text-primary, #111);
+  margin-bottom: 12px;
+  letter-spacing: -0.01em;
+}
+
+.concierge-subtitle {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--color-text-secondary, #666);
+  max-width: 680px;
+  margin: 0 auto 36px;
+}
+
+/* Stepper */
+.concierge-stepper-wrapper {
+  position: relative;
+  max-width: 650px;
+  margin: 0 auto;
+}
+
+.concierge-stepper {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  z-index: 2;
+}
+
+.concierge-step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.concierge-step-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--color-bg-card, #FFF);
+  border: 2px solid var(--color-border, #E5E0D8);
+  color: var(--color-text-secondary, #777);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  transition: all 0.25s ease;
+}
+
+.concierge-step-item.active .concierge-step-circle {
+  border-color: var(--color-gold, #DEC095);
+  background: var(--color-gold, #DEC095);
+  color: #111;
+  box-shadow: 0 0 12px rgba(222, 192, 149, 0.4);
+}
+
+.concierge-step-item.completed .concierge-step-circle {
+  border-color: var(--color-gold, #DEC095);
+  background: var(--color-gold, #DEC095);
+  color: #111;
+}
+
+.concierge-step-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary, #888);
+  transition: color 0.2s ease;
+}
+
+.concierge-step-item.active .concierge-step-label,
+.concierge-step-item.completed .concierge-step-label {
+  color: var(--color-text-primary, #111);
+}
+
+.concierge-progress-track {
+  position: absolute;
+  top: 15px;
+  left: 32px;
+  right: 32px;
+  height: 2px;
+  background: var(--color-border, #E5E0D8);
+  z-index: 1;
+}
+
+.concierge-progress-bar {
+  height: 100%;
+  background: var(--color-gold, #DEC095);
+  transition: width 0.35s ease;
+}
+
+/* Wizard Container & Steps */
+.concierge-body-content {
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+.concierge-wizard-card {
+  background: var(--color-bg-card, #FFF);
+  border: 1px solid var(--color-border, #E8E4DC);
+  border-radius: 12px;
+  padding: 44px 48px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+}
+
+.concierge-step-lead {
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+.concierge-step-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--color-gold, #B08D6B);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.concierge-step-title {
+  font-family: var(--font-playfair, serif);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-text-primary, #111);
+  margin-bottom: 10px;
+}
+
+.concierge-step-desc {
+  font-size: 14.5px;
+  color: var(--color-text-secondary, #666);
+  max-width: 620px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+/* Tiles Grid */
+.concierge-tiles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 18px;
+  margin-bottom: 36px;
+}
+
+.concierge-tile-card {
+  background: #FCFBF9;
+  border: 1.5px solid var(--color-border, #E5E0D8);
+  border-radius: 10px;
+  padding: 22px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.22s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.concierge-tile-card:hover {
+  border-color: var(--color-gold, #DEC095);
+  background: #FFF;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+}
+
+.concierge-tile-card.selected {
+  border-color: var(--color-gold, #DEC095);
+  background: #FFF;
+  box-shadow: 0 6px 20px rgba(222, 192, 149, 0.2);
+}
+
+.concierge-tile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.concierge-tile-icon {
+  font-size: 24px;
+}
+
+.concierge-check-circle {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-border, #CCC);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #111;
+  transition: all 0.2s ease;
+}
+
+.concierge-check-circle.checked {
+  background: var(--color-gold, #DEC095);
+  border-color: var(--color-gold, #DEC095);
+}
+
+.concierge-radio-circle {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-border, #CCC);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: var(--color-gold, #DEC095);
+}
+
+.concierge-radio-circle.checked {
+  border-color: var(--color-gold, #DEC095);
+}
+
+.concierge-tile-title {
+  font-family: var(--font-playfair, serif);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text-primary, #111);
+  margin-bottom: 6px;
+}
+
+.concierge-tile-tagline {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-gold, #B08D6B);
+  margin-bottom: 10px;
+  display: block;
+}
+
+.concierge-tile-desc {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-text-secondary, #666);
+  margin: 0;
+  flex: 1;
+}
+
+/* Ergonomics Grid */
+.concierge-size-badge {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text-primary, #111);
+  background: rgba(0, 0, 0, 0.05);
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.concierge-wrist-guide {
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--color-border, #E5E0D8);
+  font-size: 11.5px;
+  color: var(--color-text-secondary, #777);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Movement & Complications */
+.concierge-tech-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--color-gold, #B08D6B);
+  background: rgba(222, 192, 149, 0.12);
+  padding: 2px 7px;
+  border-radius: 3px;
+}
+
+.concierge-mech-note {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--color-border, #E5E0D8);
+  font-size: 11.5px;
+  color: var(--color-text-secondary, #666);
+  line-height: 1.4;
+}
+
+/* Budget & Metallurgy */
+.concierge-section-block {
+  margin-bottom: 24px;
+}
+
+.concierge-sub-heading {
+  font-family: var(--font-playfair, serif);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text-primary, #111);
+  margin-bottom: 14px;
+}
+
+.concierge-budget-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+}
+
+.concierge-budget-card {
+  background: #FCFBF9;
+  border: 1.5px solid var(--color-border, #E5E0D8);
+  border-radius: 8px;
+  padding: 14px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.concierge-budget-card:hover {
+  border-color: var(--color-gold, #DEC095);
+  background: #FFF;
+}
+
+.concierge-budget-card.selected {
+  border-color: var(--color-gold, #DEC095);
+  background: #FFF;
+  box-shadow: 0 4px 12px rgba(222, 192, 149, 0.25);
+}
+
+.concierge-budget-title {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--color-text-primary, #111);
+  margin-bottom: 4px;
+}
+
+.concierge-budget-sub {
+  font-size: 11.5px;
+  color: var(--color-text-secondary, #777);
+}
+
+.concierge-materials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+}
+
+.concierge-mat-chip {
+  background: #FCFBF9;
+  border: 1.5px solid var(--color-border, #E5E0D8);
+  border-radius: 8px;
+  padding: 12px 14px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.concierge-mat-chip:hover {
+  border-color: var(--color-gold, #DEC095);
+  background: #FFF;
+}
+
+.concierge-mat-chip.selected {
+  border-color: var(--color-gold, #DEC095);
+  background: #FFF;
+}
+
+.concierge-mat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.concierge-mat-name {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--color-text-primary, #111);
+}
+
+.concierge-mat-desc {
+  font-size: 11.5px;
+  color: var(--color-text-secondary, #777);
+  display: block;
+}
+
+/* Step 5 Prompt Box */
+.concierge-prompt-box {
+  background: #FCFBF9;
+  border: 1px solid var(--color-border, #E5E0D8);
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 28px;
+}
+
+.concierge-prompt-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-primary, #111);
+  margin-bottom: 8px;
+}
+
+.concierge-textarea {
+  width: 100%;
+  border: 1px solid var(--color-border, #D5D0C8);
+  border-radius: 6px;
+  padding: 14px;
+  font-size: 14.5px;
+  font-family: inherit;
+  color: var(--color-text-primary, #111);
+  background: #FFF;
+  resize: vertical;
+  line-height: 1.5;
+  transition: border-color 0.2s ease;
+  margin-bottom: 18px;
+}
+
+.concierge-textarea:focus {
+  outline: none;
+  border-color: var(--color-gold, #DEC095);
+  box-shadow: 0 0 0 3px rgba(222, 192, 149, 0.25);
+}
+
+.concierge-prebaked-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.concierge-prebaked-title {
+  font-size: 12px;
+  color: var(--color-text-secondary, #777);
+  font-weight: 600;
+}
+
+.concierge-chips-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.concierge-inquiry-chip {
+  background: #FFF;
+  border: 1px solid var(--color-border, #DDD);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 12.5px;
+  color: var(--color-text-primary, #222);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.concierge-inquiry-chip:hover {
+  border-color: var(--color-gold, #DEC095);
+  color: var(--color-gold, #B08D6B);
+  background: #FFFDF9;
+}
+
+/* Summary Card */
+.concierge-summary-card {
+  background: #FFF;
+  border: 1px solid var(--color-border, #E5E0D8);
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 32px;
+}
+
+.concierge-summary-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary, #666);
+  margin-bottom: 10px;
+}
+
+.concierge-summary-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.concierge-sum-tag {
+  background: rgba(0, 0, 0, 0.04);
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: var(--color-text-primary, #222);
+  font-weight: 500;
+}
+
+/* Actions Bar */
+.concierge-actions-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 24px;
+  border-top: 1px solid var(--color-border, #EAE6DF);
+}
+
+.concierge-selection-summary {
+  font-size: 13px;
+  color: var(--color-text-secondary, #777);
+  font-weight: 500;
+}
+
+/* Loading State Animation */
+.concierge-loading-container {
+  background: var(--color-bg-card, #FFF);
+  border: 1px solid var(--color-border, #E8E4DC);
+  border-radius: 12px;
+  padding: 80px 32px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+}
+
+.concierge-loading-dial {
+  width: 90px;
+  height: 90px;
+  margin: 0 auto 28px;
+  position: relative;
+}
+
+.concierge-dial-outer-ring {
+  width: 100%;
+  height: 100%;
+  border: 2px solid var(--color-gold, #DEC095);
+  border-radius: 50%;
+  position: relative;
+  box-shadow: 0 0 20px rgba(222, 192, 149, 0.25);
+}
+
+.concierge-dial-hour-hand {
+  position: absolute;
+  top: 18px;
+  left: 43px;
+  width: 2.5px;
+  height: 28px;
+  background: #111;
+  transform-origin: bottom center;
+  animation: rotateHand 8s linear infinite;
+}
+
+.concierge-dial-minute-hand {
+  position: absolute;
+  top: 10px;
+  left: 43.5px;
+  width: 1.5px;
+  height: 36px;
+  background: var(--color-gold, #DEC095);
+  transform-origin: bottom center;
+  animation: rotateHand 1.6s linear infinite;
+}
+
+.concierge-dial-center-jewel {
+  position: absolute;
+  top: 41px;
+  left: 41px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-gold, #DEC095);
+}
+
+@keyframes rotateHand {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.concierge-loading-title {
+  font-family: var(--font-playfair, serif);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--color-text-primary, #111);
+  margin-bottom: 12px;
+}
+
+.concierge-loading-phase {
+  font-size: 15px;
+  color: var(--color-gold, #B08D6B);
+  font-style: italic;
+  min-height: 24px;
+  margin-bottom: 24px;
+}
+
+.concierge-loading-subtext {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--color-text-secondary, #999);
+}
+
+/* Results State */
+.concierge-results-container {
+  margin-top: 16px;
+}
+
+.concierge-results-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.concierge-results-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--color-gold, #B08D6B);
+  display: block;
+  margin-bottom: 8px;
+}
+
+.concierge-results-title {
+  font-family: var(--font-playfair, serif);
+  font-size: 34px;
+  font-weight: 700;
+  color: var(--color-text-primary, #111);
+  margin-bottom: 10px;
+}
+
+.concierge-results-desc {
+  font-size: 15px;
+  color: var(--color-text-secondary, #666);
+  max-width: 640px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+.concierge-results-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-bottom: 48px;
+}
+
+.concierge-result-card {
+  background: var(--color-bg-card, #FFF);
+  border: 1px solid var(--color-border, #E5E0D8);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: all 0.25s ease;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+}
+
+.concierge-result-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.08);
+}
+
+.concierge-result-card.top-match {
+  border-color: var(--color-gold, #DEC095);
+  box-shadow: 0 12px 32px rgba(222, 192, 149, 0.22);
+}
+
+.concierge-top-badge {
+  background: var(--color-gold, #DEC095);
+  color: #111;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-align: center;
+  padding: 5px 8px;
+  text-transform: uppercase;
+}
+
+.concierge-result-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 0;
+}
+
+.concierge-score-pill {
+  background: rgba(222, 192, 149, 0.15);
+  border: 1px solid rgba(222, 192, 149, 0.4);
+  color: var(--color-gold, #B08D6B);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.concierge-highlight-tag {
+  font-size: 11px;
+  color: var(--color-text-secondary, #777);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.concierge-result-image-box {
+  position: relative;
+  width: 100%;
+  height: 240px;
+  background: #FCFBF9;
+  display: block;
+}
+
+.concierge-result-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.concierge-result-brand {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--color-gold, #B08D6B);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.concierge-result-model {
+  font-family: var(--font-playfair, serif);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text-primary, #111);
+  margin-bottom: 8px;
+  line-height: 1.25;
+  transition: color 0.2s ease;
+}
+
+.concierge-result-model:hover {
+  color: var(--color-gold, #B08D6B);
+}
+
+.concierge-result-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.concierge-result-price {
+  font-weight: 800;
+  font-size: 18px;
+  color: var(--color-text-primary, #111);
+}
+
+.concierge-result-orig-price {
+  font-size: 13px;
+  text-decoration: line-through;
+  color: var(--color-text-muted, #999);
+}
+
+.concierge-result-rating {
+  font-size: 12px;
+  color: #D4A373;
+  margin-left: auto;
+  font-weight: 600;
+}
+
+.concierge-result-specs-strip {
+  font-size: 12px;
+  color: var(--color-text-secondary, #666);
+  padding: 8px 0;
+  border-top: 1px solid var(--color-border, #EAE6DF);
+  border-bottom: 1px solid var(--color-border, #EAE6DF);
+  margin-bottom: 14px;
+  line-height: 1.4;
+}
+
+.concierge-result-reason-card {
+  background: #FCFBF9;
+  border-left: 3px solid var(--color-gold, #DEC095);
+  padding: 10px 12px;
+  border-radius: 0 6px 6px 0;
+  margin-bottom: 16px;
+}
+
+.concierge-reason-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-gold, #B08D6B);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.concierge-reason-text {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--color-text-primary, #333);
+  margin: 0;
+}
+
+.concierge-matched-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+.concierge-match-pill {
+  font-size: 11px;
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--color-text-secondary, #666);
+  padding: 2px 7px;
+  border-radius: 3px;
+}
+
+.concierge-result-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: auto;
+}
+
+/* Footer Section */
+.concierge-results-footer {
+  margin-top: 20px;
+}
+
+.concierge-footer-box {
+  background: var(--color-bg-card, #FFF);
+  border: 1px solid var(--color-border, #E5E0D8);
+  border-radius: 12px;
+  padding: 36px 40px;
+  text-align: center;
+}
+
+.concierge-footer-title {
+  font-family: var(--font-playfair, serif);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-text-primary, #111);
+  margin-bottom: 8px;
+}
+
+.concierge-footer-desc {
+  font-size: 14px;
+  color: var(--color-text-secondary, #666);
+  max-width: 580px;
+  margin: 0 auto 24px;
+  line-height: 1.5;
+}
+
+.concierge-footer-buttons {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* ==========================================================================
+   Responsive Overrides for Concierge (<992px, <640px)
+   ========================================================================== */
+
+@media (max-width: 992px) {
+  .concierge-results-grid {
+    grid-template-columns: 1fr;
+    max-width: 500px;
+    margin: 0 auto 40px;
+  }
+
+  .concierge-wizard-card {
+    padding: 32px 24px;
+  }
+
+  .concierge-main-title {
+    font-size: 34px;
+  }
+}
+
+@media (max-width: 640px) {
+  .concierge-stepper {
+    gap: 8px;
+  }
+
+  .concierge-step-label {
+    display: none;
+  }
+
+  .concierge-actions-bar {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+  }
+
+  .concierge-selection-summary {
+    text-align: center;
+  }
+
+  .concierge-actions-bar button {
+    width: 100%;
+  }
+
+  .concierge-result-actions {
+    flex-direction: column;
+  }
+
+  .concierge-footer-buttons {
+    flex-direction: column;
+  }
+
+  .concierge-footer-buttons .btn {
+    width: 100%;
+  }
+}
+
+
 
 
