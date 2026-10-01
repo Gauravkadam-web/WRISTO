@@ -8542,3 +8542,282 @@ body:not([data-current-view="home"]) .site-header {
     height: 250px;
   }
 }
+
+/* ==========================================================================
+   PHASE 10: PRODUCTION QUALITY, ACCESSIBILITY & LAUNCH HARDENING
+   ========================================================================== */
+
+/* 1. Accessible Skip to Content Link */
+.skip-to-content-link {
+  position: absolute;
+  top: -120px;
+  left: 24px;
+  z-index: 999999;
+  background: var(--color-gold, #DEC095);
+  color: #0A0A0C !important;
+  font-family: var(--font-inter, sans-serif);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 12px 24px;
+  border-radius: 4px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.7), 0 0 20px rgba(222, 192, 149, 0.4);
+  transition: top 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none;
+  outline: 2px solid #FFFFFF;
+}
+
+.skip-to-content-link:focus,
+.skip-to-content-link:focus-visible {
+  top: 24px;
+}
+
+/* 2. Global Focus Visible Ring for Keyboard a11y */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--color-gold, #DEC095);
+  outline-offset: 2px;
+}
+
+/* 3. Luxury 404 Horological Deviation Page */
+.not-found-wrapper {
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 24px;
+  background: radial-gradient(circle at 50% 30%, rgba(222, 192, 149, 0.08) 0%, rgba(250, 248, 245, 0) 70%), var(--color-bg-primary, #FAF8F5);
+  text-align: center;
+}
+
+.not-found-card {
+  max-width: 720px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.not-found-deviation-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(222, 192, 149, 0.15);
+  border: 1px solid rgba(222, 192, 149, 0.4);
+  color: var(--color-gold, #B08D6B);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 6px 16px;
+  border-radius: 20px;
+  margin-bottom: 24px;
+}
+
+.not-found-dial-graphic {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 32px;
+  border: 2px dashed rgba(222, 192, 149, 0.6);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: rotateDeviation 24s linear infinite;
+}
+
+@keyframes rotateDeviation {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.not-found-code {
+  font-family: var(--font-playfair, serif);
+  font-size: 38px;
+  font-weight: 700;
+  color: var(--color-text-primary, #111);
+  letter-spacing: 0.05em;
+}
+
+.not-found-title {
+  font-family: var(--font-playfair, serif);
+  font-size: 38px;
+  font-weight: 700;
+  color: var(--color-text-primary, #111);
+  margin-bottom: 14px;
+  letter-spacing: -0.01em;
+}
+
+.not-found-desc {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--color-text-secondary, #666);
+  max-width: 580px;
+  margin: 0 auto 36px;
+}
+
+.not-found-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 56px;
+}
+
+.not-found-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-text-primary, #111);
+  color: #FFF !important;
+  font-size: 13.5px;
+  font-weight: 600;
+  padding: 14px 28px;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+}
+
+.not-found-btn-primary:hover {
+  background: var(--color-gold, #DEC095);
+  color: #111 !important;
+  transform: translateY(-2px);
+}
+
+.not-found-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: 1px solid var(--color-border, #D5D0C8);
+  color: var(--color-text-primary, #111) !important;
+  font-size: 13.5px;
+  font-weight: 600;
+  padding: 13px 26px;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.not-found-btn-secondary:hover {
+  border-color: var(--color-gold, #DEC095);
+  background: #FFF;
+  color: var(--color-gold, #B08D6B) !important;
+}
+
+.not-found-curated-showcase {
+  max-width: 1040px;
+  width: 100%;
+  margin: 0 auto;
+  border-top: 1px solid var(--color-border, #E5E0D8);
+  padding-top: 48px;
+}
+
+.not-found-showcase-title {
+  font-family: var(--font-playfair, serif);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-text-primary, #111);
+  margin-bottom: 24px;
+}
+
+.not-found-showcase-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+/* 4. Global Error Boundary Component */
+.error-boundary-wrapper {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 24px;
+  background: var(--color-bg-primary, #FAF8F5);
+  text-align: center;
+}
+
+.error-boundary-card {
+  max-width: 600px;
+  width: 100%;
+  background: var(--color-bg-card, #FFF);
+  border: 1px solid var(--color-border, #E5E0D8);
+  border-radius: 12px;
+  padding: 48px 40px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.error-boundary-icon {
+  font-size: 48px;
+  margin-bottom: 20px;
+  display: inline-block;
+}
+
+.error-boundary-title {
+  font-family: var(--font-playfair, serif);
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--color-text-primary, #111);
+  margin-bottom: 12px;
+}
+
+.error-boundary-desc {
+  font-size: 15px;
+  color: var(--color-text-secondary, #666);
+  line-height: 1.6;
+  margin-bottom: 32px;
+}
+
+.error-boundary-actions {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .not-found-showcase-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .not-found-wrapper {
+    padding: 48px 16px;
+  }
+
+  .not-found-title {
+    font-size: 27px;
+    line-height: 1.25;
+  }
+
+  .not-found-desc {
+    font-size: 14.5px;
+    margin-bottom: 28px;
+  }
+
+  .not-found-showcase-title {
+    font-size: 19px;
+  }
+
+  .not-found-actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 12px;
+  }
+
+  .not-found-btn-primary,
+  .not-found-btn-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+

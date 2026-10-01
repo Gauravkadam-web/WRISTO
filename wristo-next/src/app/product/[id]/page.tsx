@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getProductById, getSimilarProducts, getAllProductIds } from '@/services/productService';
 import ProductDetailClient from '@/components/product/ProductDetailClient';
+import { ProductJsonLd, BreadcrumbsJsonLd } from '@/components/seo/JsonLd';
 
 interface ProductPageProps {
   params: Promise<{ id: string }>;
@@ -62,9 +63,21 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
   const similarProducts = await getSimilarProducts(product.id, 4);
 
   return (
-    <ProductDetailClient
-      product={product}
-      similarProducts={similarProducts}
-    />
+    <>
+      <ProductJsonLd product={product} />
+      <BreadcrumbsJsonLd
+        items={[
+          { name: 'Home', url: '/' },
+          { name: 'Timepieces', url: '/watches' },
+          { name: product.brand, url: `/watches?brand=${encodeURIComponent(product.brand)}` },
+          { name: `${product.brand} ${product.model}`, url: `/product/${product.id}` },
+        ]}
+      />
+      <ProductDetailClient
+        product={product}
+        similarProducts={similarProducts}
+      />
+    </>
   );
 }
+

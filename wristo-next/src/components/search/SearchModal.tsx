@@ -53,8 +53,16 @@ export default function SearchModal() {
       setQuery('');
       setResults(null);
       setSelectedIndex(-1);
+
+      const handleGlobalKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          closeSearch();
+        }
+      };
+      window.addEventListener('keydown', handleGlobalKeyDown);
+      return () => window.removeEventListener('keydown', handleGlobalKeyDown);
     }
-  }, [isSearchOpen]);
+  }, [isSearchOpen, closeSearch]);
 
   // Save query to recent searches
   const saveRecentSearch = useCallback((q: string) => {

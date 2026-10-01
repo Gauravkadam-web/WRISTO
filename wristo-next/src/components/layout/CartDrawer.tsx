@@ -26,6 +26,18 @@ export default function CartDrawer() {
   const [promoCodeInput, setPromoCodeInput] = useState('');
   const [promoFeedback, setPromoFeedback] = useState<{ error?: string; success?: string } | null>(null);
 
+  // Keyboard accessibility: Close drawer on Escape key
+  React.useEffect(() => {
+    if (!isCartDrawerOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        closeCartDrawer();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isCartDrawerOpen, closeCartDrawer]);
+
   if (!isCartDrawerOpen) return null;
 
   const thresholdPercent = Math.min(
@@ -52,13 +64,26 @@ export default function CartDrawer() {
   };
 
   return (
-    <div className="cart-drawer-overlay open" onClick={closeCartDrawer}>
-      <div className="cart-drawer" onClick={e => e.stopPropagation()}>
+    <div
+      className="cart-drawer-overlay open"
+      onClick={closeCartDrawer}
+      role="presentation"
+    >
+      <div
+        className="cart-drawer"
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Shopping Bag"
+      >
         {/* Drawer Header */}
         <div className="drawer-header">
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
             <h3 className="drawer-title">Shopping Bag</h3>
-            <span style={{ fontSize: '13px', color: 'var(--color-text-muted)' }}>
+            <span
+              style={{ fontSize: '13px', color: 'var(--color-text-muted)' }}
+              aria-live="polite"
+            >
               ({cartCount} {cartCount === 1 ? 'item' : 'items'})
             </span>
           </div>
