@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Product } from '@/types/product';
 import { useWishlist } from '@/context/WishlistContext';
 import { useCart } from '@/context/CartContext';
+import { useComparison } from '@/context/ComparisonContext';
 
 interface ProductCardProps {
   product: Product;
@@ -14,8 +15,10 @@ interface ProductCardProps {
 export default function ProductCard({ product, priority = false }: ProductCardProps) {
   const { isInWishlist, toggleWishlist } = useWishlist();
   const { addToCart } = useCart();
+  const { isInComparison, toggleComparison } = useComparison();
   const cardRef = useRef<HTMLDivElement>(null);
   const isFavorited = isInWishlist(product.id);
+  const isCompared = isInComparison(product.id);
 
   // 3D Tilt Interaction (Desktop only, respects prefers-reduced-motion)
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -114,6 +117,19 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
             }}
           >
             {isFavorited ? 'Saved' : 'Wishlist'}
+          </button>
+          <button
+            type="button"
+            className={`quick-action-btn ${isCompared ? 'active' : ''}`}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              toggleComparison(product.id);
+            }}
+            title={isCompared ? 'Remove from Comparison' : 'Compare Specifications'}
+            aria-label={isCompared ? `Remove ${product.model} from comparison` : `Compare ${product.model}`}
+          >
+            {isCompared ? 'Compared' : 'Compare'}
           </button>
         </div>
       </div>

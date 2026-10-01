@@ -174,6 +174,11 @@ export async function getProductById(id: string): Promise<Product | undefined> {
   );
 }
 
+export async function getProductsByIds(ids: string[]): Promise<Product[]> {
+  const normalizedIds = ids.map(id => id.toLowerCase().trim());
+  return PRODUCTS.filter(p => normalizedIds.includes(p.id.toLowerCase().trim()));
+}
+
 export async function getAllProductIds(): Promise<string[]> {
   return PRODUCTS.map(p => p.id);
 }

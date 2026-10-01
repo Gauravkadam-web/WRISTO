@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Product } from '@/types/product';
 import { useCart } from '@/context/CartContext';
 import { useWishlist } from '@/context/WishlistContext';
+import { useComparison } from '@/context/ComparisonContext';
 
 interface ProductActionsProps {
   product: Product;
@@ -18,10 +19,11 @@ export default function ProductActions({
 }: ProductActionsProps) {
   const { addToCart, openCartDrawer } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
+  const { isInComparison, toggleComparison } = useComparison();
   const [shareCopied, setShareCopied] = useState(false);
-  const [compareActive, setCompareActive] = useState(false);
 
   const isFavorited = isInWishlist(product.id);
+  const isCompared = isInComparison(product.id);
 
   const handleAddToCart = () => {
     addToCart(product.id, quantity);
@@ -41,7 +43,7 @@ export default function ProductActions({
   };
 
   const handleCompare = () => {
-    setCompareActive(prev => !prev);
+    toggleComparison(product.id);
   };
 
   return (
@@ -113,9 +115,9 @@ export default function ProductActions({
 
         <button
           type="button"
-          className={`pdp-secondary-btn ${compareActive ? 'active' : ''}`}
+          className={`pdp-secondary-btn ${isCompared ? 'active' : ''}`}
           onClick={handleCompare}
-          aria-label="Compare Specifications"
+          aria-label={isCompared ? 'Remove from Comparison Matrix' : 'Compare Specifications'}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <polyline points="16 3 21 3 21 8" />
@@ -124,7 +126,7 @@ export default function ProductActions({
             <line x1="15" y1="15" x2="21" y2="21" />
             <line x1="4" y1="4" x2="9" y2="9" />
           </svg>
-          <span>{compareActive ? 'In Comparison' : 'Compare Specs'}</span>
+          <span>{isCompared ? 'In Comparison' : 'Compare Specs'}</span>
         </button>
 
         <button

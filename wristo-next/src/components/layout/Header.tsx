@@ -7,11 +7,13 @@ import { usePathname } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { useWishlist } from '@/context/WishlistContext';
 import { useSearch } from '@/context/SearchContext';
+import { useComparison } from '@/context/ComparisonContext';
 
 export default function Header() {
   const pathname = usePathname();
   const { cartCount, openCartDrawer } = useCart();
   const { wishlistCount } = useWishlist();
+  const { comparisonCount } = useComparison();
   const { openSearch } = useSearch();
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -105,6 +107,27 @@ export default function Header() {
               {wishlistCount > 0 && (
                 <span className="action-badge" style={{ display: 'flex' }}>
                   {wishlistCount}
+                </span>
+              )}
+            </Link>
+
+            {/* Spec Comparison Matrix */}
+            <Link
+              href="/compare"
+              className={`header-action-btn ${pathname === '/compare' ? 'active' : ''}`}
+              title="Compare Timepieces (Side-by-Side Matrix)"
+              aria-label={`Compare Timepieces (${comparisonCount} in comparison)`}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="16 3 21 3 21 8" />
+                <line x1="4" y1="20" x2="21" y2="3" />
+                <polyline points="21 16 21 21 16 21" />
+                <line x1="15" y1="15" x2="21" y2="21" />
+                <line x1="4" y1="4" x2="9" y2="9" />
+              </svg>
+              {comparisonCount > 0 && (
+                <span className="action-badge" style={{ display: 'flex' }}>
+                  {comparisonCount}
                 </span>
               )}
             </Link>

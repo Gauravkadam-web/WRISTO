@@ -3,10 +3,12 @@ import './globals.css';
 import { CartProvider } from '@/context/CartContext';
 import { WishlistProvider } from '@/context/WishlistContext';
 import { SearchProvider } from '@/context/SearchContext';
+import { ComparisonProvider } from '@/context/ComparisonContext';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import CartDrawer from '@/components/layout/CartDrawer';
 import SearchModal from '@/components/search/SearchModal';
+import FloatingComparisonDock from '@/components/comparison/FloatingComparisonDock';
 import { OrganizationJsonLd } from '@/components/seo/JsonLd';
 
 export const viewport: Viewport = {
@@ -97,13 +99,16 @@ export default function RootLayout({
         <CartProvider>
           <WishlistProvider>
             <SearchProvider>
-              <Header />
-              <main id="main-content-view" tabIndex={-1}>
-                {children}
-              </main>
-              <Footer />
-              <CartDrawer />
-              <SearchModal />
+              <ComparisonProvider>
+                <Header />
+                <main id="main-content-view" tabIndex={-1}>
+                  {children}
+                </main>
+                <Footer />
+                <CartDrawer />
+                <SearchModal />
+                <FloatingComparisonDock />
+              </ComparisonProvider>
             </SearchProvider>
           </WishlistProvider>
         </CartProvider>
