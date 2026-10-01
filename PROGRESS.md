@@ -180,13 +180,65 @@
 
 ---
 
+### Milestone 9: Phase 6 — Full Cart Drawer, Promo Engine & Multi-Step Luxury Checkout Sequence ✅
+- **Objective:** Implement end-to-end luxury commerce transaction flow matching Section 40 of `docs/WRISTO_Design_Tokens_and_Interactions.md` (*"Keep checkout visually quieter than shopping pages. Steps: Address → Payment → Review → Confirmation"*).
+- **Achievements:**
+  - **Decoupled Architecture (`order.ts` & `orderService.ts`):** Complete TypeScript contracts and decoupled service with coupon validation engine (`WRISTO10`, `HOROLOGYVIP`, `FIRST15`), delivery options, PIN code auto-lookup, and order persistence (`wristo_orders`, `wristo_latest_order`). 100% Spring Boot backend ready (`POST /api/v1/orders`).
+  - **Extended Cart Context (`CartContext.tsx`):** Added coupons, gift wrapping toggle, handwritten calligraphy note, auto-recalculating totals with horological gift threshold (unlocks Complimentary Leather Travel Pouch at ₹15,000+).
+  - **Enhanced Slide-Over Cart Drawer (`CartDrawer.tsx`):** Integrated animated reward progress bar, promo code chip with one-click remove (`✕`), gift wrapping toggle with note textarea, line item quantity steppers (`− 1 +`), and total settlement breakdown.
+  - **Distraction-Free Luxury Checkout Route (`/checkout`):**
+    - Quieter luxury header (`CheckoutHeader.tsx`): WRISTO emblem + 256-bit SSL Security badge + Concierge helpline. Suppressed marketing nav and global footers on `/checkout*`.
+    - 4-step progressive stepper (`CheckoutStepper.tsx`): 01 Address & Contact → 02 Horological Delivery → 03 Secure Payment → 04 Review & Confirm.
+    - Modular step forms: `AddressStep.tsx` with validation, `DeliveryStep.tsx` (Complimentary Insured Air Express vs. White-Glove Hand Courier +₹999), `PaymentStep.tsx` (UPI/QR, Credit/Debit Cards with 0% EMI calculator, Netbanking, Pay on Inspection COD), and `ReviewStep.tsx` with provenance certificate disclosure.
+    - Sticky summary sidebar (`OrderSummarySidebar.tsx`): Item thumbnails, live coupon recalculation, delivery fee breakdown, and trust badges.
+  - **Authentic Horological Order Confirmation (`/checkout/success`):**
+    - Celebratory gold seal (`✓`) and serialized Order ID (`WRT-2026-XXXXX`).
+    - Registered Certificate of Provenance ID (`CERT-CHRONO-XXXXX`) in inscribed collector's name.
+    - Itemized timepiece breakdown, insured destination, arrival ETA, and `[ 🖨️ Print Certificate & Receipt ]` action.
+  - **Build Verification:** 46/46 static routes compiled with 0 errors (Next.js Turbopack).
+  - **Visual Verification Outputs (stored in `screenshots/`):**
+    - `screenshots/cart_drawer_1440.png`: Slide-over cart drawer with threshold bar and WRISTO10 coupon.
+    - `screenshots/checkout_step1_1440.png`: Address form & client contact info.
+    - `screenshots/checkout_step2_1440.png`: Delivery Tier selection with populated summary sidebar.
+    - `screenshots/checkout_step3_1440.png`: Payment options (UPI, 0% EMI Cards, Netbanking, COD).
+    - `screenshots/checkout_step4_1440.png`: Final horological verification & provenance guarantee.
+    - `screenshots/checkout_success_1440.png`: Order confirmation with Certificate of Provenance.
+
+---
+
+## 2. Current Architecture & File Manifest
+
+| File / Folder | Role & Status |
+|---|---|
+| `wristo-next/` | Production Next.js 16+ application (App Router, React 19, TypeScript). |
+| `wristo-next/src/app/globals.css` | Master design tokens, 11-step typography scale tokens, checkout layouts & tokens. |
+| `wristo-next/src/types/order.ts` | Order, Address, Delivery, Payment, Coupon & Cart item TypeScript contracts. |
+| `wristo-next/src/services/orderService.ts` | Decoupled order service (Spring Boot API ready) with coupons, validation, and storage. |
+| `wristo-next/src/context/CartContext.tsx` | Global cart, coupon engine, gift wrapping, and auto-recalculated order totals. |
+| `wristo-next/src/components/layout/CartDrawer.tsx` | Slide-over cart drawer with reward threshold progress bar & promo code engine. |
+| `wristo-next/src/app/checkout/` | Dedicated checkout route (`page.tsx` + `CheckoutClient.tsx`). |
+| `wristo-next/src/components/checkout/` | Modular checkout components (Header, Stepper, Address, Delivery, Payment, Review, Sidebar). |
+| `wristo-next/src/app/checkout/success/` | Order confirmation route (`page.tsx` + `SuccessClient.tsx`). |
+| `wristo-next/src/context/SearchContext.tsx` | Global search state & shortcut coordinator (`Cmd+K`, `/`, `ESC`). |
+| `wristo-next/src/components/search/` | Complete Phase 5 search overlay suite. |
+| `wristo-next/src/app/product/[id]/` | Product Detail Page route (`page.tsx` + `ProductDetailClient.tsx`). |
+| `wristo-next/src/app/watches/[id]/` | SEO alias redirecting to `/product/[id]`. |
+| `wristo-next/src/components/product/` | Modular PDP components. |
+| `wristo-next/src/app/watches/` | Catalog PLP route (`page.tsx` + `WatchesClient.tsx`). |
+| `wristo-next/src/services/productService.ts` | Decoupled product service contracts. |
+| `screenshots/` | Centralized repository for all visual QA regression captures (35+ screenshots). |
+| `index.html` | Vanilla HTML/CSS/JS prototype host. |
+| `MEMORY.md` | Core repository memory documenting architectural invariants and design tokens. |
+| `PROGRESS.md` | This project tracker and roadmap. |
+
+---
+
 ## 3. Next Milestones & Roadmap
 
 - [x] **Milestone 6: Phase 4 — Product Detail Experience (PDP)** ✅
 - [x] **Milestone 7: Phase 5 — Instant Search & Autocomplete Overlay** ✅
 - [x] **Milestone 8: Typography & Design Token Scale Alignment** ✅
-- [ ] **Milestone 9: Phase 6 — Full Cart Drawer & Checkout Sequence**
-  - Expand client-side cart drawer, promo code application, and simulated luxury checkout.
+- [x] **Milestone 9: Phase 6 — Full Cart Drawer & Checkout Sequence** ✅
 - [ ] **Milestone 10: Phase 8 — AI Watch Concierge Integration**
   - Connect natural language recommendation prompt to Gemini API / local mock intelligence for smart filtering.
 

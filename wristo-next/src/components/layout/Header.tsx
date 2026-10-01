@@ -23,6 +23,10 @@ export default function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  if (pathname?.startsWith('/checkout')) {
+    return null;
+  }
+
   return (
     <header className={`site-header ${isScrolled ? 'scrolled' : ''}`} id="site-header">
       <div className="container">

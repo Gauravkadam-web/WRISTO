@@ -1,36 +1,65 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
-import { PRODUCTS } from '@/data/products';
 
 export default function CartDrawer() {
-  const { cart, isCartDrawerOpen, closeCartDrawer, removeFromCart, updateQuantity } = useCart();
+  const {
+    cartCount,
+    cartProducts,
+    totals,
+    appliedCoupon,
+    applyCoupon,
+    removeCoupon,
+    isGiftWrapped,
+    setIsGiftWrapped,
+    giftMessage,
+    setGiftMessage,
+    isCartDrawerOpen,
+    closeCartDrawer,
+    removeFromCart,
+    updateQuantity
+  } = useCart();
+
+  const [promoCodeInput, setPromoCodeInput] = useState('');
+  const [promoFeedback, setPromoFeedback] = useState<{ error?: string; success?: string } | null>(null);
 
   if (!isCartDrawerOpen) return null;
 
-  const cartWithProducts = cart.map(item => {
-    const product = PRODUCTS.find(p => p.id === item.id);
-    return { ...item, product };
-  }).filter(item => item.product !== undefined);
+  const thresholdPercent = Math.min(
+    100,
+    Math.round((totals.subtotal / totals.giftPouchThreshold) * 100)
+  );
 
-  const subtotal = cartWithProducts.reduce((sum, item) => {
-    return sum + (item.product ? item.product.price * item.quantity : 0);
-  }, 0);
+  const handleApplyPromo = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!promoCodeInput.trim()) return;
+
+    const result = applyCoupon(promoCodeInput);
+    if (result.success) {
+      setPromoFeedback({ success: result.message });
+      setPromoCodeInput('');
+    } else {
+      setPromoFeedback({ error: result.message });
+    }
+  };
+
+  const handleRemovePromo = () => {
+    removeCoupon();
+    setPromoFeedback(null);
+  };
 
   return (
     <div className="cart-drawer-overlay open" onClick={closeCartDrawer}>
-      <div className="cart-drawer-box" onClick={e => e.stopPropagation()}>
+      <div className="cart-drawer" onClick={e => e.stopPropagation()}>
         {/* Drawer Header */}
-        <div className="cart-drawer-header">
+        <div className="drawer-header">
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-            <h3 className="drawer-title">
-              Shopping Bag
-            </h3>
-            <span style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>
-              ({cart.reduce((s, i) => s + i.quantity, 0)} items)
+            <h3 className="drawer-title">Shopping Bag</h3>
+            <span style={{ fontSize: '13px', color: 'var(--color-text-muted)' }}>
+              ({cartCount} {cartCount === 1 ? 'item' : 'items'})
             </span>
           </div>
           <button
@@ -38,20 +67,61 @@ export default function CartDrawer() {
             className="cart-close-btn"
             onClick={closeCartDrawer}
             aria-label="Close Shopping Bag"
+            style={{
+              background: 'none',
+              border: 'none',
+              fontSize: '24px',
+              cursor: 'pointer',
+              color: 'var(--color-text-secondary)',
+              lineHeight: 1
+            }}
           >
             &times;
           </button>
         </div>
 
-        {/* Drawer Body */}
-        <div className="cart-drawer-items" id="cart-drawer-items">
-          {cartWithProducts.length === 0 ? (
+        {/* Complimentary Reward / Shipping Threshold */}
+        {cartProducts.length > 0 && (
+          <div className="cart-threshold-wrap">
+            <div className="cart-threshold-header">
+              <span className="cart-threshold-title">
+                <span>🎁</span>
+                <span>Horological Reward</span>
+              </span>
+              <span className={`cart-threshold-badge ${totals.giftPouchUnlocked ? 'unlocked' : ''}`}>
+                {totals.giftPouchUnlocked ? 'Unlocked' : `${thresholdPercent}% Reached`}
+              </span>
+            </div>
+            <div className="cart-threshold-bar">
+              <div
+                className="cart-threshold-fill"
+                style={{ width: `${thresholdPercent}%` }}
+              />
+            </div>
+            <p className="cart-threshold-desc">
+              {totals.giftPouchUnlocked ? (
+                <span style={{ color: 'var(--color-success)', fontWeight: 600 }}>
+                  ✨ You have unlocked a Complimentary Handcrafted Leather Travel Case!
+                </span>
+              ) : (
+                <>
+                  Add <strong>₹{totals.amountNeededForGiftPouch.toLocaleString('en-IN')}</strong> more for a{' '}
+                  <strong>Complimentary Leather Travel Case</strong> (₹15,000+).
+                </>
+              )}
+            </p>
+          </div>
+        )}
+
+        {/* Drawer Body (Items) */}
+        <div className="drawer-body">
+          {cartProducts.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '60px 16px', color: 'var(--color-text-secondary)' }}>
-              <div style={{ fontSize: '32px', marginBottom: '16px' }}>🛍️</div>
-              <p style={{ fontSize: '16px', fontWeight: 500, marginBottom: '8px', color: 'var(--color-text-primary)' }}>
+              <div style={{ fontSize: '36px', marginBottom: '16px' }}>⌚</div>
+              <p style={{ fontSize: '16px', fontWeight: 600, marginBottom: '8px', color: 'var(--color-text-primary)' }}>
                 Your shopping bag is empty
               </p>
-              <p style={{ fontSize: '13px', color: 'var(--color-text-muted)', marginBottom: '24px' }}>
+              <p style={{ fontSize: '13px', color: 'var(--color-text-muted)', marginBottom: '24px', lineHeight: 1.5 }}>
                 Discover hand-finished horological timepieces calibrated for your lifestyle.
               </p>
               <Link
@@ -59,88 +129,183 @@ export default function CartDrawer() {
                 className="btn btn-primary btn-sm"
                 onClick={closeCartDrawer}
               >
-                Explore Curated Watches
+                Explore Curated Watches &rarr;
               </Link>
             </div>
           ) : (
-            cartWithProducts.map(({ id, quantity, product }) => {
-              if (!product) return null;
-              return (
-                <div key={id} className="cart-item-row">
-                  <div style={{ position: 'relative', width: '64px', height: '64px', background: '#F8F6F2', borderRadius: '8px', overflow: 'hidden', flexShrink: 0 }}>
-                    <Image
-                      src={product.image}
-                      alt={product.model}
-                      fill
-                      sizes="64px"
-                      style={{ objectFit: 'contain', padding: '4px' }}
-                    />
-                  </div>
-                  <div className="cart-item-info" style={{ flex: 1, minWidth: 0 }}>
-                    <div className="cart-item-brand">{product.brand}</div>
-                    <div className="cart-item-title" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {product.model}
-                    </div>
-                    <div className="cart-item-price">
-                      ₹{product.price.toLocaleString('en-IN')}
-                    </div>
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'space-between', height: '100%' }}>
-                    <button
-                      type="button"
-                      onClick={() => removeFromCart(id)}
-                      style={{ color: 'var(--color-text-muted)', fontSize: '16px', lineHeight: 1 }}
-                      aria-label="Remove item"
-                    >
-                      &times;
-                    </button>
-                    <div className="quantity-stepper" style={{ height: '28px', marginTop: '10px' }}>
-                      <button
-                        type="button"
-                        className="stepper-btn"
-                        style={{ width: '24px' }}
-                        onClick={() => updateQuantity(id, -1)}
-                        aria-label="Decrease quantity"
-                      >
-                        −
-                      </button>
-                      <div className="stepper-val" style={{ width: '24px', fontSize: '12px' }}>
-                        {quantity}
-                      </div>
-                      <button
-                        type="button"
-                        className="stepper-btn"
-                        style={{ width: '24px' }}
-                        onClick={() => updateQuantity(id, 1)}
-                        aria-label="Increase quantity"
-                      >
-                        +
-                      </button>
-                    </div>
+            cartProducts.map(({ productId, quantity, model, brand, price, image }) => (
+              <div key={productId} className="cart-item-row">
+                <div className="cart-item-thumb" style={{ position: 'relative' }}>
+                  <Image
+                    src={image}
+                    alt={model}
+                    fill
+                    sizes="72px"
+                    style={{ objectFit: 'contain', padding: '4px' }}
+                  />
+                </div>
+                <div className="cart-item-info">
+                  <div className="cart-item-brand">{brand}</div>
+                  <div className="cart-item-title">{model}</div>
+                  <div className="cart-item-price">
+                    ₹{price.toLocaleString('en-IN')}
                   </div>
                 </div>
-              );
-            })
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+                  <button
+                    type="button"
+                    onClick={() => removeFromCart(productId)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: 'var(--color-text-muted)',
+                      fontSize: '18px',
+                      cursor: 'pointer',
+                      lineHeight: 1,
+                      padding: '2px'
+                    }}
+                    title="Remove timepiece"
+                    aria-label={`Remove ${model} from cart`}
+                  >
+                    &times;
+                  </button>
+                  <div className="quantity-stepper" style={{ height: '28px', marginTop: '8px' }}>
+                    <button
+                      type="button"
+                      className="stepper-btn"
+                      style={{ width: '24px' }}
+                      onClick={() => updateQuantity(productId, -1)}
+                      aria-label="Decrease quantity"
+                    >
+                      −
+                    </button>
+                    <div className="stepper-val" style={{ width: '24px', fontSize: '12px' }}>
+                      {quantity}
+                    </div>
+                    <button
+                      type="button"
+                      className="stepper-btn"
+                      style={{ width: '24px' }}
+                      onClick={() => updateQuantity(productId, 1)}
+                      aria-label="Increase quantity"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))
           )}
         </div>
 
-        {/* Drawer Footer */}
-        {cartWithProducts.length > 0 && (
-          <div className="cart-drawer-footer">
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '14px' }}>
-              <span style={{ color: 'var(--color-text-secondary)' }}>Subtotal</span>
-              <span style={{ fontWeight: 600 }}>₹{subtotal.toLocaleString('en-IN')}</span>
+        {/* Promo Code & Gift Section (When Cart has items) */}
+        {cartProducts.length > 0 && (
+          <>
+            {/* Promo Code Input / Applied Badge */}
+            <div className="cart-promo-container">
+              {appliedCoupon ? (
+                <div className="cart-coupon-pill">
+                  <span>
+                    🏷️ <strong>{appliedCoupon.code}</strong> (Saving ₹{appliedCoupon.calculatedDiscount.toLocaleString('en-IN')})
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleRemovePromo}
+                    title="Remove coupon"
+                    aria-label="Remove coupon"
+                  >
+                    &times;
+                  </button>
+                </div>
+              ) : (
+                <form onSubmit={handleApplyPromo} className="cart-promo-form">
+                  <input
+                    type="text"
+                    value={promoCodeInput}
+                    onChange={e => setPromoCodeInput(e.target.value)}
+                    placeholder="Enter code (e.g. WRISTO10)"
+                    className="cart-promo-input"
+                  />
+                  <button type="submit" className="cart-promo-btn">
+                    Apply
+                  </button>
+                </form>
+              )}
+              {promoFeedback?.error && (
+                <p style={{ color: '#D32F2F', fontSize: '11px', marginTop: '6px' }}>
+                  {promoFeedback.error}
+                </p>
+              )}
+              {promoFeedback?.success && (
+                <p style={{ color: 'var(--color-success)', fontSize: '11px', marginTop: '6px' }}>
+                  {promoFeedback.success}
+                </p>
+              )}
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px', fontSize: '13px' }}>
-              <span style={{ color: 'var(--color-text-secondary)' }}>Insured Express Shipping</span>
+
+            {/* Bespoke Gift Wrap Toggle */}
+            <div className="cart-gift-container">
+              <label className="cart-gift-label">
+                <input
+                  type="checkbox"
+                  checked={isGiftWrapped}
+                  onChange={e => setIsGiftWrapped(e.target.checked)}
+                />
+                <span>🎁 Bespoke Gift Box & Handwritten Calligraphy Note (Free)</span>
+              </label>
+              {isGiftWrapped && (
+                <div className="cart-gift-message-box">
+                  <textarea
+                    rows={2}
+                    placeholder="Enter personalized note to accompany this timepiece..."
+                    value={giftMessage}
+                    onChange={e => setGiftMessage(e.target.value)}
+                    className="cart-gift-textarea"
+                  />
+                </div>
+              )}
+            </div>
+          </>
+        )}
+
+        {/* Drawer Footer (Summary & CTA) */}
+        {cartProducts.length > 0 && (
+          <div className="drawer-footer">
+            <div className="cart-totals-row">
+              <span style={{ color: 'var(--color-text-secondary)' }}>Subtotal</span>
+              <span style={{ fontWeight: 600 }}>₹{totals.subtotal.toLocaleString('en-IN')}</span>
+            </div>
+
+            {totals.discount > 0 && (
+              <div className="cart-totals-row" style={{ color: 'var(--color-gold-hover)' }}>
+                <span>Collector Discount ({appliedCoupon?.code})</span>
+                <span style={{ fontWeight: 600 }}>−₹{totals.discount.toLocaleString('en-IN')}</span>
+              </div>
+            )}
+
+            <div className="cart-totals-row" style={{ fontSize: '13px' }}>
+              <span style={{ color: 'var(--color-text-secondary)' }}>Insured Air Delivery</span>
               <span style={{ color: 'var(--color-success)', fontWeight: 600 }}>Complimentary</span>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', fontSize: '16px', borderTop: '1px solid var(--color-border-light)', paddingTop: '12px' }}>
-              <span style={{ fontWeight: 700 }}>Total</span>
-              <span style={{ fontWeight: 700, color: 'var(--color-text-primary)' }}>
-                ₹{subtotal.toLocaleString('en-IN')}
+
+            {totals.giftPouchUnlocked && (
+              <div className="cart-totals-row" style={{ fontSize: '13px', color: 'var(--color-gold-hover)' }}>
+                <span>Leather Travel Case</span>
+                <span style={{ fontWeight: 600 }}>Complimentary Gift</span>
+              </div>
+            )}
+
+            <div className="cart-totals-row total-bold">
+              <span>Estimated Total</span>
+              <span style={{ color: 'var(--color-text-primary)' }}>
+                ₹{totals.total.toLocaleString('en-IN')}
               </span>
             </div>
+
+            <p style={{ fontSize: '11px', color: 'var(--color-text-muted)', marginBottom: '14px' }}>
+              Inclusive of all luxury duties, insurance & GST.
+            </p>
+
             <Link
               href="/checkout"
               className="btn btn-primary btn-block btn-lg"

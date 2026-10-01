@@ -217,3 +217,26 @@ WRISTO/
   # Mobile (375px)
   Start-Process -FilePath "C:\Program Files\Google\Chrome\Application\chrome.exe" -ArgumentList "--headless --disable-gpu --screenshot=E:\WRISTO\screenshots\watches_mobile_375.png --window-size=375,2000 http://localhost:3000/watches" -Wait
   ```
+
+---
+
+## 9. Checkout & Order Architecture (Milestone 9 / Phase 6)
+
+- **Design Reference:** `docs/WRISTO_Design_Tokens_and_Interactions.md` (Section 40).
+- **Distraction-Free Quiet Isolation:**
+  - Route `/checkout` and `/checkout/success` suppress global marketing navigation (`Header.tsx`) and footers (`Footer.tsx`).
+  - Minimalist `CheckoutHeader.tsx` displays only WRISTO emblem, 256-bit SSL Security badge, and Concierge helpline.
+- **Progressive 4-Step Stepper (`CheckoutStepper.tsx`):**
+  - `01 Address & Contact` → `02 Horological Delivery` → `03 Secure Payment` → `04 Review & Confirm`.
+  - Direct URL deep linking supported via `?step=1..4`.
+- **Decoupled Order Service (`orderService.ts`):**
+  - Pure decoupled business logic ready for Spring Boot `POST /api/v1/orders`.
+  - Coupon validation engine: `WRISTO10` (10% off), `HOROLOGYVIP` (₹2,500 off orders > ₹15,000), `FIRST15` (15% off).
+  - Indian PIN code auto-lookup for city and state.
+  - Delivery tiers: Complimentary Insured Air Express (₹0) and White-Glove Hand Courier (+₹999).
+  - Order persistence via `wristo_orders` and `wristo_latest_order` in `localStorage`.
+- **Order Confirmation & Provenance (`/checkout/success`):**
+  - Serialized order reference number (`WRT-2026-XXXXX`).
+  - Serialized Certificate of Provenance ID (`CERT-CHRONO-XXXXX`).
+  - Itemized receipt with print action (`window.print()`).
+
