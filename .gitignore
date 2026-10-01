@@ -16,6 +16,7 @@ wristo-next/scratch_chrome/
 scratch/
 .temp_chrome_profile/
 *.temp_chrome_profile/
+.temp_chrome_profile*/
 
 # Verification Screenshots (Ignored per user request)
 screenshots/

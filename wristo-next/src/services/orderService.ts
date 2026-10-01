@@ -198,12 +198,21 @@ export async function createOrder(payload: CreateOrderPayload): Promise<OrderRec
   return newOrder;
 }
 
+export async function getOrders(): Promise<OrderRecord[]> {
+  if (typeof window === 'undefined') return [];
+  try {
+    const existing = localStorage.getItem('wristo_orders');
+    if (!existing) return [];
+    return JSON.parse(existing);
+  } catch {
+    return [];
+  }
+}
+
 export async function getOrderById(orderId: string): Promise<OrderRecord | null> {
   if (typeof window === 'undefined') return null;
   try {
-    const existing = localStorage.getItem('wristo_orders');
-    if (!existing) return null;
-    const orders: OrderRecord[] = JSON.parse(existing);
+    const orders = await getOrders();
     return orders.find(o => o.orderId === orderId) || null;
   } catch {
     return null;
