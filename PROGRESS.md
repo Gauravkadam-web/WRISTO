@@ -2,8 +2,11 @@
 
 **Brand:** WRISTO  
 **Project:** Luxury Watch E-Commerce Web Application  
-**Status:** Phase 1, Phase 2 & Phase 3 Complete (Hero, Editorial Banner, and Production Next.js Catalog / PLP Fully Refined)  
-**Last Updated:** September 2026
+**Status:** All Core Phases 1–10 Complete + Desktop Parity Milestone 1 (Watch Comparison Engine) Live & Committed.  
+**Active Target:** Desktop Parity Milestone 2 (Homepage Parity & Section Restoration).  
+**Total Production Routes:** 58 Statically Pre-rendered SSG Routes (40 Watches + 6 Journal Articles + Core Pages).  
+**GitHub Remote:** `https://github.com/Gauravkadam-web/WRISTO.git` (Branch: `main`)  
+**Last Updated:** October 2026  
 
 ---
 
@@ -94,68 +97,107 @@
 
 ---
 
-## 2. Current Architecture & File Manifest
-
-| File / Folder | Role & Status |
-|---|---|
-| `wristo-next/` | Production Next.js 16+ application (App Router, React 19, TypeScript). |
-| `wristo-next/src/app/product/[id]/` | Product Detail Page route (`page.tsx` + `ProductDetailClient.tsx`). |
-| `wristo-next/src/app/watches/[id]/` | SEO alias redirecting to `/product/[id]`. |
-| `wristo-next/src/components/product/` | Modular PDP components (Gallery, Header, Pricing, Variants, Actions, SpecsGrid, AIInsight, TrustAccordions, StickyBar, CoordinatedWatches). |
-| `wristo-next/src/app/watches/` | Catalog PLP route (`page.tsx` + `WatchesClient.tsx`). |
-| `wristo-next/src/services/` | Decoupled data contracts (`productService.ts` - Spring Boot ready). |
-| `wristo-next/src/components/catalog/` | Modular catalog UI (Sidebar, Drawer, Grid, Card, ActiveFilterBar, CategoryNav, SortSelect, Pagination). |
-| `screenshots/` | Centralized repository for all visual QA regression captures (17 screenshots). |
-| `index.html` | Vanilla HTML/CSS/JS prototype host. |
-| `MEMORY.md` | Core repository memory documenting architectural invariants and design tokens. |
-| `PROGRESS.md` | This project tracker and roadmap. |
-
----
-
----
-
 ### Milestone 7: Phase 5 — Instant Search & Autocomplete Overlay ✅
 - **Objective:** Build enterprise-grade, Spring Boot-ready Instant Search modal overlay with keyboard shortcuts (`⌘K` / `Ctrl+K`, `/`, `ESC`), debounced autocomplete suggestions, query highlighting, recent search history persistence, brand pills, empty state recovery, and multi-viewport responsive luxury styling.
 - **Achievements:**
-  - **Decoupled Search Engine:** Added `getSearchSuggestions(query)` in `productService.ts` returning typed `SearchSuggestionsResult` (products, matching brands, total count, popular queries). Ready for Elasticsearch/PostgreSQL full-text backend transition with zero UI alterations.
+  - **Decoupled Search Engine:** Added `getSearchSuggestions(query)` in `productService.ts` returning typed `SearchSuggestionsResult`.
   - **Global Search Context & Shortcuts:** Built `SearchContext.tsx` with `useSearch()`, global `Cmd+K` / `Ctrl+K`, `/`, and `Escape` listeners, with automatic body scroll locking.
   - **Header Trigger & Shortcut Badge:** Replaced static link in `Header.tsx` with interactive `<button>` displaying subtle `⌘K` keyboard badge on desktop viewports.
-  - **Search Modal & Subcomponents:**
-    - `SearchInput.tsx`: Auto-focus, debounce, gold magnifying glass icon, clear `✕` button, `ESC` badge.
-    - `SearchRecentAndPopular.tsx`: `localStorage` search history with individual removal and "Clear History" actions, popular horological query chips, and curated trending timepiece cards.
-    - `SearchSuggestionsList.tsx`: Matching brand pills with model count badges, suggested timepieces with query highlighting in gold, horology specs, INR pricing, discount indicators, arrow key (`↑`/`↓`) navigation, and "View all in catalog" footer link.
-    - `SearchEmptyState.tsx`: Gold icon badge, no-results recovery advice, and quick-click popular query chips.
-  - **Luxury Glassmorphism Styling:** Deep obsidian backdrop (`rgba(8,8,8,0.78)` with `backdrop-filter: blur(16px)`), gold border accents, custom gold scrollbar, and responsive mobile layout.
+  - **Search Modal & Subcomponents:** `SearchInput.tsx`, `SearchRecentAndPopular.tsx`, `SearchSuggestionsList.tsx`, `SearchEmptyState.tsx`.
 - **Verification Outputs (stored in `screenshots/`):**
-  - `screenshots/search_desktop_1440.png`: 1440px desktop idle search modal with recents, popular chips, and trending cards.
+  - `screenshots/search_desktop_1440.png`: 1440px desktop idle search modal.
   - `screenshots/search_suggestions_1440.png`: 1440px desktop suggestions with brand match, query highlighting, and prices.
   - `screenshots/search_empty_1440.png`: 1440px desktop empty state with horological recovery guidance.
   - `screenshots/search_mobile_375.png`: 375px mobile idle search modal.
-  - `screenshots/search_mobile_suggestions_375.png`: 375px mobile suggestions with vertically stacked price column and zero horizontal overflow.
+  - `screenshots/search_mobile_suggestions_375.png`: 375px mobile suggestions with vertically stacked price column.
 
 ---
 
 ### Milestone 8: Typography & Design Token Scale Alignment (Section 3 Parity) ✅
 - **Objective:** Eliminate typography divergence from Section 3 of `WRISTO_Design_Tokens_and_Interactions.md`, establish the complete 11-step scale tokens system, retire SaaS `Sora` headings in favor of Swiss editorial `Playfair Display` (`--font-serif`) and commerce `Inter` (`--font-body`), and eliminate all manual inline font style band-aids across TSX components.
 - **Achievements:**
-  - **11-Step Token Scale System:** Added `--type-display-xl` (64px) to `--type-label` (11px) custom properties in `:root` with full size, line-height, and weight declarations, plus utility classes (`.type-display-xl`, `.type-heading-xl`, etc.).
+  - **11-Step Token Scale System:** Added `--type-display-xl` (64px) to `--type-label` (11px) in `globals.css` with utility classes (`.type-display-xl`, `.type-heading-xl`, etc.).
   - **Authoritative 2-Family Restoration:**
-    - `.section-title`: Migrated from Sora to `var(--font-serif)` (40px desktop, 30px tablet, 26px mobile, weight 500, line-height 1.05).
-    - `.pdp-model-title`: Migrated from Sora to `var(--font-serif)` (40px desktop, 27px mobile, weight 600, line-height 1.05).
-    - `.card-title`: Migrated from Sora to `var(--font-body)` (`Inter`, 15px, weight 600, line-height 1.3).
-    - `.collection-title`: Migrated to `var(--font-serif)` (26px, weight 500, line-height 1.15).
-    - `.drawer-title` & `.footer-heading`: Migrated to `var(--font-body)` (`Inter`).
-  - **Eliminated All Inline Band-Aids:** Removed inline font family and font size overrides from `WatchesClient.tsx`, `page.tsx`, `Hero.tsx`, `ProductCard.tsx`, `CartDrawer.tsx`, and `ProductGrid.tsx`.
-  - **Component Styling Additions:** Added responsive styles for `.trust-strip-minimal` (4-column horizontal grid with bronze star accents) and `.ai-teaser-banner` (dark luxury container card with responsive mobile scaling).
-  - **Multi-Viewport Visual QA Verification:**
-    - `screenshots/home_typography_1440.png`: 1440px desktop homepage verification.
-    - `screenshots/home_typography_768.png`: 768px tablet homepage verification.
-    - `screenshots/home_typography_375.png`: 375px mobile homepage verification.
-    - `screenshots/watches_typography_1440.png`: 1440px desktop catalog verification.
-    - `screenshots/watches_typography_768.png`: 768px tablet catalog verification.
-    - `screenshots/watches_typography_375.png`: 375px mobile catalog verification.
-    - `screenshots/pdp_typography_1440.png`: 1440px desktop PDP verification.
-    - `screenshots/pdp_typography_375.png`: 375px mobile PDP verification.
+    - `.section-title`, `.pdp-model-title`, `.collection-title`: Migrated to `var(--font-serif)`.
+    - `.card-title`, `.drawer-title`, `.footer-heading`: Migrated to `var(--font-body)` (`Inter`).
+  - **Eliminated All Inline Band-Aids:** Cleaned up `WatchesClient.tsx`, `page.tsx`, `Hero.tsx`, `ProductCard.tsx`, `CartDrawer.tsx`, and `ProductGrid.tsx`.
+
+---
+
+### Milestone 9: Phase 6 — Full Cart Drawer, Promo Engine & Multi-Step Luxury Checkout Sequence ✅
+- **Objective:** Implement end-to-end luxury commerce transaction flow matching Section 40 of `docs/WRISTO_Design_Tokens_and_Interactions.md`.
+- **Achievements:**
+  - **Decoupled Architecture (`order.ts` & `orderService.ts`):** Complete TypeScript contracts and decoupled service with coupon validation engine (`WRISTO10`, `HOROLOGYVIP`, `FIRST15`), delivery options, PIN code auto-lookup, and order persistence.
+  - **Extended Cart Context (`CartContext.tsx`):** Added coupons, gift wrapping toggle, handwritten calligraphy note, auto-recalculating totals with horological gift threshold (Complimentary Leather Travel Pouch at ₹15,000+).
+  - **Enhanced Slide-Over Cart Drawer (`CartDrawer.tsx`):** Integrated animated reward progress bar, promo code chip with one-click remove (`✕`), gift wrapping toggle with note textarea, line item quantity steppers (`− 1 +`), and total settlement breakdown.
+  - **Distraction-Free Luxury Checkout Route (`/checkout`):**
+    - Quieter luxury header (`CheckoutHeader.tsx`): WRISTO emblem + 256-bit SSL Security badge + Concierge helpline.
+    - 4-step progressive stepper (`CheckoutStepper.tsx`): 01 Address & Contact → 02 Horological Delivery → 03 Secure Payment → 04 Review & Confirm.
+    - Modular step forms: `AddressStep.tsx`, `DeliveryStep.tsx`, `PaymentStep.tsx`, `ReviewStep.tsx`, `OrderSummarySidebar.tsx`.
+  - **Authentic Horological Order Confirmation (`/checkout/success`):**
+    - Serialized Order ID (`WRT-2026-XXXXX`), Certificate of Provenance ID (`CERT-CHRONO-XXXXX`), itemized receipt, and `[ 🖨️ Print Certificate & Receipt ]` action.
+
+---
+
+### Milestone 10: Phase 7 — Client Account & Provenance Ledger (`/account`) ✅
+- **Objective:** Build private client portal displaying collector status, order tracking, address book, and interactive provenance certificates.
+- **Achievements:**
+  - Built `/account` route (`page.tsx` + `AccountClient.tsx`).
+  - Implemented decoupled `accountService.ts` with customer profiles, past orders, and security settings.
+  - 5-tab dashboard: Overview, My Orders & Custody, Address Book, Vault Wishlist, Security & Preferences.
+  - Built `ProvenanceCertificateModal.tsx`: SVG guilloché security borders, embossed gold holographic seal, collector provenance details, movement caliber serial, and printable format.
+
+---
+
+### Milestone 11: Phase 8 — AI Watch Concierge (`/concierge`) ✅
+- **Objective:** Deploy private conversational horological advisor powered by multi-factor semantic matching.
+- **Achievements:**
+  - Built `/concierge` route (`page.tsx` + `ConciergeClient.tsx`).
+  - Interactive multi-turn chat stream with custom horological reasoning engine.
+  - Multi-factor scoring against 40 watches (budget, movement, water resistance, occasion, strap style).
+  - Structured recommendation cards embedded in conversation with direct PDP links and 3D preview cards.
+
+---
+
+### Milestone 12: Phase 9 — Editorial Journal (`/journal` & `/journal/[slug]`) ✅
+- **Objective:** Build Swiss horology editorial journal with deep-dive collector guides and dynamic SSG pre-rendering.
+- **Achievements:**
+  - Built `/journal` index (`JournalClient.tsx`) with category filters (Collector Guides, Technical Horology, Industry Insights).
+  - Built dynamic SSG route `/journal/[slug]` (`generateStaticParams()` pre-rendering all 6 articles).
+  - Decoupled `journalService.ts` with rich article data, read times, tags, and horological photography.
+
+---
+
+### Milestone 13: Phase 10 — Launch Hardening, Rich SEO & Dynamic Sitemap ✅
+- **Objective:** Enterprise search indexing, structured JSON-LD schemas, fault recovery, and accessibility hardening.
+- **Achievements:**
+  - Built dynamic `sitemap.ts` pre-rendering 57 indexed URLs (core routes + 40 watches + 6 articles).
+  - Configured `robots.ts` with `/checkout` and `/account` crawl protection.
+  - Integrated JSON-LD structured schemas (`Organization`, `WebSite`, `Product`, `AggregateRating`, `BreadcrumbList`).
+  - Built luxury 404 recovery screen (`not-found.tsx`), global error boundary (`error.tsx`), and skip-to-content links.
+  - Committed and pushed to `main` as `eb9b5ad`.
+
+---
+
+### Milestone 14: Desktop Web Parity & Content Audit ✅
+- **Objective:** Exhaustive audit comparing reference image boards (`10_28_21 PM.png`, `10_32_53 PM.png`) and `WRISTO_Design_Tokens_and_Interactions.md` against active codebase.
+- **Achievements:**
+  - Documented 13-panel desktop screen analysis in [`docs/desktop_web_parity_analysis.md`](file:///e:/WRISTO/docs/desktop_web_parity_analysis.md).
+  - Identified all missing sections, copywriting discrepancies (TrustStrip, footer, search keywords, account persona), and the omitted Watch Comparison Engine.
+  - Created 5-Milestone Desktop Parity Roadmap.
+
+---
+
+### Milestone 15: The Watch Comparison Engine (Desktop Parity Milestone 1) ✅
+- **Objective:** Restore the interactive Side-by-Side Horology Matrix from the preview prototype (`js/app.js` lines 1145–1230).
+- **Achievements:**
+  - Built `ComparisonContext.tsx`: Max 4 watches, localStorage persistence, toast feedback notifications.
+  - Built `FloatingComparisonDock.tsx`: Bottom luxury floating tray with thumbnail slots, remove actions, and "Compare Now &rarr;" button.
+  - Built `/compare` route (`page.tsx` + `ComparisonClient.tsx`): 9-spec technical matrix comparing Brand, Caliber, Diameter, Material, Strap, Dial, Water Resistance, Style, and Occasions, with Add to Cart / Buy Now per column.
+  - Connected `Header.tsx` (scale icon with live badge counter), `ProductCard.tsx` (card hover "Compare" quick action), and `ProductActions.tsx` (PDP secondary toggle).
+  - Updated `sitemap.ts` to 58 pages.
+  - Tested 100% clean production build (`npm run build` with 0 errors).
+  - Committed and pushed to `main` as `8ccebb4`.
 
 ---
 
@@ -166,80 +208,67 @@
 | `wristo-next/` | Production Next.js 16+ application (App Router, React 19, TypeScript). |
 | `wristo-next/src/app/globals.css` | Master design tokens, 11-step typography scale tokens, responsive rules. |
 | `wristo-next/src/context/SearchContext.tsx` | Global search state & shortcut coordinator (`Cmd+K`, `/`, `ESC`). |
+| `wristo-next/src/context/CartContext.tsx` | Global cart, coupon engine, gift wrapping, auto-recalculated order totals. |
+| `wristo-next/src/context/WishlistContext.tsx` | Global wishlist state with localStorage persistence. |
+| `wristo-next/src/context/ComparisonContext.tsx` | Global watch comparison state (max 4 items, localStorage sync). |
+| `wristo-next/src/components/comparison/FloatingComparisonDock.tsx` | Bottom floating comparison dock with thumbnail chips & minimize pill. |
+| `wristo-next/src/app/compare/` | Dedicated Side-by-Side Horology Matrix route (`page.tsx` + `ComparisonClient.tsx`). |
 | `wristo-next/src/components/search/` | Complete Phase 5 search overlay suite (`SearchModal`, `SearchInput`, `SearchRecentAndPopular`, `SearchSuggestionsList`, `SearchEmptyState`). |
-| `wristo-next/src/app/product/[id]/` | Product Detail Page route (`page.tsx` + `ProductDetailClient.tsx`). |
+| `wristo-next/src/app/product/[id]/` | Dynamic SSG Product Detail Page route (`page.tsx` + `ProductDetailClient.tsx`). |
 | `wristo-next/src/app/watches/[id]/` | SEO alias redirecting to `/product/[id]`. |
 | `wristo-next/src/components/product/` | Modular PDP components (Gallery, Header, Pricing, Variants, Actions, SpecsGrid, AIInsight, TrustAccordions, StickyBar, CoordinatedWatches). |
 | `wristo-next/src/app/watches/` | Catalog PLP route (`page.tsx` + `WatchesClient.tsx`). |
-| `wristo-next/src/services/` | Decoupled data contracts (`productService.ts` - Spring Boot ready). |
 | `wristo-next/src/components/catalog/` | Modular catalog UI (Sidebar, Drawer, Grid, Card, ActiveFilterBar, CategoryNav, SortSelect, Pagination). |
-| `screenshots/` | Centralized repository for all visual QA regression captures (29 screenshots). |
-| `index.html` | Vanilla HTML/CSS/JS prototype host. |
-| `MEMORY.md` | Core repository memory documenting architectural invariants and design tokens. |
-| `PROGRESS.md` | This project tracker and roadmap. |
-
----
-
-### Milestone 9: Phase 6 — Full Cart Drawer, Promo Engine & Multi-Step Luxury Checkout Sequence ✅
-- **Objective:** Implement end-to-end luxury commerce transaction flow matching Section 40 of `docs/WRISTO_Design_Tokens_and_Interactions.md` (*"Keep checkout visually quieter than shopping pages. Steps: Address → Payment → Review → Confirmation"*).
-- **Achievements:**
-  - **Decoupled Architecture (`order.ts` & `orderService.ts`):** Complete TypeScript contracts and decoupled service with coupon validation engine (`WRISTO10`, `HOROLOGYVIP`, `FIRST15`), delivery options, PIN code auto-lookup, and order persistence (`wristo_orders`, `wristo_latest_order`). 100% Spring Boot backend ready (`POST /api/v1/orders`).
-  - **Extended Cart Context (`CartContext.tsx`):** Added coupons, gift wrapping toggle, handwritten calligraphy note, auto-recalculating totals with horological gift threshold (unlocks Complimentary Leather Travel Pouch at ₹15,000+).
-  - **Enhanced Slide-Over Cart Drawer (`CartDrawer.tsx`):** Integrated animated reward progress bar, promo code chip with one-click remove (`✕`), gift wrapping toggle with note textarea, line item quantity steppers (`− 1 +`), and total settlement breakdown.
-  - **Distraction-Free Luxury Checkout Route (`/checkout`):**
-    - Quieter luxury header (`CheckoutHeader.tsx`): WRISTO emblem + 256-bit SSL Security badge + Concierge helpline. Suppressed marketing nav and global footers on `/checkout*`.
-    - 4-step progressive stepper (`CheckoutStepper.tsx`): 01 Address & Contact → 02 Horological Delivery → 03 Secure Payment → 04 Review & Confirm.
-    - Modular step forms: `AddressStep.tsx` with validation, `DeliveryStep.tsx` (Complimentary Insured Air Express vs. White-Glove Hand Courier +₹999), `PaymentStep.tsx` (UPI/QR, Credit/Debit Cards with 0% EMI calculator, Netbanking, Pay on Inspection COD), and `ReviewStep.tsx` with provenance certificate disclosure.
-    - Sticky summary sidebar (`OrderSummarySidebar.tsx`): Item thumbnails, live coupon recalculation, delivery fee breakdown, and trust badges.
-  - **Authentic Horological Order Confirmation (`/checkout/success`):**
-    - Celebratory gold seal (`✓`) and serialized Order ID (`WRT-2026-XXXXX`).
-    - Registered Certificate of Provenance ID (`CERT-CHRONO-XXXXX`) in inscribed collector's name.
-    - Itemized timepiece breakdown, insured destination, arrival ETA, and `[ 🖨️ Print Certificate & Receipt ]` action.
-  - **Build Verification:** 46/46 static routes compiled with 0 errors (Next.js Turbopack).
-  - **Visual Verification Outputs (stored in `screenshots/`):**
-    - `screenshots/cart_drawer_1440.png`: Slide-over cart drawer with threshold bar and WRISTO10 coupon.
-    - `screenshots/checkout_step1_1440.png`: Address form & client contact info.
-    - `screenshots/checkout_step2_1440.png`: Delivery Tier selection with populated summary sidebar.
-    - `screenshots/checkout_step3_1440.png`: Payment options (UPI, 0% EMI Cards, Netbanking, COD).
-    - `screenshots/checkout_step4_1440.png`: Final horological verification & provenance guarantee.
-    - `screenshots/checkout_success_1440.png`: Order confirmation with Certificate of Provenance.
-
----
-
-## 2. Current Architecture & File Manifest
-
-| File / Folder | Role & Status |
-|---|---|
-| `wristo-next/` | Production Next.js 16+ application (App Router, React 19, TypeScript). |
-| `wristo-next/src/app/globals.css` | Master design tokens, 11-step typography scale tokens, checkout layouts & tokens. |
-| `wristo-next/src/types/order.ts` | Order, Address, Delivery, Payment, Coupon & Cart item TypeScript contracts. |
-| `wristo-next/src/services/orderService.ts` | Decoupled order service (Spring Boot API ready) with coupons, validation, and storage. |
-| `wristo-next/src/context/CartContext.tsx` | Global cart, coupon engine, gift wrapping, and auto-recalculated order totals. |
-| `wristo-next/src/components/layout/CartDrawer.tsx` | Slide-over cart drawer with reward threshold progress bar & promo code engine. |
 | `wristo-next/src/app/checkout/` | Dedicated checkout route (`page.tsx` + `CheckoutClient.tsx`). |
-| `wristo-next/src/components/checkout/` | Modular checkout components (Header, Stepper, Address, Delivery, Payment, Review, Sidebar). |
 | `wristo-next/src/app/checkout/success/` | Order confirmation route (`page.tsx` + `SuccessClient.tsx`). |
-| `wristo-next/src/context/SearchContext.tsx` | Global search state & shortcut coordinator (`Cmd+K`, `/`, `ESC`). |
-| `wristo-next/src/components/search/` | Complete Phase 5 search overlay suite. |
-| `wristo-next/src/app/product/[id]/` | Product Detail Page route (`page.tsx` + `ProductDetailClient.tsx`). |
-| `wristo-next/src/app/watches/[id]/` | SEO alias redirecting to `/product/[id]`. |
-| `wristo-next/src/components/product/` | Modular PDP components. |
-| `wristo-next/src/app/watches/` | Catalog PLP route (`page.tsx` + `WatchesClient.tsx`). |
-| `wristo-next/src/services/productService.ts` | Decoupled product service contracts. |
+| `wristo-next/src/components/checkout/` | Modular checkout components (Header, Stepper, Address, Delivery, Payment, Review, Sidebar). |
+| `wristo-next/src/app/account/` | Client Account & Provenance Ledger route (`page.tsx` + `AccountClient.tsx`). |
+| `wristo-next/src/components/account/` | ProvenanceCertificateModal (SVG guilloché borders & holographic seal). |
+| `wristo-next/src/app/concierge/` | AI Watch Concierge route (`page.tsx` + `ConciergeClient.tsx`). |
+| `wristo-next/src/app/journal/` | Editorial Journal index (`page.tsx` + `JournalClient.tsx`). |
+| `wristo-next/src/app/journal/[slug]/` | Dynamic SSG Article Reader (`page.tsx`). |
+| `wristo-next/src/app/sitemap.ts` | Dynamic XML sitemap generator (58 routes). |
+| `wristo-next/src/app/robots.ts` | SEO robots.txt generator. |
+| `wristo-next/src/app/not-found.tsx` | Luxury horological 404 recovery screen. |
+| `wristo-next/src/app/error.tsx` | Global fault boundary. |
+| `wristo-next/src/services/` | Decoupled data contracts (`productService.ts`, `orderService.ts`, `accountService.ts`, `journalService.ts`). |
+| `docs/desktop_web_parity_analysis.md` | Master Desktop Web Parity & Copywriting Gap Analysis. |
 | `screenshots/` | Centralized repository for all visual QA regression captures (35+ screenshots). |
 | `index.html` | Vanilla HTML/CSS/JS prototype host. |
 | `MEMORY.md` | Core repository memory documenting architectural invariants and design tokens. |
 | `PROGRESS.md` | This project tracker and roadmap. |
+| `TECHNICALDEBT.md` | Known technical debt and refactoring registry. |
 
 ---
 
-## 3. Next Milestones & Roadmap
+## 3. Desktop Parity Roadmap
 
-- [x] **Milestone 6: Phase 4 — Product Detail Experience (PDP)** ✅
-- [x] **Milestone 7: Phase 5 — Instant Search & Autocomplete Overlay** ✅
-- [x] **Milestone 8: Typography & Design Token Scale Alignment** ✅
-- [x] **Milestone 9: Phase 6 — Full Cart Drawer & Checkout Sequence** ✅
-- [ ] **Milestone 10: Phase 8 — AI Watch Concierge Integration**
-  - Connect natural language recommendation prompt to Gemini API / local mock intelligence for smart filtering.
+- [x] **Milestone 1: Watch Comparison Engine** ✅ (Committed & Pushed as `8ccebb4`)
+  - `ComparisonContext.tsx` (max 4 watches, localStorage persistence, toast feedback).
+  - `FloatingComparisonDock.tsx` (floating tray + minimize pill).
+  - `/compare` route & `ComparisonClient.tsx` (9-spec technical matrix, Add to Cart / Buy Now).
+  - `Header.tsx` comparison counter badge + `ProductCard.tsx` card hover action + `ProductActions.tsx` PDP toggle.
+  - Production build: 58/58 static routes compiled cleanly.
 
+- [ ] **Milestone 2: Homepage Parity & Section Restoration**
+  - Popular Brands strip (6 brand cards + crown bezel banner: *"Explore Premium Brands. Authentic. Trusted. Always. [ Browse Brands &rarr; ]"*).
+  - Curated Occasions section (4 tall lifestyle cards: Formal 312, Casual 489, Sports 256, Luxury 198 with photography + carousel controls `01 < >`).
+  - Mobile App promo (3D phone mockup + store badges).
+  - From Our Blog (3 preview cards linking to `/journal`).
+  - Trust Strip copy alignment (`100% Authentic | Brand Warranty`, `Free Shipping | Across India`, `Easy Returns | Within 7 Days`, `Secure | Payments`).
 
+- [ ] **Milestone 3: Catalog / PLP Enhancements**
+  - Shop by Category left jump list in sidebar.
+  - Under-header 4 Circular Category Chips (`Analog 1240`, `Chronograph 852`, `Smart 600`, `Dress 716`).
+  - Distinct bottom card pill badges (`Best Seller`, `Trending`, `Premium`, `New Arrival`).
+
+- [ ] **Milestone 4: Dedicated Standalone Desktop Pages**
+  - Dedicated `/wishlist` full-page table (Panel 8 parity).
+  - Dedicated `/cart` full-page view with specs and sticky summary (Panel 9 parity).
+  - Dedicated `/brands` showcase page.
+  - Account persona correction in `accountService.ts` to `Gaurav Kadam` (`GK`, `gauravkadam@gmail.com`).
+
+- [ ] **Milestone 5: Header, Footer & Search Copy Polish**
+  - Header links: `Home | Men | Women | Collections | Brands | Accessories`.
+  - Footer contact info: `Pune, Maharashtra`, `+91 98765 43210`, `support@wristo.com`, social media icons, and payment badges.
+  - Search modal keywords: `Titan`, `Fastrack`, `Casio`, `Chronograph`, `Smart Watch`.

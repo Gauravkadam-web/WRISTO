@@ -14,7 +14,7 @@
 
 ---
 
-## 🚀 Key Features Implemented (Phases 1 — 3)
+## 🚀 Key Features Implemented
 
 ### 1. Cinematic Dark Luxury Hero Section
 - High-resolution dark luxury timepiece on rock backdrop with radial vignette overlay.
@@ -36,9 +36,48 @@
 - **40-Watch Master Catalog:** Curated dataset with luxury calibers, technical specs, pricing, and ratings.
 - **Spring Boot-Ready Service Layer (`src/services/productService.ts`):** Decoupled data contracts (`getCatalogProducts`) supporting multi-facet queries, pagination, and dynamic facet counts.
 - **Two-Way URL State Synchronization:** All filter facets (`brand`, `movement`, `style`, `maxPrice`, `sort`, `q`) synchronize 2-way with Next.js `searchParams`.
-- **Responsive Multi-Device Layout:**
-  - **Desktop (≥1024px):** Sticky 270px left facet rail + 4-column card grid with 3D mouse tilt interaction.
-  - **Tablet & Mobile (<1024px):** Desktop sidebar cleanly tucked into a luxury `[ ⚙ Filters & Sort ]` trigger button opening an animated slide-over `FilterDrawer` with backdrop blur and body scroll lock.
+- **Responsive Multi-Device Layout:** Sticky 270px left facet rail on desktop; luxury `[ ⚙ Filters & Sort ]` trigger opening animated `FilterDrawer` on tablet and mobile.
+
+### 5. Product Detail Experience (PDP at `/product/[id]`)
+- **Dynamic SSG Pre-rendering:** Pre-renders all 40 watches statically at build time with dynamic OpenGraph meta tags and `/watches/[id]` SEO redirect.
+- **Interactive 3D Stage:** Level 3 depth cursor-tracking tilt gallery with vertical thumbnail rail and official WRISTO Authenticity Seal.
+- **Macro Lightbox Modal:** Fullscreen zoom-in, zoom-out, and reset controls with keyboard `Escape` dismissal.
+- **Technical Horology Matrix:** 6-cell tactile specs grid (Caliber Movement, Case Diameter, Case Material, Dial & Crystal, Strap, Water Resistance).
+- **AI Style Concierge Insight:** Distinctive ivory card with gold accent bar grounded in `product.aiReason`, compatibility score (`98% Style Match`), and occasion chips.
+- **Mobile Sticky Purchase Bar:** Fixed thumb-zone bar on mobile viewports revealing on scroll with watch thumbnail, price, and instant Add/Buy buttons.
+
+### 6. Instant Search & Autocomplete Overlay (`⌘K`)
+- **Global Keyboard Coordination:** `Cmd+K` / `Ctrl+K`, `/`, and `Escape` shortcuts with body scroll lock.
+- **Decoupled Search Engine:** Multi-field debounced queries returning matching brands with piece count pills, suggested timepieces with query highlighting in gold, and horology specs.
+- **Search History & Recents:** LocalStorage search history persistence with per-item remove and clear all history.
+
+### 7. Full Cart Drawer & Multi-Step Luxury Checkout Sequence (`/checkout`)
+- **Slide-Over Cart Drawer:** Animated reward threshold progress bar (Complimentary Leather Travel Pouch at ₹15,000+), promo code engine (`WRISTO10`, `HOROLOGYVIP`, `FIRST15`), and gift wrapping toggle.
+- **Distraction-Free Isolated Checkout:** Quieter luxury header with 256-bit SSL badge, suppressing marketing navigation and footers.
+- **Progressive 4-Step Stepper:** `01 Address & Contact` → `02 Horological Delivery` → `03 Secure Payment` → `04 Review & Confirm`.
+- **Order Confirmation & Provenance (`/checkout/success`):** Serialized Order ID (`WRT-2026-XXXXX`), registered Certificate of Provenance ID (`CERT-CHRONO-XXXXX`), itemized receipt, and print layout.
+
+### 8. Client Account & Provenance Ledger (`/account`)
+- **5-Tab Collector Dashboard:** Overview, My Orders & Custody, Address Book, Vault Wishlist, and Security & Preferences.
+- **Interactive Provenance Certificate Modal:** Vector SVG guilloché security borders, embossed gold holographic seal, collector provenance details, movement caliber serial, and printable layout.
+
+### 9. AI Watch Concierge (`/concierge`)
+- **Private Conversational Advisor:** Multi-turn chat interface simulating a private Mayfair horological advisor.
+- **Semantic Scoring:** Real-time multi-factor weighted scoring across 40 watches (budget, caliber, water resistance, occasion, strap style) with structured recommendation cards.
+
+### 10. Editorial Journal (`/journal` & `/journal/[slug]`)
+- **Swiss Horology Publication:** 6 deep-dive horological essays with category filters (Collector Guides, Technical Horology, Industry Insights).
+- **Dynamic SSG Pre-rendering:** Pre-renders all 6 articles with optimized serif typography, pull quotes, and inline timepiece links.
+
+### 11. Watch Comparison Engine (`/compare`)
+- **Side-by-Side Horology Matrix:** Compare up to 4 timepieces across 9 technical dimensions (Brand House, Caliber Movement, Case Diameter, Case Material, Strap Type, Dial Finish, Water Resistance, Style Aesthetic, Recommended Occasions).
+- **Floating Comparison Dock:** Persistent luxury floating bottom dock with watch thumbnail chips, remove actions, and minimize pill badge.
+- **Universal Triggers:** Header scale icon with live badge counter, catalog card hover "Compare" quick action, and PDP "Compare Specs" toggle.
+
+### 12. Launch Hardening, Rich SEO & Dynamic Sitemap
+- **58 Statically Pre-rendered Routes:** Dynamic `sitemap.ts` indexing all core pages, 40 watch PDPs, and 6 journal articles.
+- **Structured Schema Markup:** `Organization`, `WebSite`, `Product`, `AggregateRating`, and `BreadcrumbList` JSON-LD schemas.
+- **Resilience Infrastructure:** Luxury horological 404 recovery page (`not-found.tsx`), global error boundary (`error.tsx`), and skip-to-content links.
 
 ---
 
@@ -49,9 +88,9 @@
 | **Frontend Framework** | [Next.js 16+ (App Router)](https://nextjs.org/) + [React 19](https://react.dev/) |
 | **Language** | [TypeScript 5](https://www.typescriptlang.org/) (Strict Mode) |
 | **Bundler & Tooling** | Turbopack |
-| **Styling** | Vanilla CSS3 Custom Design Tokens (Zero Tailwind/Bootstrap Bloat) |
-| **State Management** | React Context (`CartContext`, `WishlistContext`) with LocalStorage Sync |
-| **Architecture Pattern** | Decoupled Service Layer (Mock in-memory today, Spring Boot REST API tomorrow) |
+| **Styling** | Vanilla CSS3 Custom Design Tokens (11-step typography scale tokens, HSL luxury palettes) |
+| **State Management** | React Context (`CartContext`, `WishlistContext`, `SearchContext`, `ComparisonContext`) with LocalStorage Sync |
+| **Architecture Pattern** | Decoupled Service Layer (`productService`, `orderService`, `accountService`, `journalService`) |
 | **Planned Backend** | Java 21 + Spring Boot 3.3+ + PostgreSQL |
 
 ---
@@ -60,28 +99,44 @@
 
 ```
 WRISTO/
-├── wristo-next/                       # Production Next.js Web Application
+├── wristo-next/                                 # Production Next.js 16+ Web Application
 │   ├── src/
-│   │   ├── app/                       # Next.js App Router (layout, globals.css, page, watches)
-│   │   ├── components/                # Modular UI (catalog, home, layout)
-│   │   ├── context/                   # Cart & Wishlist context providers
-│   │   ├── data/                      # 40-watch dataset, brands, categories, collections
-│   │   ├── services/                  # productService.ts (decoupled data contract)
-│   │   └── types/                     # product.ts, filter.ts
-│   ├── public/assets/                 # Watch photography, brand logos, banners
-│   ├── package.json                   # Dependencies
-│   └── tsconfig.json                  # TypeScript config
-├── assets/                            # Original raw assets & brand identity
-├── css/                               # Vanilla CSS reference stylesheet
-├── js/                                # Vanilla JS prototype scripts
-├── docs/                              # Project specifications & master prompt
+│   │   ├── app/                                 # App Router (58 SSG routes)
+│   │   │   ├── layout.tsx                       # Root Layout (Fonts, Cart/Wishlist/Comparison/Search Providers)
+│   │   │   ├── globals.css                      # Master Design Tokens, 11-step typography scale
+│   │   │   ├── page.tsx                         # Home / Discover Page
+│   │   │   ├── watches/                         # Catalog PLP Route (/watches)
+│   │   │   ├── product/[id]/                    # Dynamic SSG Product Detail Pages (40 watches)
+│   │   │   ├── compare/                         # Watch Comparison Matrix Route (/compare)
+│   │   │   ├── checkout/                        # Multi-Step Checkout (/checkout) & Confirmation (/checkout/success)
+│   │   │   ├── account/                         # Client Account & Provenance Ledger (/account)
+│   │   │   ├── concierge/                       # AI Watch Concierge (/concierge)
+│   │   │   ├── journal/                         # Editorial Journal (/journal & /journal/[slug])
+│   │   │   ├── not-found.tsx                    # Luxury 404 Recovery Screen
+│   │   │   ├── error.tsx                        # Global Fault Boundary
+│   │   │   ├── robots.ts                        # SEO robots.txt Generator
+│   │   │   └── sitemap.ts                       # Dynamic XML Sitemap (58 routes)
+│   │   ├── components/                          # Modular UI components (catalog, home, layout, product, comparison, search, checkout, account)
+│   │   ├── context/                             # CartContext, WishlistContext, SearchContext, ComparisonContext
+│   │   ├── data/                                # 40-watch master dataset, brands, categories
+│   │   ├── services/                            # productService.ts, orderService.ts, accountService.ts, journalService.ts
+│   │   └── types/                               # product.ts, filter.ts, order.ts, account.ts, journal.ts
+│   ├── public/assets/                           # Watch photography, brand logos, banners, SVG seals
+│   ├── package.json                             # Dependencies
+│   └── tsconfig.json                            # Strict TypeScript Configuration
+├── assets/                                      # Original raw image & brand assets
+├── css/                                         # Original vanilla CSS reference stylesheet
+├── js/                                          # Original vanilla JS prototype scripts
+├── docs/                                        # Master specifications, parity analysis, session summaries
 │   ├── WRISTO_MASTER_DEVELOPMENT_PROMPT.md
 │   ├── WRISTO_Design_Tokens_and_Interactions.md
+│   ├── desktop_web_parity_analysis.md
 │   └── session_summary.md
-├── MEMORY.md                          # Repository architectural invariants & design memory
-├── PROGRESS.md                        # Milestones & roadmap tracking
-├── TECHNICALDEBT.md                   # Known technical debt & architectural trade-offs
-└── README.md                          # This file
+├── screenshots/                                 # Centralized multi-viewport visual QA regression captures
+├── MEMORY.md                                    # Repository architectural memory & design invariants
+├── PROGRESS.md                                  # Milestones & roadmap tracking
+├── TECHNICALDEBT.md                             # Technical debt registry & resolution plans
+└── README.md                                    # This file
 ```
 
 ---
@@ -104,8 +159,13 @@ npm install
 npm run dev
 
 # 4. Open in your browser:
-#    Home:    http://localhost:3000
-#    Catalog: http://localhost:3000/watches
+#    Home:        http://localhost:3000
+#    Catalog:     http://localhost:3000/watches
+#    Compare:     http://localhost:3000/compare
+#    Concierge:   http://localhost:3000/concierge
+#    Journal:     http://localhost:3000/journal
+#    Account:     http://localhost:3000/account
+#    Checkout:    http://localhost:3000/checkout
 ```
 
 ### Production Build & Typecheck
@@ -116,17 +176,31 @@ npm run build
 
 ---
 
-## 🗺️ Roadmap & Upcoming Milestones
+## 🗺️ Roadmap & Milestones
 
+### Core Architecture & Commerce Lifecycle (100% Completed)
 - [x] **Milestone 1:** Luxury Hero Section Refinement ✅
 - [x] **Milestone 2:** Official Brand Identity & Vector Logo Lockup ✅
 - [x] **Milestone 3:** "Modern Looks. Timeless Feel." Editorial Campaign Banner ✅
 - [x] **Milestone 4:** Multi-Viewport Visual Regression & Quality Assurance ✅
 - [x] **Milestone 5:** Phase 3 — Production Next.js Catalog (PLP) Architecture ✅
-- [ ] **Milestone 6:** Phase 4 — Product Detail Experience (PDP with image gallery, specs, caliber breakdown)
-- [ ] **Milestone 7:** Phase 5 — Instant Search & Autocomplete Overlay
-- [ ] **Milestone 8:** Phase 6 — Full Cart Drawer & Checkout Sequence
-- [ ] **Milestone 9:** Phase 8 — AI Watch Concierge Integration (Gemini API)
+- [x] **Milestone 6:** Phase 4 — Product Detail Experience (PDP with 3D tilt, zoom gallery, specs matrix) ✅
+- [x] **Milestone 7:** Phase 5 — Instant Search & Autocomplete Overlay (`⌘K`) ✅
+- [x] **Milestone 8:** Typography & Design Token Scale Alignment (Section 3 Parity) ✅
+- [x] **Milestone 9:** Phase 6 — Full Cart Drawer, Promo Engine & Multi-Step Luxury Checkout Sequence ✅
+- [x] **Milestone 10:** Phase 7 — Client Account & Provenance Ledger (`/account`) ✅
+- [x] **Milestone 11:** Phase 8 — AI Watch Concierge (`/concierge`) ✅
+- [x] **Milestone 12:** Phase 9 — Editorial Journal (`/journal` & `/journal/[slug]`) ✅
+- [x] **Milestone 13:** Phase 10 — Launch Hardening, Rich SEO & Dynamic Sitemap (57 routes, `eb9b5ad`) ✅
+- [x] **Milestone 14:** Desktop Web Parity & Content Audit (`docs/desktop_web_parity_analysis.md`) ✅
+- [x] **Milestone 15:** Desktop Parity Milestone 1 — Watch Comparison Engine (`8ccebb4`, 58 routes) ✅
+
+### Desktop Parity Roadmap (In Progress)
+- [x] **Parity Milestone 1:** Watch Comparison Engine (Floating dock, `/compare` matrix, quick actions) ✅
+- [ ] **Parity Milestone 2:** Homepage Parity & Section Restoration (Popular Brands strip, Curated Occasions 4 tall cards, App promo, Blog preview, Trust strip copy)
+- [ ] **Parity Milestone 3:** Catalog / PLP Enhancements (Shop by Category left jump list, 4 circular category chips, card bottom status pills)
+- [ ] **Parity Milestone 4:** Dedicated Standalone Desktop Pages (`/wishlist`, `/cart`, `/brands`, Account persona correction to `Gaurav Kadam`)
+- [ ] **Parity Milestone 5:** Header, Footer & Search Copy Polish (Pune contact details, social links, payment gateway badges, search keywords)
 
 ---
 
