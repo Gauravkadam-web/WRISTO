@@ -5,6 +5,7 @@ import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { Product, CategoryItem } from '@/types/product';
 import { ProductQueryFilters, SortOption, CatalogQueryResult } from '@/types/filter';
 import { getCatalogProducts } from '@/services/productService';
+import CircularCategoryChips from '@/components/catalog/CircularCategoryChips';
 import CategoryNav from '@/components/catalog/CategoryNav';
 import ActiveFilterBar from '@/components/catalog/ActiveFilterBar';
 import FilterSidebar from '@/components/catalog/FilterSidebar';
@@ -62,6 +63,47 @@ export default function WatchesClient({ categories, initialResult }: WatchesClie
       router.push(`${pathname}?${current.toString()}`, { scroll: false });
     });
   }, [searchParams, router, pathname]);
+
+  // Dynamic Title & Subtitle based on active facets (Panel 2 Parity)
+  let pageTitle = currentCategoryItem.title;
+  let pageSubtitle = currentCategoryItem.description;
+
+  if (genderParam === 'Men' || activeCategory === 'men') {
+    pageTitle = "Men's Watches";
+    pageSubtitle = "Explore our premium collection for men.";
+  } else if (genderParam === 'Women' || activeCategory === 'women') {
+    pageTitle = "Women's Watches";
+    pageSubtitle = "Elegance and refinement curated for her wrist.";
+  } else if (genderParam === 'Unisex') {
+    pageTitle = "Unisex Timepieces";
+    pageSubtitle = "Versatile proportions crafted for any horological collector.";
+  } else if (styleParams.includes('Chronograph') || activeCategory === 'chronographs') {
+    pageTitle = "Chronograph Watches";
+    pageSubtitle = "Precision timing and architectural sub-dial complications.";
+  } else if (movementParams.includes('Automatic') || activeCategory === 'automatics') {
+    pageTitle = "Automatic Calibers";
+    pageSubtitle = "Self-winding mechanical movements with exhibition casebacks.";
+  } else if (movementParams.includes('Smart Digital') || activeCategory === 'smart') {
+    pageTitle = "Smart Watches";
+    pageSubtitle = "Next-generation biometric telemetry and connected digital elegance.";
+  } else if (brandParams.length === 1) {
+    pageTitle = `${brandParams[0]} Watches`;
+    pageSubtitle = `Explore authentic timepieces from the house of ${brandParams[0]}.`;
+  }
+
+  // Circular Chip Selector Handler
+  const handleSelectChip = (type: 'category' | 'movement' | 'style', val: string) => {
+    setPageSize(12);
+    if (type === 'movement') {
+      const isSelected = movementParams.includes(val);
+      handleUpdateFilters({ movements: isSelected ? [] : [val] });
+    } else if (type === 'style') {
+      const isSelected = styleParams.includes(val);
+      handleUpdateFilters({ styles: isSelected ? [] : [val] });
+    } else if (type === 'category') {
+      handleCategorySelect(val);
+    }
+  };
 
   // Execute query on filter or page change
   useEffect(() => {
@@ -141,18 +183,25 @@ export default function WatchesClient({ categories, initialResult }: WatchesClie
 
   return (
     <div className="container" style={{ paddingTop: 'var(--space-8)', paddingBottom: 'var(--space-20)' }}>
-      {/* Category Narrative Header */}
-      <div style={{ marginBottom: 'var(--space-8)' }}>
+      {/* Category Narrative Header (Panel 2 Parity) */}
+      <div style={{ marginBottom: 'var(--space-6)' }}>
         <div className="section-label" style={{ color: 'var(--brand-bronze)' }}>
           CURATED CATALOGUE &bull; {queryResult.total} PIECES
         </div>
-        <h1 className="section-title" style={{ margin: '4px 0 12px 0' }}>
-          {currentCategoryItem.title}
+        <h1 className="section-title" style={{ margin: '4px 0 10px 0' }}>
+          {pageTitle}
         </h1>
         <p className="section-subtitle" style={{ maxWidth: '680px', color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>
-          {currentCategoryItem.description}
+          {pageSubtitle}
         </p>
       </div>
+
+      {/* 4 Circular Category Photo Chips below Header (Panel 2 Parity) */}
+      <CircularCategoryChips
+        activeMovement={movementParams.length === 1 ? movementParams[0] : undefined}
+        activeStyle={styleParams.length === 1 ? styleParams[0] : undefined}
+        onSelectChip={handleSelectChip}
+      />
 
       {/* Category Pills Navigation */}
       <CategoryNav

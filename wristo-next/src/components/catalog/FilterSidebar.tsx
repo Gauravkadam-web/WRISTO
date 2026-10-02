@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { ProductQueryFilters, CatalogFacetCounts } from '@/types/filter';
+import ShopByCategoryList, { CategoryNavItem } from './ShopByCategoryList';
 
 interface FilterSidebarProps {
   filters: ProductQueryFilters;
@@ -33,6 +34,20 @@ export default function FilterSidebar({
   const currentStraps = filters.straps || [];
   const maxPrice = typeof filters.maxPrice === 'number' ? filters.maxPrice : 25000;
 
+  const handleSelectNavItem = (item: CategoryNavItem) => {
+    if (item.filterKey === 'gender') {
+      onUpdateFilters({ gender: filters.gender === item.filterValue ? 'All' : item.filterValue });
+    } else if (item.filterKey === 'movement') {
+      const isSelected = currentMovements.includes(item.filterValue);
+      onUpdateFilters({ movements: isSelected ? [] : [item.filterValue] });
+    } else if (item.filterKey === 'style') {
+      const isSelected = currentStyles.includes(item.filterValue);
+      onUpdateFilters({ styles: isSelected ? [] : [item.filterValue] });
+    } else if (item.filterKey === 'category') {
+      onUpdateFilters({ category: filters.category === item.filterValue ? undefined : item.filterValue });
+    }
+  };
+
   const toggleArrayFilter = (key: 'brands' | 'movements' | 'styles' | 'caseSizes' | 'straps', val: string) => {
     const list = filters[key] || [];
     const updated = list.includes(val) ? list.filter(item => item !== val) : [...list, val];
@@ -41,6 +56,15 @@ export default function FilterSidebar({
 
   return (
     <aside className="filter-sidebar" aria-label="Catalog Filters">
+      {/* 0. Shop by Category Vertical Jump List (Panel 2 Parity) */}
+      <ShopByCategoryList
+        activeGender={filters.gender}
+        activeMovement={currentMovements}
+        activeStyle={currentStyles}
+        activeCategory={filters.category}
+        onSelectNavItem={handleSelectNavItem}
+      />
+
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', paddingBottom: '12px', borderBottom: '1px solid var(--color-border-light)' }}>
         <h2 style={{ fontSize: '13px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--color-text-primary)' }}>

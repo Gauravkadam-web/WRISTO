@@ -9758,4 +9758,255 @@ textarea:focus-visible {
   }
 }
 
+/* ==========================================================================
+   Milestone 3: PLP Enhancements (Panel 2 Parity)
+   ========================================================================== */
+
+/* 1. Shop By Category Sidebar Jump List */
+.shop-by-category-nav-group {
+  margin-bottom: 24px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--color-border-light, rgba(0, 0, 0, 0.08));
+}
+
+.shop-by-category-header {
+  margin-bottom: 12px;
+}
+
+.shop-by-category-heading {
+  font-family: var(--font-body);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brand-bronze, #B08D6B);
+}
+
+.shop-by-category-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.shop-by-category-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  transition: all var(--transition-quick, 150ms ease);
+}
+
+.shop-by-category-item:hover {
+  background: rgba(176, 141, 107, 0.08);
+  border-color: rgba(176, 141, 107, 0.2);
+}
+
+.shop-by-category-item.active {
+  background: #111111;
+  border-color: #111111;
+}
+
+.category-item-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.category-item-icon {
+  font-size: 15px;
+  line-height: 1;
+}
+
+.category-item-label {
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #222222;
+  transition: color var(--transition-quick, 150ms ease);
+}
+
+.shop-by-category-item.active .category-item-label {
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+.category-item-arrow {
+  font-size: 13px;
+  color: #888888;
+  transition: transform var(--transition-quick, 150ms ease), color var(--transition-quick, 150ms ease);
+}
+
+.shop-by-category-item:hover .category-item-arrow {
+  transform: translateX(3px);
+  color: var(--brand-bronze, #B08D6B);
+}
+
+.shop-by-category-item.active .category-item-arrow {
+  color: var(--color-accent-champagne, #DEC095);
+}
+
+/* 2. Circular Category Chips Below PLP Header */
+.circular-category-chips-container {
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.circular-category-chips-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  max-width: 640px;
+}
+
+.circular-chip-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px 4px;
+  border-radius: 16px;
+  transition: transform 250ms ease;
+  text-decoration: none;
+}
+
+.circular-chip-card:hover {
+  transform: translateY(-4px);
+}
+
+.circular-chip-avatar-wrap {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid rgba(176, 141, 107, 0.35);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  margin-bottom: 10px;
+  transition: all 250ms ease;
+  background: #F4EFE6;
+}
+
+.circular-chip-card:hover .circular-chip-avatar-wrap {
+  border-color: var(--brand-bronze, #B08D6B);
+  box-shadow: 0 10px 24px rgba(176, 141, 107, 0.25);
+  transform: scale(1.05);
+}
+
+.circular-chip-card.active .circular-chip-avatar-wrap {
+  border-color: var(--brand-charcoal, #111111);
+  box-shadow: 0 0 0 3px rgba(176, 141, 107, 0.4);
+}
+
+.circular-chip-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.circular-chip-active-ring {
+  position: absolute;
+  inset: 0;
+  border: 2px solid var(--color-accent-champagne, #DEC095);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.circular-chip-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.circular-chip-title {
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #111111;
+  letter-spacing: -0.01em;
+}
+
+.circular-chip-card.active .circular-chip-title {
+  color: var(--brand-bronze, #B08D6B);
+}
+
+.circular-chip-count {
+  font-family: var(--font-body);
+  font-size: 11.5px;
+  color: #777777;
+  font-weight: 500;
+}
+
+@media (max-width: 640px) {
+  .circular-category-chips-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  .circular-chip-avatar-wrap {
+    width: 60px;
+    height: 60px;
+  }
+  .circular-chip-title {
+    font-size: 12px;
+  }
+  .circular-chip-count {
+    font-size: 10px;
+  }
+}
+
+/* 3. Product Card Status Badges */
+.badge-best-seller {
+  background: #E8F5E9 !important;
+  color: #1B5E20 !important;
+  border: 1px solid rgba(27, 94, 32, 0.25) !important;
+  font-weight: 700;
+}
+
+.badge-trending {
+  background: #FFF3E0 !important;
+  color: #E65100 !important;
+  border: 1px solid rgba(230, 81, 0, 0.25) !important;
+  font-weight: 700;
+}
+
+.badge-premium {
+  background: #E3F2FD !important;
+  color: #0D47A1 !important;
+  border: 1px solid rgba(13, 71, 161, 0.25) !important;
+  font-weight: 700;
+}
+
+.badge-new {
+  background: #FCE4EC !important;
+  color: #880E4F !important;
+  border: 1px solid rgba(136, 14, 79, 0.25) !important;
+  font-weight: 700;
+}
+
+.badge-editorial,
+.badge-staff {
+  background: #F3E5F5 !important;
+  color: #4A148C !important;
+  border: 1px solid rgba(74, 20, 140, 0.25) !important;
+  font-weight: 700;
+}
+
+.badge-limited {
+  background: #111111 !important;
+  color: #DEC095 !important;
+  border: 1px solid #DEC095 !important;
+  font-weight: 700;
+}
+
+
 

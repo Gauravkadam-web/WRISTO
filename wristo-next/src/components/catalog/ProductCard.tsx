@@ -53,6 +53,17 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
 
   const discountPercent = Math.round((1 - product.price / product.originalPrice) * 100);
 
+  const getBadgeClass = (badge: string) => {
+    const b = badge.toLowerCase();
+    if (b.includes('best seller')) return 'badge-best-seller';
+    if (b.includes('trending') || b.includes('popular')) return 'badge-trending';
+    if (b.includes('premium') || b.includes('luxury') || b.includes('masterpiece')) return 'badge-premium';
+    if (b.includes('new') || b.includes('arrival')) return 'badge-new';
+    if (b.includes('editorial') || b.includes('staff')) return 'badge-editorial';
+    if (b.includes('limited')) return 'badge-limited';
+    return 'badge-default';
+  };
+
   return (
     <article className="product-card" ref={cardRef}>
       <div
@@ -62,7 +73,7 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
       >
         {/* Badges */}
         {product.badge && (
-          <span className="pill-badge card-badge-tag gold">
+          <span className={`pill-badge card-badge-tag ${getBadgeClass(product.badge)}`}>
             {product.badge}
           </span>
         )}
