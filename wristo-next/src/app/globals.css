@@ -1142,7 +1142,7 @@ body:not([data-current-view="home"]) .site-header {
    Trust Strip (Minimalist, Non-Carded Luxury Row)
    ========================================================================== */
 .trust-strip-minimal {
-  padding: 32px 0;
+  padding: 28px 0;
   border-bottom: 1px solid var(--color-border-light);
   background-color: var(--color-brand-cream);
   margin-bottom: var(--space-8);
@@ -1157,44 +1157,670 @@ body:not([data-current-view="home"]) .site-header {
 
 .trust-strip-item {
   display: flex;
-  align-items: flex-start;
-  gap: 12px;
+  align-items: center;
+  gap: 14px;
 }
 
-.trust-strip-accent {
+.trust-strip-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: rgba(176, 141, 107, 0.12);
   color: var(--brand-bronze, #B08D6B);
-  font-size: 15px;
-  line-height: 1.2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
-  margin-top: 2px;
+  transition: all var(--transition-quick);
+}
+
+.trust-strip-item:hover .trust-strip-icon-box {
+  background: var(--brand-bronze, #B08D6B);
+  color: #FFFFFF;
+  transform: scale(1.05);
+}
+
+.trust-strip-text {
+  display: flex;
+  flex-direction: column;
 }
 
 .trust-strip-title {
   font-family: var(--font-body);
-  font-size: 13.5px;
-  font-weight: 600;
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   color: var(--color-brand-black);
   margin-bottom: 2px;
 }
 
 .trust-strip-subtitle {
   font-family: var(--font-body);
-  font-size: 12px;
+  font-size: 12.5px;
   color: var(--color-text-secondary);
-  line-height: 1.4;
+  line-height: 1.35;
 }
 
 @media (max-width: 1024px) {
   .trust-strip-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+    gap: 22px;
   }
 }
 
 @media (max-width: 600px) {
   .trust-strip-grid {
     grid-template-columns: 1fr;
-    gap: 16px;
+    gap: 18px;
+  }
+}
+
+/* ==========================================================================
+   Popular Brands Section & Bezel Banner (Panel 5 Parity)
+   ========================================================================== */
+.popular-brands-section {
+  padding-top: var(--space-8);
+  padding-bottom: var(--space-12);
+}
+
+.popular-brands-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 16px;
+  margin-bottom: 36px;
+}
+
+.popular-brand-card {
+  background: #FFFFFF;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 14px;
+  padding: 24px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  text-decoration: none;
+  transition: all var(--transition-quick);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
+}
+
+.popular-brand-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--brand-bronze, #B08D6B);
+  box-shadow: 0 12px 28px rgba(176, 141, 107, 0.16);
+}
+
+.brand-card-monogram {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1A1A1A 0%, #2A2A2A 100%);
+  color: #DEC095;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  border: 1px solid rgba(222, 192, 149, 0.35);
+  transition: transform var(--transition-quick);
+}
+
+.popular-brand-card:hover .brand-card-monogram {
+  transform: scale(1.08) rotate(3deg);
+  border-color: #DEC095;
+}
+
+.brand-card-name {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #111111;
+  margin-bottom: 4px;
+}
+
+.brand-card-series {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: #777777;
+  margin-bottom: 10px;
+}
+
+.brand-card-count {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--brand-bronze, #B08D6B);
+  background: rgba(176, 141, 107, 0.08);
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(176, 141, 107, 0.18);
+}
+
+@media (max-width: 1024px) {
+  .popular-brands-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .popular-brands-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}
+
+/* Dark Bezel Banner */
+.bezel-banner-card {
+  position: relative;
+  border-radius: var(--radius-xl, 20px);
+  overflow: hidden;
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  padding: 44px 52px;
+  background-color: #0A0A0A;
+  background-image: url('/assets/banners/banner-explore-brands.png');
+  background-position: right center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+}
+
+.bezel-banner-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(to right, #0A0A0A 0%, rgba(10, 10, 10, 0.95) 30%, rgba(10, 10, 10, 0.65) 55%, transparent 80%);
+}
+
+.bezel-banner-content {
+  position: relative;
+  z-index: 2;
+  max-width: 440px;
+}
+
+.bezel-banner-title {
+  font-family: var(--font-serif);
+  font-size: 34px;
+  font-weight: 500;
+  line-height: 1.1;
+  color: #FFFFFF;
+  margin-bottom: 8px;
+}
+
+.bezel-banner-subtitle {
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: #D9C9B8;
+  margin-bottom: 22px;
+}
+
+.bezel-banner-btn {
+  display: inline-flex;
+}
+
+@media (max-width: 768px) {
+  .bezel-banner-card {
+    padding: 32px 24px;
+    min-height: 260px;
+    background-position: 85% center;
+  }
+  .bezel-banner-overlay {
+    background: linear-gradient(to top, #0A0A0A 0%, rgba(10, 10, 10, 0.85) 50%, rgba(10, 10, 10, 0.95) 100%);
+  }
+  .bezel-banner-title {
+    font-size: 26px;
+  }
+}
+
+/* ==========================================================================
+   Curated Occasions Section (Panel 6 Parity: Formal, Casual, Sports, Luxury)
+   ========================================================================== */
+.occasion-section {
+  padding-top: var(--space-12);
+  padding-bottom: var(--space-16);
+}
+
+.occasion-header-wrap {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.occasion-header-left {
+  max-width: 580px;
+}
+
+.occasion-cta-box {
+  margin-top: 18px;
+}
+
+.occasion-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.occasion-page-number {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-brand-black);
+  letter-spacing: 0.05em;
+}
+
+.occasion-nav-btns {
+  display: flex;
+  gap: 8px;
+}
+
+.occasion-nav-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  background: #FFFFFF;
+  color: #111111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-quick);
+}
+
+.occasion-nav-btn:hover {
+  background: #111111;
+  color: #FFFFFF;
+  border-color: #111111;
+}
+
+.occasion-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.occasion-card {
+  position: relative;
+  border-radius: var(--radius-xl, 20px);
+  overflow: hidden;
+  min-height: 460px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 32px 24px;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  transition: transform 400ms cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 400ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.occasion-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.22);
+}
+
+.occasion-card-img {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  transition: transform 700ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.occasion-card:hover .occasion-card-img {
+  transform: scale(1.06);
+}
+
+.occasion-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.92) 0%, rgba(0, 0, 0, 0.45) 30%, transparent 60%);
+  pointer-events: none;
+}
+
+.occasion-card-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.occasion-card-tagline {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: #DEC095;
+}
+
+.occasion-card-title {
+  font-family: var(--font-serif);
+  font-size: 26px;
+  font-weight: 500;
+  color: #FFFFFF;
+  margin: 0;
+  line-height: 1.15;
+}
+
+.occasion-card-count {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  color: #CCCCCC;
+}
+
+@media (max-width: 1024px) {
+  .occasion-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .occasion-cards-grid {
+    grid-template-columns: 1fr;
+  }
+  .occasion-card {
+    min-height: 360px;
+  }
+}
+
+/* ==========================================================================
+   Mobile App Promotion Section (Panel 7 Parity)
+   ========================================================================== */
+.app-promo-section {
+  padding-top: var(--space-12);
+  padding-bottom: var(--space-16);
+}
+
+.app-promo-card {
+  background: linear-gradient(135deg, #FAF7F2 0%, #F4EFE6 100%);
+  border: 1px solid rgba(217, 201, 184, 0.5);
+  border-radius: 24px;
+  overflow: hidden;
+  padding: 48px 56px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.04);
+}
+
+.app-promo-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  gap: 48px;
+  align-items: center;
+}
+
+.app-promo-visual {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.app-promo-phone-wrap {
+  max-width: 440px;
+  filter: drop-shadow(0 25px 50px rgba(0, 0, 0, 0.18));
+}
+
+.app-promo-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.app-promo-title {
+  font-family: var(--font-serif);
+  font-size: 38px;
+  font-weight: 500;
+  line-height: 1.15;
+  color: #111111;
+  margin-bottom: 12px;
+}
+
+.app-promo-subtitle {
+  font-family: var(--font-body);
+  font-size: 15.5px;
+  color: #555555;
+  line-height: 1.6;
+  margin-bottom: 24px;
+  max-width: 480px;
+}
+
+.app-promo-features {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.app-promo-feature-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: #333333;
+  font-weight: 500;
+}
+
+.app-promo-check {
+  color: var(--brand-bronze, #B08D6B);
+  font-weight: 700;
+}
+
+.app-promo-badges {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.store-badge-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: #111111;
+  color: #FFFFFF;
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: all var(--transition-quick);
+  text-decoration: none;
+}
+
+.store-badge-btn:hover {
+  transform: translateY(-2px);
+  background: #000000;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  border-color: var(--brand-bronze, #B08D6B);
+}
+
+.store-badge-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.store-badge-sub {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #AAAAAA;
+  line-height: 1.2;
+}
+
+.store-badge-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #FFFFFF;
+  line-height: 1.2;
+}
+
+@media (max-width: 900px) {
+  .app-promo-card {
+    padding: 36px 28px;
+  }
+  .app-promo-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .app-promo-title {
+    font-size: 30px;
+  }
+}
+
+/* ==========================================================================
+   From Our Blog Section (Panel 11 Parity)
+   ========================================================================== */
+.blog-preview-section {
+  padding-top: var(--space-12);
+  padding-bottom: var(--space-16);
+}
+
+.blog-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+
+.blog-preview-card {
+  background: #FFFFFF;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all 300ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+}
+
+.blog-preview-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.08);
+  border-color: rgba(176, 141, 107, 0.35);
+}
+
+.blog-card-media-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: #1A1A1A;
+  display: block;
+  padding: 0;
+}
+
+.blog-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 500ms ease;
+}
+
+.blog-preview-card:hover .blog-card-img {
+  transform: scale(1.06);
+}
+
+.blog-card-tag {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 2;
+  background: #FFFFFF;
+  color: #111111;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 999px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.blog-card-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.blog-card-meta {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: #888888;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.blog-card-meta-dot {
+  color: var(--brand-bronze, #B08D6B);
+}
+
+.blog-card-title {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.25;
+  margin-bottom: 10px;
+}
+
+.blog-card-title a {
+  color: #111111;
+  text-decoration: none;
+  transition: color var(--transition-quick);
+}
+
+.blog-preview-card:hover .blog-card-title a {
+  color: var(--brand-bronze, #B08D6B);
+}
+
+.blog-card-excerpt {
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  color: #666666;
+  line-height: 1.55;
+  margin-bottom: 20px;
+  flex-grow: 1;
+}
+
+.blog-card-read-link {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  color: #111111;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all var(--transition-quick);
+}
+
+.blog-card-read-link:hover {
+  color: var(--brand-bronze, #B08D6B);
+  transform: translateX(4px);
+}
+
+@media (max-width: 992px) {
+  .blog-preview-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .blog-preview-grid {
+    grid-template-columns: 1fr;
   }
 }
 

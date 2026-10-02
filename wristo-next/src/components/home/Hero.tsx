@@ -15,9 +15,7 @@ export default function Hero() {
             <div className="hero-content">
               {/* Luxury Eyebrow Badge */}
               <div className="hero-eyebrow">
-                <span className="hero-eyebrow-accent">SPRING / SUMMER 2026</span>
-                <span className="hero-eyebrow-divider" />
-                <span>NEW HOROLOGY</span>
+                PREMIUM WATCH STORE
               </div>
 
               {/* Verified Serif Headline */}
@@ -28,7 +26,7 @@ export default function Hero() {
 
               {/* Sub-headline description */}
               <p className="hero-description">
-                Curated luxury, automatic, and minimalist timepieces from trusted global watchmakers. Intelligent AI-powered watch styling for every wrist and occasion.
+                Discover a curated collection of premium watches from the world&apos;s most trusted brands.
               </p>
 
               {/* Dual Action CTAs */}
