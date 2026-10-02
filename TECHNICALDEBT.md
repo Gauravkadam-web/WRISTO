@@ -26,8 +26,8 @@ This document registers all acknowledged technical debt items, architectural tra
 | **TD-04** | Architecture | Root directory contains legacy vanilla prototype alongside `wristo-next/` | Low | Post-Parity Cleanup | Open |
 | **TD-05** | Testing | Visual regression performed via headless Chrome script without automated CI runner | Low | CI/CD Phase | Open |
 | **TD-06** | Performance | Facet count computation is $O(N)$ per filter change | Low | Backend Faceting | Open |
-| **TD-07** | Feature | Watch Comparison Engine omitted from Next.js port | High | Desktop Parity M1 | ✅ **RESOLVED** (`8ccebb4`) |
-| **TD-08** | Desktop Parity | Homepage sections & PLP controls diverge from `10_28_21 PM.png` | Medium | Desktop Parity M2–M5 | 🟡 **IN PROGRESS** |
+| **TD-07** | Feature | Watch Comparison Engine omitted from Next.js port | High | Desktop Parity M1 | ✅ **RESOLVED** (`8935832`) |
+| **TD-08** | Desktop Parity | Homepage sections, PLP controls, Standalone Pages & Copy | Medium | Desktop Parity M2–M5 | ✅ **RESOLVED** (M2-M5 Complete) |
 
 ---
 

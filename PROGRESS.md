@@ -241,34 +241,36 @@
 
 ---
 
-## 3. Desktop Parity Roadmap
+## 3. Desktop Parity Roadmap (100% Complete & Verified)
 
-- [x] **Milestone 1: Watch Comparison Engine** ✅ (Committed & Pushed as `8ccebb4`)
+- [x] **Milestone 1: Watch Comparison Engine** ✅ (Committed & Pushed as `8935832`)
   - `ComparisonContext.tsx` (max 4 watches, localStorage persistence, toast feedback).
   - `FloatingComparisonDock.tsx` (floating tray + minimize pill).
   - `/compare` route & `ComparisonClient.tsx` (9-spec technical matrix, Add to Cart / Buy Now).
   - `Header.tsx` comparison counter badge + `ProductCard.tsx` card hover action + `ProductActions.tsx` PDP toggle.
   - Production build: 58/58 static routes compiled cleanly.
 
-- [ ] **Milestone 2: Homepage Parity & Section Restoration**
+- [x] **Milestone 2: Homepage Parity & Section Restoration** ✅ (Committed & Pushed as `2ba36df`)
   - Popular Brands strip (6 brand cards + crown bezel banner: *"Explore Premium Brands. Authentic. Trusted. Always. [ Browse Brands &rarr; ]"*).
-  - Curated Occasions section (4 tall lifestyle cards: Formal 312, Casual 489, Sports 256, Luxury 198 with photography + carousel controls `01 < >`).
-  - Mobile App promo (3D phone mockup + store badges).
-  - From Our Blog (3 preview cards linking to `/journal`).
+  - Curated Occasions section (4 tall lifestyle cards: Formal, Casual, Sports, Luxury with 8K ultra-HD photography + carousel controls `01 < >`).
+  - Mobile App promo (`AppPromoSection.tsx` with 3D phone mockup + store badges).
+  - From Our Blog (`BlogPreviewSection.tsx` with 3 preview cards linking to `/journal`).
   - Trust Strip copy alignment (`100% Authentic | Brand Warranty`, `Free Shipping | Across India`, `Easy Returns | Within 7 Days`, `Secure | Payments`).
 
-- [ ] **Milestone 3: Catalog / PLP Enhancements**
-  - Shop by Category left jump list in sidebar.
-  - Under-header 4 Circular Category Chips (`Analog 1240`, `Chronograph 852`, `Smart 600`, `Dress 716`).
-  - Distinct bottom card pill badges (`Best Seller`, `Trending`, `Premium`, `New Arrival`).
+- [x] **Milestone 3: Catalog / PLP Enhancements** ✅ (Committed & Pushed as `d9ef911`)
+  - Shop by Category left jump list in sidebar (`ShopByCategoryList.tsx`).
+  - Under-header 4 Circular Category Chips (`CircularCategoryChips.tsx` for Analog, Chronograph, Smart, Dress).
+  - Distinct bottom card pill badges (`Best Seller`, `Trending`, `Premium`, `New Arrival`, `Limited Edition`).
+  - Dynamic category header titles (`Men's Watches`, `Women's Watches`, `All Timepieces`).
 
-- [ ] **Milestone 4: Dedicated Standalone Desktop Pages**
-  - Dedicated `/wishlist` full-page table (Panel 8 parity).
-  - Dedicated `/cart` full-page view with specs and sticky summary (Panel 9 parity).
-  - Dedicated `/brands` showcase page.
-  - Account persona correction in `accountService.ts` to `Gaurav Kadam` (`GK`, `gauravkadam@gmail.com`).
+- [x] **Milestone 4: Dedicated Standalone Desktop Pages** ✅ (Implemented & Build-Verified)
+  - Dedicated `/wishlist` full-page table layout (`WishlistClient.tsx`) with thumbnail, brand, model, price, stock status pill, quick Add to Cart, and remove actions (Panel 8 parity).
+  - Dedicated `/cart` 2-column full-page layout (`CartPageClient.tsx`) with specs, quantity steppers, promo code validation, sticky order summary card, and trust guarantees (Panel 9 parity).
+  - Dedicated `/brands` curated brand houses showcase page (`BrandsClient.tsx`).
+  - Account persona updated in `accountService.ts` to `Gaurav Kadam` (`gauravkadam@gmail.com`, `+91 98765 43210`, Pune, Maharashtra, Grand Complication Patron tier).
 
-- [ ] **Milestone 5: Header, Footer & Search Copy Polish**
-  - Header links: `Home | Men | Women | Collections | Brands | Accessories`.
-  - Footer contact info: `Pune, Maharashtra`, `+91 98765 43210`, `support@wristo.com`, social media icons, and payment badges.
-  - Search modal keywords: `Titan`, `Fastrack`, `Casio`, `Chronograph`, `Smart Watch`.
+- [x] **Milestone 5: Header, Footer & Search Copy Polish** ✅ (Implemented & Build-Verified)
+  - Header links updated in `Header.tsx` (`Home | Men | Women | Collections | Brands | Accessories | Journal | AI Concierge`) and rewired Wishlist to `/wishlist`.
+  - Footer contact info in `Footer.tsx`: Pune, Maharashtra, `+91 98765 43210`, `support@wristo.com`, social media links, brand tagline *"Your Time. Your Style."*, and payment badges (`VISA`, `Mastercard`, `Maestro`, `UPI`, `Net Banking`).
+  - Search modal keywords in `SearchModal.tsx`: `Titan`, `Fastrack`, `Casio`, `Chronograph`, `Smart Watch`, `Automatic`, `AUREN`, `Rose Gold`.
+  - Production build: **61/61 static and dynamic routes compiled cleanly with 0 TypeScript/ESLint errors.**

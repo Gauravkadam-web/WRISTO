@@ -2,11 +2,11 @@ import { CollectorProfile, SavedAddress } from '@/types/account';
 
 export const DEFAULT_PROFILE: CollectorProfile = {
   id: 'USR-WRISTO-08492',
-  fullName: 'Aditya Vikram Singhania',
-  email: 'aditya.singhania@horology.com',
-  phone: '+91 98201 98201',
+  fullName: 'Gaurav Kadam',
+  email: 'gauravkadam@gmail.com',
+  phone: '+91 98765 43210',
   salutation: 'Collector',
-  vipTier: 'Patron Connoisseur',
+  vipTier: 'Grand Complication Patron',
   joinedDate: 'October 2024',
   wristSizeMm: 175,
   currency: 'INR',
@@ -21,25 +21,25 @@ export const DEFAULT_ADDRESSES: SavedAddress[] = [
   {
     id: 'ADDR-01',
     label: 'Primary Residence',
-    fullName: 'Aditya Vikram Singhania',
-    phone: '+91 98201 98201',
-    addressLine1: 'Penthouse 12, Altamount Towers, Altamount Road',
-    addressLine2: 'Near Royal Opera House',
-    city: 'Mumbai',
+    fullName: 'Gaurav Kadam',
+    phone: '+91 98765 43210',
+    addressLine1: 'Row House 04, Clover Highlands, NIBM Road, Kondhwa',
+    addressLine2: 'Near Corinthian Club',
+    city: 'Pune',
     state: 'Maharashtra',
-    pincode: '400001',
+    pincode: '411048',
     isDefault: true
   },
   {
     id: 'ADDR-02',
-    label: 'Corporate Suite',
-    fullName: 'Aditya Vikram Singhania',
-    phone: '+91 98201 98201',
-    addressLine1: 'Executive Floor 34, Maker Chambers VI, Nariman Point',
+    label: 'Corporate Office',
+    fullName: 'Gaurav Kadam',
+    phone: '+91 98765 43210',
+    addressLine1: 'Level 12, World Trade Center, Tower 2, Kharadi',
     addressLine2: '',
-    city: 'Mumbai',
+    city: 'Pune',
     state: 'Maharashtra',
-    pincode: '400021',
+    pincode: '411014',
     isDefault: false
   }
 ];

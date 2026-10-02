@@ -4,7 +4,7 @@
 **Tagline:** Your Time. Your Style.  
 **Platform:** Ultra-Luxury Multi-Brand Watch E-Commerce Experience  
 **Core Technologies:** Next.js 16+ (App Router, Turbopack, React 19, TypeScript), Vanilla CSS Custom Tokens, Decoupled Service Architecture (Spring Boot-Ready)  
-**Total Production Routes:** 58 Statically Pre-rendered SSG Routes (40 Watches + 6 Journal Articles + Core Pages)  
+**Total Production Routes:** 61 Statically Pre-rendered SSG Routes (40 Watches + 6 Journal Articles + Standalone Wishlist, Cart, Brands & Core Pages)  
 **GitHub Remote:** `https://github.com/Gauravkadam-web/WRISTO.git` (Branch: `main`)  
 **Last Updated:** October 2026  
 
@@ -30,10 +30,13 @@ WRISTO is designed as an ultra-luxury editorial watch boutique — pairing the a
 WRISTO/
 ├── wristo-next/                                 # Production Next.js 16+ Application
 │   ├── src/
-│   │   ├── app/                                 # App Router (58 SSG routes)
+│   │   ├── app/                                 # App Router (61 SSG routes)
 │   │   │   ├── layout.tsx                       # Root Layout (Fonts, Cart/Wishlist/Comparison/Search Providers)
 │   │   │   ├── globals.css                      # Master Design Tokens, 11-step typography scale, responsive rules
 │   │   │   ├── page.tsx                         # Home / Discover Page
+│   │   │   ├── wishlist/                        # Dedicated Standalone Wishlist Page (/wishlist)
+│   │   │   ├── cart/                            # Dedicated Standalone Shopping Cart Page (/cart)
+│   │   │   ├── brands/                          # Curated Brand Houses Showcase Page (/brands)
 │   │   │   ├── watches/                         # Catalog PLP Route (/watches)
 │   │   │   │   ├── page.tsx                     # Server Component with Suspense & Metadata
 │   │   │   │   └── WatchesClient.tsx            # Client State Shell (URL Sync, Filters, Grid)

@@ -12,13 +12,13 @@ import SearchEmptyState from './SearchEmptyState';
 
 const RECENT_SEARCHES_KEY = 'wristo_recent_searches';
 const DEFAULT_POPULAR = [
-  'Automatic',
+  'Titan',
+  'Fastrack',
+  'Casio',
   'Chronograph',
-  'Emerald Green',
-  'Skeleton',
-  'Minimal Leather',
+  'Smart Watch',
+  'Automatic',
   'AUREN',
-  'Titanium',
   'Rose Gold'
 ];
 

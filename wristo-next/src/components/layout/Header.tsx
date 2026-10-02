@@ -53,25 +53,25 @@ export default function Header() {
             />
           </Link>
 
-          {/* Desktop Navigation */}
+          {/* Desktop Navigation (Milestone 5 Parity) */}
           <nav className="main-nav" aria-label="Main Navigation">
             <Link href="/" className={`nav-link ${pathname === '/' ? 'active' : ''}`}>
               Home
             </Link>
-            <Link href="/watches" className={`nav-link ${pathname.startsWith('/watches') && !pathname.includes('gender=') ? 'active' : ''}`}>
-              All Watches
-            </Link>
-            <Link href="/watches?gender=Men" className="nav-link">
+            <Link href="/watches?gender=Men" className={`nav-link ${pathname === '/watches' && pathname.includes('gender=Men') ? 'active' : ''}`}>
               Men
             </Link>
-            <Link href="/watches?gender=Women" className="nav-link">
+            <Link href="/watches?gender=Women" className={`nav-link ${pathname === '/watches' && pathname.includes('gender=Women') ? 'active' : ''}`}>
               Women
             </Link>
-            <Link href="/watches?category=automatic" className="nav-link">
-              Automatics
+            <Link href="/watches" className={`nav-link ${pathname === '/watches' && !pathname.includes('gender=') ? 'active' : ''}`}>
+              Collections
             </Link>
-            <Link href="/watches?category=chronograph" className="nav-link">
-              Chronographs
+            <Link href="/brands" className={`nav-link ${pathname.startsWith('/brands') ? 'active' : ''}`}>
+              Brands
+            </Link>
+            <Link href="/watches?category=accessories" className="nav-link">
+              Accessories
             </Link>
             <Link href="/journal" className={`nav-link ${pathname.startsWith('/journal') ? 'active' : ''}`}>
               Journal
@@ -99,8 +99,13 @@ export default function Header() {
               <span className="header-search-badge">⌘K</span>
             </button>
 
-            {/* Wishlist */}
-            <Link href="/account?tab=wishlist" className="header-action-btn" title="Saved Wishlist" aria-label="Wishlist">
+            {/* Standalone Wishlist Page (Panel 8 Parity) */}
+            <Link
+              href="/wishlist"
+              className={`header-action-btn ${pathname === '/wishlist' ? 'active' : ''}`}
+              title="Saved Wishlist"
+              aria-label="Wishlist"
+            >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
               </svg>
