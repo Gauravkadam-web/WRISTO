@@ -30,7 +30,7 @@ WRISTO is designed as an ultra-luxury editorial watch boutique — pairing the a
 WRISTO/
 ├── wristo-next/                                 # Production Next.js 16+ Application
 │   ├── src/
-│   │   ├── app/                                 # App Router (61 SSG routes)
+│   │   ├── app/                                 # App Router (61 SSG & Dynamic routes)
 │   │   │   ├── layout.tsx                       # Root Layout (Fonts, Cart/Wishlist/Comparison/Search Providers)
 │   │   │   ├── globals.css                      # Master Design Tokens, 11-step typography scale, responsive rules
 │   │   │   ├── page.tsx                         # Home / Discover Page
@@ -64,12 +64,12 @@ WRISTO/
 │   │   │   ├── not-found.tsx                    # Luxury 404 Recovery Screen
 │   │   │   ├── error.tsx                        # Global Fault Boundary
 │   │   │   ├── robots.ts                        # SEO robots.txt Generator
-│   │   │   └── sitemap.ts                       # Dynamic XML Sitemap (58 routes)
+│   │   │   └── sitemap.ts                       # Dynamic XML Sitemap (58 indexed routes)
 │   │   ├── components/
 │   │   │   ├── layout/                          # Header (Scale icon, ⌘K, Cart, Wishlist), Footer, CartDrawer
-│   │   │   ├── home/                            # Hero, TrustStrip, EditorialBanner
+│   │   │   ├── home/                            # Hero, TrustStrip, EditorialBanner, PopularBrands, CuratedOccasions, AppPromo, BlogPreview
 │   │   │   ├── catalog/                         # CategoryNav, FilterSidebar, FilterDrawer, ProductCard,
-│   │   │   │                                    # ProductGrid, ActiveFilterBar, SortSelect, Pagination
+│   │   │   │                                    # ProductGrid, ActiveFilterBar, SortSelect, Pagination, ShopByCategoryList, CircularCategoryChips
 │   │   │   ├── product/                         # Gallery (3D Tilt), Header, Pricing, Variants, Actions,
 │   │   │   │                                    # SpecsGrid, AIInsight, TrustAccordions, StickyBar, CoordinatedWatches
 │   │   │   ├── comparison/                      # FloatingComparisonDock (Tray & Minimize Pill)
@@ -85,14 +85,23 @@ WRISTO/
 │   ├── public/assets/                           # 40 Watch Images, Brand Logos, Editorial Banners, SVG Seals
 │   ├── package.json                             # Next.js 16+, React 19, TypeScript
 │   └── tsconfig.json                            # Strict TypeScript Configuration
+├── prompts/                                     # Master Prompts Archive (All major engineering & design prompts)
+│   ├── README.md                                # Prompts Directory Index & Catalog
+│   ├── 01_master_architecture_and_brand_system.md
+│   ├── 02_core_commerce_phases_1_to_10.md
+│   ├── 03_desktop_parity_roadmap_milestones_1_to_5.md
+│   ├── 04_backend_architecture_and_spring_boot_spec.md
+│   └── 05_gsap_scroll_scrubbed_watch_animation.md
 ├── assets/                                      # Original Raw Image & Brand Assets
 ├── css/                                         # Original Vanilla CSS Reference Stylesheet
 ├── js/                                          # Original Vanilla JS Prototype Scripts (app.js, products.js)
-├── docs/                                        # Master Specifications & Session Summaries
+├── docs/                                        # Master Specifications, Architecture Docs & Summaries
 │   ├── WRISTO_MASTER_DEVELOPMENT_PROMPT.md      # Foundational Design Prompt
 │   ├── WRISTO_Design_Tokens_and_Interactions.md # Master 41-Section Design System
+│   ├── WRISTO_Production_Ready_SRS_v1.0.md      # Full Software Requirements Specification (SRS)
+│   ├── backend_architecture_specification.md    # Java 21 + Spring Boot 3.3+ Architecture & API Spec
 │   ├── desktop_web_parity_analysis.md           # 13-Panel Reference Audit & Copywriting Mismatches
-│   └── session_summary.md                       # Comprehensive Session Changelog (Sessions 1–7)
+│   └── session_summary.md                       # Comprehensive Session Changelog (Sessions 1–8)
 ├── screenshots/                                 # Centralized Multi-Viewport QA Regression Captures (.gitignored)
 ├── MEMORY.md                                    # Repository Architectural Memory (This File)
 ├── PROGRESS.md                                  # Milestones & Roadmap Tracker
@@ -316,11 +325,11 @@ WRISTO/
 - **Reference Board:** `ref_images/ChatGPT Image Sep 28, 2026, 10_28_21 PM.png` (13 panels).
 - **Scope:** Strict desktop web experience. Mobile app and PWA are deferred.
 - **5-Milestone Desktop Parity Roadmap:**
-  - [x] **Milestone 1:** Watch Comparison Engine (Completed & Pushed in `8ccebb4`).
-  - [ ] **Milestone 2:** Homepage Parity & Section Restoration (Popular Brands strip, Curated Occasions 4 tall cards, App promo, Blog preview, Trust strip copy).
-  - [ ] **Milestone 3:** Catalog / PLP Enhancements (Shop by Category left jump list, Circular category chips, Card bottom pill badges).
-  - [ ] **Milestone 4:** Dedicated Standalone Desktop Pages (`/wishlist`, `/cart`, `/brands`, Account persona correction to `Gaurav Kadam` / `GK`).
-  - [ ] **Milestone 5:** Header, Footer & Search Copy Polish (Pune location, phone, socials, payment badges, search keywords).
+  - [x] **Milestone 1:** Watch Comparison Engine (Completed & Pushed in `8935832`).
+  - [x] **Milestone 2:** Homepage Parity & Section Restoration (Popular Brands strip, Curated Occasions 4 tall cards, App promo, Blog preview, Trust strip copy, `2ba36df`).
+  - [x] **Milestone 3:** Catalog / PLP Enhancements (Shop by Category left jump list, Circular category chips, Card bottom pill badges, `d9ef911`).
+  - [x] **Milestone 4:** Dedicated Standalone Desktop Pages (`/wishlist`, `/cart`, `/brands`, Account persona correction to `Gaurav Kadam` / `GK`, `8853fbb`).
+  - [x] **Milestone 5:** Header, Footer & Search Copy Polish (Pune location, phone, socials, payment badges, search keywords, `8853fbb`).
 
 ---
 
@@ -377,3 +386,24 @@ WRISTO/
   # Mobile (375px)
   Start-Process -FilePath "C:\Program Files\Google\Chrome\Application\chrome.exe" -ArgumentList "--headless --disable-gpu --screenshot=E:\WRISTO\screenshots\watches_mobile_375.png --window-size=375,2000 http://localhost:3000/watches" -Wait
   ```
+
+---
+
+## 16. Backend Architecture & Spring Boot 3.3+ Specification (`docs/backend_architecture_specification.md`)
+
+- **Tech Stack:** Java 21, Spring Boot 3.3+, Spring Security 6 (Stateless JWT), Spring Data JPA, PostgreSQL 16 (JSONB, Full-Text Search), Redis 7 (L2 cache & cart session state), Flyway V1-V8 migrations, Google Gemini AI 1.5 Flash (Concierge).
+- **Core Entity Modules:** `users`, `user_roles`, `user_addresses`, `products`, `product_specs`, `product_images`, `categories`, `brands`, `collections`, `orders`, `order_items`, `provenance_certificates`, `coupons`, `wishlists`, `journal_articles`, `concierge_chats`.
+- **Decoupled Frontend Interface:** Swapping `src/services/` from client mock fixtures to live REST endpoints requires 0 UI component changes.
+- **Master Document:** [`docs/backend_architecture_specification.md`](file:///e:/WRISTO/docs/backend_architecture_specification.md).
+
+---
+
+## 17. Master Prompts Archive (`prompts/`)
+
+- All major project engineering prompts, architectural briefs, and design specifications are cataloged inside `prompts/`:
+  - `prompts/01_master_architecture_and_brand_system.md`: Foundational prompt and architecture system.
+  - `prompts/02_core_commerce_phases_1_to_10.md`: Core commerce phases 1 through 10 implementation brief.
+  - `prompts/03_desktop_parity_roadmap_milestones_1_to_5.md`: 5-milestone desktop parity execution prompt.
+  - `prompts/04_backend_architecture_and_spring_boot_spec.md`: Spring Boot 3.3+ & PostgreSQL architecture spec prompt.
+  - `prompts/05_gsap_scroll_scrubbed_watch_animation.md`: GSAP scroll canvas exploration brief & restoration notes.
+  - `prompts/README.md`: Index and navigation guide.

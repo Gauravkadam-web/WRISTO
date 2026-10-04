@@ -101,10 +101,13 @@
 WRISTO/
 ├── wristo-next/                                 # Production Next.js 16+ Web Application
 │   ├── src/
-│   │   ├── app/                                 # App Router (58 SSG routes)
+│   │   ├── app/                                 # App Router (61 SSG & Dynamic routes)
 │   │   │   ├── layout.tsx                       # Root Layout (Fonts, Cart/Wishlist/Comparison/Search Providers)
 │   │   │   ├── globals.css                      # Master Design Tokens, 11-step typography scale
 │   │   │   ├── page.tsx                         # Home / Discover Page
+│   │   │   ├── wishlist/                        # Dedicated Standalone Wishlist Page (/wishlist)
+│   │   │   ├── cart/                            # Dedicated Standalone Shopping Cart Page (/cart)
+│   │   │   ├── brands/                          # Curated Brand Houses Showcase Page (/brands)
 │   │   │   ├── watches/                         # Catalog PLP Route (/watches)
 │   │   │   ├── product/[id]/                    # Dynamic SSG Product Detail Pages (40 watches)
 │   │   │   ├── compare/                         # Watch Comparison Matrix Route (/compare)
@@ -115,7 +118,7 @@ WRISTO/
 │   │   │   ├── not-found.tsx                    # Luxury 404 Recovery Screen
 │   │   │   ├── error.tsx                        # Global Fault Boundary
 │   │   │   ├── robots.ts                        # SEO robots.txt Generator
-│   │   │   └── sitemap.ts                       # Dynamic XML Sitemap (58 routes)
+│   │   │   └── sitemap.ts                       # Dynamic XML Sitemap (58 indexed routes)
 │   │   ├── components/                          # Modular UI components (catalog, home, layout, product, comparison, search, checkout, account)
 │   │   ├── context/                             # CartContext, WishlistContext, SearchContext, ComparisonContext
 │   │   ├── data/                                # 40-watch master dataset, brands, categories
@@ -124,12 +127,21 @@ WRISTO/
 │   ├── public/assets/                           # Watch photography, brand logos, banners, SVG seals
 │   ├── package.json                             # Dependencies
 │   └── tsconfig.json                            # Strict TypeScript Configuration
+├── prompts/                                     # Master Prompts Archive (All major engineering & design prompts)
+│   ├── README.md                                # Prompts Directory Index & Catalog
+│   ├── 01_master_architecture_and_brand_system.md
+│   ├── 02_core_commerce_phases_1_to_10.md
+│   ├── 03_desktop_parity_roadmap_milestones_1_to_5.md
+│   ├── 04_backend_architecture_and_spring_boot_spec.md
+│   └── 05_gsap_scroll_scrubbed_watch_animation.md
 ├── assets/                                      # Original raw image & brand assets
 ├── css/                                         # Original vanilla CSS reference stylesheet
 ├── js/                                          # Original vanilla JS prototype scripts
-├── docs/                                        # Master specifications, parity analysis, session summaries
+├── docs/                                        # Master specifications, architecture docs, parity analysis
 │   ├── WRISTO_MASTER_DEVELOPMENT_PROMPT.md
 │   ├── WRISTO_Design_Tokens_and_Interactions.md
+│   ├── WRISTO_Production_Ready_SRS_v1.0.md
+│   ├── backend_architecture_specification.md
 │   ├── desktop_web_parity_analysis.md
 │   └── session_summary.md
 ├── screenshots/                                 # Centralized multi-viewport visual QA regression captures
@@ -161,6 +173,9 @@ npm run dev
 # 4. Open in your browser:
 #    Home:        http://localhost:3000
 #    Catalog:     http://localhost:3000/watches
+#    Wishlist:    http://localhost:3000/wishlist
+#    Cart:        http://localhost:3000/cart
+#    Brands:      http://localhost:3000/brands
 #    Compare:     http://localhost:3000/compare
 #    Concierge:   http://localhost:3000/concierge
 #    Journal:     http://localhost:3000/journal
@@ -195,12 +210,19 @@ npm run build
 - [x] **Milestone 14:** Desktop Web Parity & Content Audit (`docs/desktop_web_parity_analysis.md`) ✅
 - [x] **Milestone 15:** Desktop Parity Milestone 1 — Watch Comparison Engine (`8ccebb4`, 58 routes) ✅
 
-### Desktop Parity Roadmap (In Progress)
-- [x] **Parity Milestone 1:** Watch Comparison Engine (Floating dock, `/compare` matrix, quick actions) ✅
-- [ ] **Parity Milestone 2:** Homepage Parity & Section Restoration (Popular Brands strip, Curated Occasions 4 tall cards, App promo, Blog preview, Trust strip copy)
-- [ ] **Parity Milestone 3:** Catalog / PLP Enhancements (Shop by Category left jump list, 4 circular category chips, card bottom status pills)
-- [ ] **Parity Milestone 4:** Dedicated Standalone Desktop Pages (`/wishlist`, `/cart`, `/brands`, Account persona correction to `Gaurav Kadam`)
-- [ ] **Parity Milestone 5:** Header, Footer & Search Copy Polish (Pune contact details, social links, payment gateway badges, search keywords)
+### Desktop Parity Roadmap (100% Complete)
+- [x] **Parity Milestone 1:** Watch Comparison Engine (Floating dock, `/compare` matrix, quick actions, `8935832`) ✅
+- [x] **Parity Milestone 2:** Homepage Parity & Section Restoration (Popular Brands strip, Curated Occasions 4 tall cards, App promo, Blog preview, Trust strip copy, `2ba36df`) ✅
+- [x] **Parity Milestone 3:** Catalog / PLP Enhancements (Shop by Category left jump list, 4 circular category chips, card bottom status pills, `d9ef911`) ✅
+- [x] **Parity Milestone 4:** Dedicated Standalone Desktop Pages (`/wishlist`, `/cart`, `/brands`, Account persona updated to `Gaurav Kadam`, `8853fbb`) ✅
+- [x] **Parity Milestone 5:** Header, Footer & Search Copy Polish (Pune contact details, social links, payment gateway badges, search keywords, `8853fbb`) ✅
+
+---
+
+## 🛠️ Backend Architecture & Specification
+
+For complete details on the target Java 21 + Spring Boot 3.3+ microframework, PostgreSQL schema, Flyway migrations, Redis caching, and REST API contracts matching this Next.js frontend, see the master specification:
+- 📖 **[Backend Architecture & API Specification](file:///e:/WRISTO/docs/backend_architecture_specification.md)**
 
 ---
 

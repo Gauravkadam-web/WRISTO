@@ -2,9 +2,9 @@
 
 **Brand:** WRISTO  
 **Project:** Luxury Watch E-Commerce Web Application  
-**Status:** All Core Phases 1–10 Complete + Desktop Parity Milestone 1 (Watch Comparison Engine) Live & Committed.  
-**Active Target:** Desktop Parity Milestone 2 (Homepage Parity & Section Restoration).  
-**Total Production Routes:** 58 Statically Pre-rendered SSG Routes (40 Watches + 6 Journal Articles + Core Pages).  
+**Status:** All Core Phases 1–10 Complete + All Desktop Parity Milestones 1–5 100% Complete & Verified.  
+**Active Target:** Java 21 + Spring Boot 3.3+ Backend Integration (`docs/backend_architecture_specification.md`).  
+**Total Production Routes:** 61 Statically Pre-rendered SSG & Dynamic Routes.  
 **GitHub Remote:** `https://github.com/Gauravkadam-web/WRISTO.git` (Branch: `main`)  
 **Last Updated:** October 2026  
 
@@ -213,12 +213,15 @@
 | `wristo-next/src/context/ComparisonContext.tsx` | Global watch comparison state (max 4 items, localStorage sync). |
 | `wristo-next/src/components/comparison/FloatingComparisonDock.tsx` | Bottom floating comparison dock with thumbnail chips & minimize pill. |
 | `wristo-next/src/app/compare/` | Dedicated Side-by-Side Horology Matrix route (`page.tsx` + `ComparisonClient.tsx`). |
+| `wristo-next/src/app/wishlist/` | Dedicated Standalone Wishlist page route (`page.tsx` + `WishlistClient.tsx`). |
+| `wristo-next/src/app/cart/` | Dedicated Standalone Shopping Cart page route (`page.tsx` + `CartPageClient.tsx`). |
+| `wristo-next/src/app/brands/` | Curated Brand Houses showcase page route (`page.tsx` + `BrandsClient.tsx`). |
 | `wristo-next/src/components/search/` | Complete Phase 5 search overlay suite (`SearchModal`, `SearchInput`, `SearchRecentAndPopular`, `SearchSuggestionsList`, `SearchEmptyState`). |
 | `wristo-next/src/app/product/[id]/` | Dynamic SSG Product Detail Page route (`page.tsx` + `ProductDetailClient.tsx`). |
 | `wristo-next/src/app/watches/[id]/` | SEO alias redirecting to `/product/[id]`. |
 | `wristo-next/src/components/product/` | Modular PDP components (Gallery, Header, Pricing, Variants, Actions, SpecsGrid, AIInsight, TrustAccordions, StickyBar, CoordinatedWatches). |
 | `wristo-next/src/app/watches/` | Catalog PLP route (`page.tsx` + `WatchesClient.tsx`). |
-| `wristo-next/src/components/catalog/` | Modular catalog UI (Sidebar, Drawer, Grid, Card, ActiveFilterBar, CategoryNav, SortSelect, Pagination). |
+| `wristo-next/src/components/catalog/` | Modular catalog UI (Sidebar, Drawer, Grid, Card, ActiveFilterBar, CategoryNav, SortSelect, Pagination, ShopByCategoryList, CircularCategoryChips). |
 | `wristo-next/src/app/checkout/` | Dedicated checkout route (`page.tsx` + `CheckoutClient.tsx`). |
 | `wristo-next/src/app/checkout/success/` | Order confirmation route (`page.tsx` + `SuccessClient.tsx`). |
 | `wristo-next/src/components/checkout/` | Modular checkout components (Header, Stepper, Address, Delivery, Payment, Review, Sidebar). |
@@ -227,11 +230,14 @@
 | `wristo-next/src/app/concierge/` | AI Watch Concierge route (`page.tsx` + `ConciergeClient.tsx`). |
 | `wristo-next/src/app/journal/` | Editorial Journal index (`page.tsx` + `JournalClient.tsx`). |
 | `wristo-next/src/app/journal/[slug]/` | Dynamic SSG Article Reader (`page.tsx`). |
-| `wristo-next/src/app/sitemap.ts` | Dynamic XML sitemap generator (58 routes). |
+| `wristo-next/src/app/sitemap.ts` | Dynamic XML sitemap generator (58 indexed routes). |
 | `wristo-next/src/app/robots.ts` | SEO robots.txt generator. |
 | `wristo-next/src/app/not-found.tsx` | Luxury horological 404 recovery screen. |
 | `wristo-next/src/app/error.tsx` | Global fault boundary. |
 | `wristo-next/src/services/` | Decoupled data contracts (`productService.ts`, `orderService.ts`, `accountService.ts`, `journalService.ts`). |
+| `prompts/` | Master Prompts Archive (All 5 major design & implementation prompts + index `README.md`). |
+| `docs/backend_architecture_specification.md` | Master Java 21 + Spring Boot 3.3+ + PostgreSQL 16 Architecture & REST API Spec. |
+| `docs/WRISTO_Production_Ready_SRS_v1.0.md` | Production Software Requirements Specification (SRS). |
 | `docs/desktop_web_parity_analysis.md` | Master Desktop Web Parity & Copywriting Gap Analysis. |
 | `screenshots/` | Centralized repository for all visual QA regression captures (35+ screenshots). |
 | `index.html` | Vanilla HTML/CSS/JS prototype host. |

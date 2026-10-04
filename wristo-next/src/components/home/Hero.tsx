@@ -79,7 +79,7 @@ export default function Hero() {
               <div className="hero-video-placeholder">
                 <div
                   className="hero-video-poster"
-                  style={{ backgroundImage: "url('/assets/hero/hero-watch-dark.png')" }}
+                  style={{ backgroundImage: "url('/assets/banners/hero-luxury-watch-bg.jpg')" }}
                 />
                 <div className="hero-video-play-layer">
                   <span className="hero-video-badge">WRISTO CINEMA &bull; 4K HOROLOGY</span>

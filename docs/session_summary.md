@@ -1,5 +1,38 @@
 # WRISTO — Session Summary & Changelog
 
+## Session 8: October 2–4, 2026
+
+**Focus Areas:** Desktop Parity Milestones 2–5 Complete Implementation, Dedicated Standalone Desktop Pages (`/wishlist`, `/cart`, `/brands`), Homepage Sections Restoration (Popular Brands strip, Curated Occasions 4 cards, App Promo, Blog Preview), Catalog / PLP Enhancements (Shop by Category jump list, 4 circular category chips, card bottom pills), Copywriting & Contact Alignment (Pune, Maharashtra, payment badges), Backend Architecture Specification (`docs/backend_architecture_specification.md`), Master Prompts Archive (`prompts/`), Hero Section Polish (Clean Static Luxury Watch on Rock + Video Modal), 61 Production Routes Verified (`npm run build`).
+
+### 1. Executive Summary
+1. **Desktop Parity Milestones 2–5 Execution:**
+   - **Milestone 2 (Homepage Parity):** Restored Popular Brands strip with 6 brand cards and crown bezel banner, Curated Occasions section with 4 tall lifestyle cards (Formal, Casual, Sports, Luxury) with carousel controls, App Promo section with 3D smartphone frame, Blog Preview with 3 cards, and updated Trust Strip copy (`2ba36df`).
+   - **Milestone 3 (Catalog / PLP Enhancements):** Added Shop by Category left jump list in filter sidebar, 4 Circular Category Chips (Analog, Chronograph, Smart, Dress), card bottom status pill badges (`Best Seller`, `Trending`, `Limited Edition`), and dynamic catalog titles (`d9ef911`).
+   - **Milestone 4 (Dedicated Standalone Desktop Pages):** Built dedicated full-page `/wishlist` (`WishlistClient.tsx`), dedicated 2-column `/cart` (`CartPageClient.tsx`), and curated brand houses `/brands` (`BrandsClient.tsx`). Updated collector persona in `accountService.ts` to `Gaurav Kadam` / `GK` (`8853fbb`).
+   - **Milestone 5 (Header, Footer & Search Copy Polish):** Aligned header navigation links, updated footer with Pune address, phone, email, socials, and payment gateway badges. Enhanced search modal keywords (`8853fbb`).
+2. **Backend Architecture & API Specification (`docs/backend_architecture_specification.md`):** Authored 26KB master specification for Java 21 + Spring Boot 3.3+ + PostgreSQL 16 + Redis 7 + Flyway V1-V8 + Stateless JWT + Gemini AI horological concierge.
+3. **Master Prompts Archive (`prompts/`):** Created structured archive containing 5 master engineering & design prompts (`01_master_architecture_and_brand_system.md` through `05_gsap_scroll_scrubbed_watch_animation.md`) with navigation `README.md`.
+4. **Hero Section Architecture & Polish:** Reverted experimental GSAP scroll animation per user instruction, preserving high-performance static luxury watch visual on rock backdrop (`hero-luxury-watch-bg.jpg`) with left typographic gradient and interactive 4K video modal trigger.
+5. **Full Production Build Verification:** `npm run build` compiled **61/61 static and dynamic routes** with 0 errors.
+
+### 2. Key Files Modified & Created
+| File | Action | Impact |
+|---|---|---|
+| `docs/backend_architecture_specification.md` | Created | Full 26KB Java 21 + Spring Boot 3.3+ architecture, entity schema, and REST API contract. |
+| `prompts/` | Created | Master prompts archive with 5 markdown files and catalog index `README.md`. |
+| `wristo-next/src/app/wishlist/` | Created | Dedicated standalone Wishlist desktop route (`page.tsx` + `WishlistClient.tsx`). |
+| `wristo-next/src/app/cart/` | Created | Dedicated standalone Cart desktop route (`page.tsx` + `CartPageClient.tsx`). |
+| `wristo-next/src/app/brands/` | Created | Curated brand houses showcase route (`page.tsx` + `BrandsClient.tsx`). |
+| `wristo-next/src/components/home/PopularBrandsSection.tsx` | Created | 6 brand cards + crown bezel banner. |
+| `wristo-next/src/components/home/CuratedOccasionsSection.tsx` | Created | 4 tall occasion cards with 8K photography and carousel. |
+| `wristo-next/src/components/home/AppPromoSection.tsx` | Created | 3D phone mockup + store badges. |
+| `wristo-next/src/components/home/BlogPreviewSection.tsx` | Created | 3 editorial article cards linking to `/journal`. |
+| `wristo-next/src/components/catalog/ShopByCategoryList.tsx` | Created | Sidebar category jump list navigation. |
+| `wristo-next/src/components/catalog/CircularCategoryChips.tsx` | Created | 4 circular category filter chips with piece counts. |
+| `MEMORY.md`, `PROGRESS.md`, `TECHNICALDEBT.md` | Updated | Synchronized all architectural milestones, route counts, and technical debt items. |
+
+---
+
 ## Session 7: October 1–2, 2026 (Night)
 
 **Focus Areas:** Reference Board vs. Codebase Audit (`ref_images/` & `WRISTO_Design_Tokens_and_Interactions.md`), In-Depth 13-Panel Desktop Web Parity Analysis, Copywriting & Section Divergence Audit, Restoration of the Missing Watch Comparison Engine (Desktop Parity Milestone 1), Global Comparison Dock, Dedicated 9-Spec `/compare` Route, Full Production Build Verification (58 Routes), Git Commit & Push (`8ccebb4`).
