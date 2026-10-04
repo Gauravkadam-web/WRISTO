@@ -280,3 +280,16 @@
   - Footer contact info in `Footer.tsx`: Pune, Maharashtra, `+91 98765 43210`, `support@wristo.com`, social media links, brand tagline *"Your Time. Your Style."*, and payment badges (`VISA`, `Mastercard`, `Maestro`, `UPI`, `Net Banking`).
   - Search modal keywords in `SearchModal.tsx`: `Titan`, `Fastrack`, `Casio`, `Chronograph`, `Smart Watch`, `Automatic`, `AUREN`, `Rose Gold`.
   - Production build: **61/61 static and dynamic routes compiled cleanly with 0 TypeScript/ESLint errors.**
+
+---
+
+## 4. Backend Implementation Roadmap (Java 21 + Spring Boot 3.3+ + PostgreSQL)
+
+- [x] **Phase 1: Foundation, Architecture & Database Setup** ✅ (Implemented & Test-Verified)
+  - Created `wristo-backend/` project with Spring Boot 3.3.4, Java 21 LTS, and Maven.
+  - Configured 100% environment-driven settings with `.env.example` templates at root and backend.
+  - Setup Flyway migration engine: `V1__init_core_schema.sql` (brands, categories, watches, watch_specs, users, addresses) & `V2__seed_initial_brands_and_categories.sql`.
+  - Implemented modular packages: `common/dto` (`ApiResponse`, `ApiErrorResponse`, `PageResponse`), `common/entity` (`BaseAuditEntity`), `exception` (`GlobalExceptionHandler`, `BusinessException`, `ResourceNotFoundException`), `config` (`SecurityBaseConfig`, `CorsConfig`, `OpenApiConfig`, `JpaConfig`).
+  - Implemented health check (`/api/v1/health`) and initial catalog endpoints (`/api/v1/watches`, `/api/v1/brands`, `/api/v1/categories`).
+  - Verified 100% test success (5/5 automated unit & integration tests passing in `mvn test`).
+

@@ -28,6 +28,12 @@ WRISTO is designed as an ultra-luxury editorial watch boutique — pairing the a
 
 ```
 WRISTO/
+├── wristo-backend/                              # Production Java 21 LTS + Spring Boot 3.3+ Backend
+│   ├── src/main/java/com/wristo/                # Modular Monolith Architecture (common, config, exception, modules)
+│   ├── src/main/resources/                      # application.yml, application-dev.yml, db/migration (Flyway V1, V2)
+│   ├── src/test/                                # JUnit 5 + MockMvc + H2 Integration Test Suite (100% Passing)
+│   ├── pom.xml                                  # Maven dependencies (Web, Data JPA, Security, Actuator, Flyway, OpenAPI 3)
+│   └── .env.example                             # Environment variables template for database, JWT & CORS
 ├── wristo-next/                                 # Production Next.js 16+ Application
 │   ├── src/
 │   │   ├── app/                                 # App Router (61 SSG & Dynamic routes)

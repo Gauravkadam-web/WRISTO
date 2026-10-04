@@ -25,6 +25,16 @@ screenshots/
 .env
 .env*.local
 wristo-next/.env*
+wristo-backend/.env*
+
+# Java & Maven Build Output
+target/
+wristo-backend/target/
+*.class
+*.jar
+*.war
+.mvn/
+
 
 # IDE & Editor Files
 .vscode/
