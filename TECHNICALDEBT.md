@@ -20,14 +20,15 @@ With Desktop Parity Milestones 1–5 fully completed and verified, all frontend 
 
 | ID | Domain | Issue / Trade-off | Severity | Planned Milestone | Status |
 |---|---|---|:---:|:---:|:---:|
-| **TD-01** | Data & API | In-memory client filtering in `productService.ts` | Medium | Spring Boot Backend Integration | Open (Target: JPA Specs) |
-| **TD-02** | State | Cart, Wishlist, Comparison & Account stored in browser `localStorage` | Medium | Spring Boot Backend Integration | Open (Target: Redis + JWT) |
-| **TD-03** | Media | High-resolution assets served locally from `/public/assets` (~10.7 MB) | Low | Cloud Deployment Phase | Open (Target: S3 / Cloudinary) |
+| **TD-01** | Data & API | In-memory client filtering in `productService.ts` | Medium | Phase 3: Catalog & Inventory | Scheduled for Phase 3 |
+| **TD-02** | State | Cart, Wishlist, Comparison & Account stored in browser `localStorage` | Medium | Phase 4/5: Cart & Orders | Phase 2 Auth Ready |
+| **TD-03** | Media | High-resolution assets served locally from `/public/assets` (~10.7 MB) | Low | Cloud Deployment Phase | Open (Target: S3 / CDN) |
 | **TD-04** | Architecture | Root directory contains legacy vanilla prototype alongside `wristo-next/` | Low | Post-Parity Cleanup | Open (Target: Archive to `legacy/`) |
 | **TD-05** | Testing | Visual regression performed via headless Chrome script without automated CI runner | Low | CI/CD Phase | Open (Target: GitHub Actions) |
-| **TD-06** | Performance | Facet count computation is $O(N)$ per filter change | Low | Spring Boot Backend Integration | Open (Target: SQL Aggregations) |
+| **TD-06** | Performance | Facet count computation is $O(N)$ per filter change | Low | Phase 3: Catalog & Inventory | Scheduled for Phase 3 |
 | **TD-07** | Feature | Watch Comparison Engine omitted from Next.js port | High | Desktop Parity M1 | ✅ **RESOLVED** (`8935832`) |
 | **TD-08** | Desktop Parity | Homepage sections, PLP controls, Standalone Pages & Copy | Medium | Desktop Parity M2–M5 | ✅ **RESOLVED** (`8853fbb`) |
+| **TD-09** | Backend Auth | JWT Auth, RBAC, User Profiles & Seller Onboarding | High | Backend Phase 2 | ✅ **RESOLVED** (`be27ddc`) |
 
 ---
 

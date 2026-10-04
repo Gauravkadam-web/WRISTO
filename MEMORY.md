@@ -395,12 +395,20 @@ WRISTO/
 
 ---
 
-## 16. Backend Architecture & Spring Boot 3.3+ Specification (`docs/backend_architecture_specification.md`)
+## 16. Backend Architecture & Spring Boot 3.3+ Status (`wristo-backend/`)
 
-- **Tech Stack:** Java 21, Spring Boot 3.3+, Spring Security 6 (Stateless JWT), Spring Data JPA, PostgreSQL 16 (JSONB, Full-Text Search), Redis 7 (L2 cache & cart session state), Flyway V1-V8 migrations, Google Gemini AI 1.5 Flash (Concierge).
-- **Core Entity Modules:** `users`, `user_roles`, `user_addresses`, `products`, `product_specs`, `product_images`, `categories`, `brands`, `collections`, `orders`, `order_items`, `provenance_certificates`, `coupons`, `wishlists`, `journal_articles`, `concierge_chats`.
-- **Decoupled Frontend Interface:** Swapping `src/services/` from client mock fixtures to live REST endpoints requires 0 UI component changes.
-- **Master Document:** [`docs/backend_architecture_specification.md`](file:///e:/WRISTO/docs/backend_architecture_specification.md).
+- **Tech Stack:** Java 21 LTS, Spring Boot 3.3.4, Spring Security 6 (Stateless JJWT 0.12.6, HMAC-SHA512), Spring Data JPA, PostgreSQL (Local `wristodb` / Production), Flyway Migrations, OpenAPI 3 / Swagger UI (`/swagger-ui/index.html`), Virtual Threads enabled.
+- **Environment Driven:** 100% environment-driven configuration via `.env.example` templates.
+- **Backend Port & Base Path:** `http://localhost:8080/api/v1`
+- **Completed Phases:**
+  - **Phase 1: Foundation, Architecture & Core Schema** ✅ (Flyway V1, V2, BaseAuditEntity, GlobalExceptionHandler, ApiResponse, PageResponse, Swagger UI, Catalog & Health endpoints).
+  - **Phase 2: Authentication, Authorization (JWT) & Seller Onboarding** ✅:
+    - Flyway V3 (`refresh_tokens`, `sellers`, `seller_users`, `seller_documents`, `seller_brand_authorizations`) & V4 (Admin, Collector, Seller seed data).
+    - `JwtTokenProvider`, `JwtAuthenticationFilter`, `JwtAuthenticationEntryPoint`, `UserPrincipal`, `CustomUserDetailsService`.
+    - Auth & User endpoints: `/auth/register`, `/auth/login`, `/auth/refresh-token`, `/auth/logout`, `/auth/me`, `/user/profile`, `/user/addresses/**`.
+    - Seller & Admin endpoints: `/seller/onboard`, `/seller/me`, `/seller/staff/**`, `/seller/documents`, `/seller/brand-authorizations`, `/admin/sellers/**`.
+    - Test Suite: **20/20 unit & integration tests passing (100% green)** in `mvn test`.
+- **Master Specification Document:** [`docs/backend_architecture_specification.md`](file:///e:/WRISTO/docs/backend_architecture_specification.md) & [`docs/WRISTO_Production_Ready_SRS_v1.0.md`](file:///e:/WRISTO/docs/WRISTO_Production_Ready_SRS_v1.0.md).
 
 ---
 
