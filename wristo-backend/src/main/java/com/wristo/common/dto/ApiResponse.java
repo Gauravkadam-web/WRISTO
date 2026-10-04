@@ -30,6 +30,14 @@ public class ApiResponse<T> {
         return new ApiResponse<>(true, message, data, Instant.now());
     }
 
+    public static <T> ApiResponse<T> created(T data) {
+        return new ApiResponse<>(true, "Resource created successfully", data, Instant.now());
+    }
+
+    public static <T> ApiResponse<T> created(String message, T data) {
+        return new ApiResponse<>(true, message, data, Instant.now());
+    }
+
     public boolean isSuccess() {
         return success;
     }

@@ -285,11 +285,20 @@
 
 ## 4. Backend Implementation Roadmap (Java 21 + Spring Boot 3.3+ + PostgreSQL)
 
-- [x] **Phase 1: Foundation, Architecture & Database Setup** ✅ (Implemented & Test-Verified)
+- [x] **Phase 1: Foundation, Architecture & Database Setup** ✅ (Implemented, Verified & Pushed)
   - Created `wristo-backend/` project with Spring Boot 3.3.4, Java 21 LTS, and Maven.
   - Configured 100% environment-driven settings with `.env.example` templates at root and backend.
   - Setup Flyway migration engine: `V1__init_core_schema.sql` (brands, categories, watches, watch_specs, users, addresses) & `V2__seed_initial_brands_and_categories.sql`.
   - Implemented modular packages: `common/dto` (`ApiResponse`, `ApiErrorResponse`, `PageResponse`), `common/entity` (`BaseAuditEntity`), `exception` (`GlobalExceptionHandler`, `BusinessException`, `ResourceNotFoundException`), `config` (`SecurityBaseConfig`, `CorsConfig`, `OpenApiConfig`, `JpaConfig`).
   - Implemented health check (`/api/v1/health`) and initial catalog endpoints (`/api/v1/watches`, `/api/v1/brands`, `/api/v1/categories`).
   - Verified 100% test success (5/5 automated unit & integration tests passing in `mvn test`).
+
+- [x] **Phase 2: Authentication, Authorization (JWT) & Seller Onboarding** ✅ (Implemented & Test-Verified)
+  - Flyway Migrations: `V3__init_auth_and_seller_schema.sql` (refresh tokens, sellers, seller users, seller documents, seller brand authorizations) & `V4__seed_admin_and_demo_users.sql` (super admin, collector, verified demo seller).
+  - Security Core & JWT: `JwtTokenProvider.java` (jjwt 0.12.6, HMAC-SHA256, access + refresh token lifecycle), `JwtAuthenticationEntryPoint.java`, `JwtAuthenticationFilter.java`, `CustomUserDetailsService.java`, `UserPrincipal.java`.
+  - Auth Module: `User.java`, `UserAddress.java`, `RefreshToken.java`, `AuthService.java`, `UserService.java`, `AuthController.java` (`/auth/register`, `/auth/login`, `/auth/refresh-token`, `/auth/logout`, `/auth/me`), `UserController.java` (`/user/profile`, `/user/addresses/**`).
+  - Seller & RBAC Module: `Seller.java`, `SellerUser.java`, `SellerDocument.java`, `SellerBrandAuthorization.java`, `SellerService.java`, `AdminSellerService.java`, `SellerController.java` (`/seller/onboard`, `/seller/me`, `/seller/staff/**`, `/seller/documents`, `/seller/brand-authorizations`), `AdminSellerController.java` (`/admin/sellers/**` for approval, rejection, and KYC/brand verification).
+  - Security Config: Registered `JwtAuthenticationFilter` in filter chain with strict RBAC: `/admin/**` -> `hasRole('ADMIN')`, `/seller/**` -> `hasAnyRole('SELLER', 'SELLER_STAFF', 'ADMIN')`, `/user/**` -> `authenticated()`.
+  - Test Suite: **20/20 automated unit and integration tests passing in `mvn test` (100% green)** across `JwtTokenProviderTest`, `AuthControllerTest`, `UserControllerTest`, `SellerControllerTest`, `AdminSellerControllerTest`, `CatalogControllerTest`, `HealthCheckControllerTest`, and `WristoApplicationTests`.
+  - Frontend Verification: Next.js 16.3.7 Turbopack build verified (**61/61 static & dynamic routes compiled cleanly**).
 

@@ -19,7 +19,17 @@ public enum ErrorCode {
 
     // Auth & Identity Domain
     USER_ALREADY_EXISTS("USER_ALREADY_EXISTS", "A user account with this email address already exists", HttpStatus.CONFLICT),
-    INVALID_CREDENTIALS("INVALID_CREDENTIALS", "Invalid email or password combination", HttpStatus.UNAUTHORIZED);
+    INVALID_CREDENTIALS("INVALID_CREDENTIALS", "Invalid email or password combination", HttpStatus.UNAUTHORIZED),
+
+    // Seller Domain
+    SELLER_ALREADY_EXISTS("SELLER_ALREADY_EXISTS", "A seller boutique with this GSTIN or business entity already exists", HttpStatus.CONFLICT),
+    SELLER_NOT_FOUND("SELLER_NOT_FOUND", "Seller organization record was not found", HttpStatus.NOT_FOUND),
+    SELLER_NOT_APPROVED("SELLER_NOT_APPROVED", "Seller organization is not verified for marketplace trading", HttpStatus.FORBIDDEN),
+    SELLER_STAFF_ALREADY_EXISTS("SELLER_STAFF_ALREADY_EXISTS", "User is already affiliated with this seller organization", HttpStatus.CONFLICT),
+    SELLER_STAFF_NOT_FOUND("SELLER_STAFF_NOT_FOUND", "Staff member not found in seller organization", HttpStatus.NOT_FOUND),
+    DOCUMENT_NOT_FOUND("DOCUMENT_NOT_FOUND", "Seller verification document was not found", HttpStatus.NOT_FOUND),
+    BRAND_AUTHORIZATION_ALREADY_EXISTS("BRAND_AUTHORIZATION_ALREADY_EXISTS", "Brand authorization already requested or granted for this brand", HttpStatus.CONFLICT),
+    BRAND_AUTHORIZATION_NOT_FOUND("BRAND_AUTHORIZATION_NOT_FOUND", "Brand authorization record not found", HttpStatus.NOT_FOUND);
 
     private final String code;
     private final String message;
