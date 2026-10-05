@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  # 1. PostgreSQL 16 Relational Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: wristo-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: ${DB_NAME:-wristodb}
+      POSTGRES_USER: ${DB_USER:-wristo_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-wristo_password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-wristo_user} -d ${DB_NAME:-wristodb}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - wristo-network
+
+  # 2. WRISTO Backend (Spring Boot 3.3.4 + Java 21)
+  backend:
+    build:
+      context: ./wristo-backend
+      dockerfile: Dockerfile
+    container_name: wristo-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${DB_NAME:-wristodb}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER:-wristo_user}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-wristo_password}
+      SPRING_FLYWAY_ENABLED: "true"
+      WRISTO_SECURITY_JWT_SECRET: ${JWT_SECRET:-404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
+      WRISTO_AI_GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - wristo-network
+
+  # 3. WRISTO Frontend (Next.js 16+ App Router)
+  frontend:
+    build:
+      context: ./wristo-next
+      dockerfile: Dockerfile
+    container_name: wristo-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8080}
+      NODE_ENV: production
+    networks:
+      - wristo-network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  wristo-network:
+    driver: bridge
