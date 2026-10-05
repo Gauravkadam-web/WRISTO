@@ -3,12 +3,15 @@ package com.wristo.modules.seller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wristo.modules.auth.entity.User;
 import com.wristo.modules.auth.repository.UserRepository;
+import com.wristo.modules.cart.repository.CartItemRepository;
+import com.wristo.modules.cart.repository.CartRepository;
 import com.wristo.modules.catalog.entity.Brand;
 import com.wristo.modules.catalog.entity.Category;
 import com.wristo.modules.catalog.entity.Watch;
 import com.wristo.modules.catalog.repository.BrandRepository;
 import com.wristo.modules.catalog.repository.CategoryRepository;
 import com.wristo.modules.catalog.repository.WatchRepository;
+import com.wristo.modules.coupon.repository.CouponRepository;
 import com.wristo.modules.inventory.repository.InventoryMovementRepository;
 import com.wristo.modules.inventory.repository.InventoryRepository;
 import com.wristo.modules.inventory.repository.InventoryReservationRepository;
@@ -21,6 +24,8 @@ import com.wristo.modules.seller.repository.SellerBrandAuthorizationRepository;
 import com.wristo.modules.seller.repository.SellerListingRepository;
 import com.wristo.modules.seller.repository.SellerRepository;
 import com.wristo.modules.seller.repository.SellerUserRepository;
+import com.wristo.modules.wishlist.repository.WishlistItemRepository;
+import com.wristo.modules.wishlist.repository.WishlistRepository;
 import com.wristo.security.jwt.JwtTokenProvider;
 import com.wristo.security.model.UserPrincipal;
 import org.junit.jupiter.api.BeforeEach;
@@ -76,6 +81,21 @@ class AdminListingControllerTest {
     private SellerBrandAuthorizationRepository brandAuthRepository;
 
     @Autowired
+    private WishlistItemRepository wishlistItemRepository;
+
+    @Autowired
+    private WishlistRepository wishlistRepository;
+
+    @Autowired
+    private CartItemRepository cartItemRepository;
+
+    @Autowired
+    private CartRepository cartRepository;
+
+    @Autowired
+    private CouponRepository couponRepository;
+
+    @Autowired
     private WatchRepository watchRepository;
 
     @Autowired
@@ -98,6 +118,11 @@ class AdminListingControllerTest {
 
     @BeforeEach
     void setUp() {
+        wishlistItemRepository.deleteAll();
+        wishlistRepository.deleteAll();
+        cartItemRepository.deleteAll();
+        cartRepository.deleteAll();
+        couponRepository.deleteAll();
         inventoryMovementRepository.deleteAll();
         inventoryReservationRepository.deleteAll();
         inventoryRepository.deleteAll();

@@ -324,12 +324,26 @@
   - **Backend Test Suite:** **35/35 automated unit and integration tests passing in `mvn test` (100% green)** across `CatalogControllerTest`, `SellerListingControllerTest`, `AdminListingControllerTest`, `SellerInventoryControllerTest`, `SellerControllerTest`, `AdminSellerControllerTest`, `AuthControllerTest`, `UserControllerTest`, `JwtTokenProviderTest`, `HealthCheckControllerTest`, and `WristoApplicationTests`.
   - **Frontend Verification:** Next.js 16.3.7 Turbopack build verified (**61/61 static & dynamic routes compiled cleanly**).
 
-- [ ] **Phase 4: Cart, Wishlist & Comparison Backend Services** ⏳ (Next Target)
-  - Persistent cart endpoints with coupon engine integration (`/api/v1/cart/**`).
-  - Client wishlist synchronization with catalog metadata (`/api/v1/wishlist/**`).
-  - Watch comparison persistence and technical matrix comparison endpoint (`/api/v1/compare/**`).
+- [x] **Phase 4: Cart, Wishlist & Comparison Backend Services** ✅ (Implemented & 100% Test-Verified)
+  - **Database Migration:** `V8__init_cart_wishlist_coupon_schema.sql` (promotional vouchers `coupons`, persistent `carts`, `cart_items`, client `wishlists`, `wishlist_items`, foreign keys, indices, and seed vouchers: `WRISTO10`, `HOROLOGYVIP`, `FIRST15`, `VAULT20`).
+  - **Promotional Coupon Engine (`/api/v1/coupons/**`, `/api/v1/admin/coupons/**`):**
+    - Public coupon validation (`/coupons/validate`) computing percentage and fixed discounts against minimum cart thresholds.
+    - Public active promotions discovery (`/coupons/active`).
+    - Administrative coupon lifecycle management (`/admin/coupons/**` with RBAC `ADMIN` role).
+  - **Shopping Cart & Stateless Calculations (`/api/v1/cart/**`):**
+    - Dual guest (`X-Session-ID`) and authenticated user cart lifecycle with atomic session merging.
+    - Real-time stock validation during add/update (`/cart/items/**`).
+    - Promotional coupon application (`/cart/coupon`), luxury gift wrapping with handwritten calligraphy notes (`/cart/gift-options`), and delivery tier configuration (`/cart/delivery-options`).
+    - Stateless totals calculation (`/cart/calculate-totals`) computing subtotal, discount, gift wrap fee, White-Glove delivery fee, 18% GST, and complimentary travel pouch threshold.
+  - **Collector Vault Wishlist Management (`/api/v1/wishlist/**`):**
+    - Authenticated customer wishlist endpoints (`/wishlist`, `/wishlist/items/{watchId}`, `/wishlist/toggle/{watchId}`, `/wishlist/check/{watchId}`).
+    - Atomic move-to-cart workflow (`/wishlist/items/{watchId}/move-to-cart`).
+  - **9-Axis Horological Comparison Matrix (`/api/v1/compare/**`):**
+    - Public comparison matrix engine (`/compare?ids=WRT-001,WRT-002`) validating 2 to 4 watches and returning 9 technical horology dimensions (Movement, Case Diameter, Case Material, Dial Finish, Strap Material, Water Resistance, Power Reserve, Crystal Glass, Warranty Period).
+  - **Backend Test Suite:** **56/56 automated unit and integration tests passing in `mvn test` (100% green)** across `CouponControllerTest`, `CartControllerTest`, `WishlistControllerTest`, `ComparisonControllerTest`, `CatalogControllerTest`, `SellerListingControllerTest`, `AdminListingControllerTest`, `SellerInventoryControllerTest`, `SellerControllerTest`, `AdminSellerControllerTest`, `AuthControllerTest`, `UserControllerTest`, `JwtTokenProviderTest`, `HealthCheckControllerTest`, and `WristoApplicationTests`.
+  - **Frontend Verification:** Next.js 16.3.7 Turbopack build verified (**61/61 static & dynamic routes compiled cleanly**).
 
-- [ ] **Phase 5: Order Processing, Luxury Checkout & Payment Integration** ⏳
+- [ ] **Phase 5: Order Processing, Luxury Checkout & Payment Integration** ⏳ (Next Target)
   - Multi-step checkout state machine with inventory reservation coordination (`/api/v1/checkout/**`).
   - Order management and tracking (`/api/v1/orders/**`).
   - Razorpay/Stripe luxury payment gateway integration & webhook handling (`/api/v1/payments/**`).

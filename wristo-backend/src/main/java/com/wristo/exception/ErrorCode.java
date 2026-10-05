@@ -38,7 +38,31 @@ public enum ErrorCode {
     INVENTORY_NOT_FOUND("INVENTORY_NOT_FOUND", "Inventory record not found", HttpStatus.NOT_FOUND),
     RESERVATION_NOT_FOUND("RESERVATION_NOT_FOUND", "Stock reservation record not found", HttpStatus.NOT_FOUND),
     RESERVATION_EXPIRED("RESERVATION_EXPIRED", "Stock reservation has expired", HttpStatus.CONFLICT),
-    INVALID_INVENTORY_ADJUSTMENT("INVALID_INVENTORY_ADJUSTMENT", "Inventory quantity adjustment would cause negative stock", HttpStatus.BAD_REQUEST);
+    INVALID_INVENTORY_ADJUSTMENT("INVALID_INVENTORY_ADJUSTMENT", "Inventory quantity adjustment would cause negative stock", HttpStatus.BAD_REQUEST),
+
+    // Coupon & Promotion Domain
+    COUPON_NOT_FOUND("COUPON_NOT_FOUND", "Promotional coupon code not found or inactive", HttpStatus.NOT_FOUND),
+    COUPON_EXPIRED("COUPON_EXPIRED", "Promotional coupon code has expired", HttpStatus.BAD_REQUEST),
+    COUPON_NOT_STARTED("COUPON_NOT_STARTED", "Promotional coupon is not yet active", HttpStatus.BAD_REQUEST),
+    COUPON_MIN_SUBTOTAL_NOT_MET("COUPON_MIN_SUBTOTAL_NOT_MET", "Order subtotal does not meet the minimum requirement for this coupon", HttpStatus.BAD_REQUEST),
+    COUPON_MIN_ORDER_UNMET("COUPON_MIN_ORDER_UNMET", "Order subtotal does not meet the minimum requirement for this coupon", HttpStatus.BAD_REQUEST),
+    COUPON_USAGE_LIMIT_REACHED("COUPON_USAGE_LIMIT_REACHED", "Promotional coupon usage limit has been reached", HttpStatus.BAD_REQUEST),
+    COUPON_ALREADY_EXISTS("COUPON_ALREADY_EXISTS", "A coupon with this code already exists", HttpStatus.CONFLICT),
+
+    // Cart Domain
+    CART_NOT_FOUND("CART_NOT_FOUND", "Shopping cart not found", HttpStatus.NOT_FOUND),
+    CART_ITEM_NOT_FOUND("CART_ITEM_NOT_FOUND", "Item was not found in shopping cart", HttpStatus.NOT_FOUND),
+    CART_EMPTY("CART_EMPTY", "Shopping cart is currently empty", HttpStatus.BAD_REQUEST),
+    INSUFFICIENT_STOCK_FOR_CART("INSUFFICIENT_STOCK_FOR_CART", "Requested quantity exceeds available stock for this timepiece", HttpStatus.CONFLICT),
+
+    // Wishlist Domain
+    WISHLIST_NOT_FOUND("WISHLIST_NOT_FOUND", "Collector wishlist not found", HttpStatus.NOT_FOUND),
+    WISHLIST_ITEM_NOT_FOUND("WISHLIST_ITEM_NOT_FOUND", "Timepiece not found in collector wishlist", HttpStatus.NOT_FOUND),
+    WISHLIST_ITEM_ALREADY_EXISTS("WISHLIST_ITEM_ALREADY_EXISTS", "Timepiece is already saved in collector wishlist", HttpStatus.CONFLICT),
+
+    // Comparison Domain
+    COMPARE_MIN_LIMIT("COMPARE_MIN_LIMIT", "At least 2 watches are required for side-by-side comparison", HttpStatus.BAD_REQUEST),
+    COMPARE_MAX_LIMIT("COMPARE_MAX_LIMIT", "Comparison is limited to a maximum of 4 watches", HttpStatus.BAD_REQUEST);
 
     private final String code;
     private final String message;

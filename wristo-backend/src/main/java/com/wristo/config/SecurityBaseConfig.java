@@ -57,11 +57,17 @@ public class SecurityBaseConfig {
                                 "/watches/**",
                                 "/brands/**",
                                 "/categories/**",
+                                "/compare/**",
+                                "/coupons/**",
+                                "/cart/**",
                                 "/health/**"
                         ).permitAll()
 
                         // Auth Endpoints (Phase 2)
                         .requestMatchers("/auth/**").permitAll()
+
+                        // Wishlist (Authenticated Collector)
+                        .requestMatchers("/wishlist/**").authenticated()
 
                         // Seller Onboarding
                         .requestMatchers("/seller/onboard").authenticated()

@@ -17,6 +17,11 @@ import com.wristo.modules.seller.entity.SellerStatus;
 import com.wristo.modules.seller.repository.SellerBrandAuthorizationRepository;
 import com.wristo.modules.seller.repository.SellerListingRepository;
 import com.wristo.modules.seller.repository.SellerRepository;
+import com.wristo.modules.cart.repository.CartItemRepository;
+import com.wristo.modules.cart.repository.CartRepository;
+import com.wristo.modules.coupon.repository.CouponRepository;
+import com.wristo.modules.wishlist.repository.WishlistItemRepository;
+import com.wristo.modules.wishlist.repository.WishlistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +54,21 @@ class CatalogControllerTest {
     private CategoryRepository categoryRepository;
 
     @Autowired
+    private WishlistItemRepository wishlistItemRepository;
+
+    @Autowired
+    private WishlistRepository wishlistRepository;
+
+    @Autowired
+    private CartItemRepository cartItemRepository;
+
+    @Autowired
+    private CartRepository cartRepository;
+
+    @Autowired
+    private CouponRepository couponRepository;
+
+    @Autowired
     private SellerListingRepository sellerListingRepository;
 
     @Autowired
@@ -73,6 +93,11 @@ class CatalogControllerTest {
 
     @BeforeEach
     void setUp() {
+        wishlistItemRepository.deleteAll();
+        wishlistRepository.deleteAll();
+        cartItemRepository.deleteAll();
+        cartRepository.deleteAll();
+        couponRepository.deleteAll();
         inventoryMovementRepository.deleteAll();
         inventoryReservationRepository.deleteAll();
         inventoryRepository.deleteAll();

@@ -413,7 +413,13 @@ WRISTO/
     - Seller listing management & unique SKU isolation (`/seller/listings/**`).
     - Admin listing governance & approval state machine (`/admin/listings/**`).
     - Seller inventory management with row-locking (`PESSIMISTIC_WRITE`), movement audit history, and transactional stock reservations (`/seller/inventory/**`).
-    - Test Suite: **35/35 unit & integration tests passing (100% green)** in `mvn test`.
+  - **Phase 4: Cart, Wishlist & Comparison Backend Services** ✅:
+    - Flyway V8 (`coupons`, `carts`, `cart_items`, `wishlists`, `wishlist_items`, foreign keys, indices, seed promotional codes).
+    - Promotional Coupon Engine (`/coupons/validate`, `/coupons/active`, `/admin/coupons/**`).
+    - Shopping Cart & Stateless Calculations (`/cart`, `/cart/items/**`, `/cart/coupon`, `/cart/gift-options`, `/cart/delivery-options`, `/cart/calculate-totals`).
+    - Collector Vault Wishlist Management (`/wishlist`, `/wishlist/items/**`, `/wishlist/toggle/**`, `/wishlist/check/**`, `/wishlist/items/**/move-to-cart`).
+    - 9-Axis Horological Comparison Engine (`/compare?ids=...`).
+    - Test Suite: **56/56 unit & integration tests passing (100% green)** in `mvn test`.
 - **Master Specification Document:** [`docs/backend_architecture_specification.md`](file:///e:/WRISTO/docs/backend_architecture_specification.md) & [`docs/WRISTO_Production_Ready_SRS_v1.0.md`](file:///e:/WRISTO/docs/WRISTO_Production_Ready_SRS_v1.0.md).
 
 ---

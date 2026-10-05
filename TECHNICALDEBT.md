@@ -30,6 +30,7 @@ With Desktop Parity Milestones 1–5 fully completed and verified, all frontend 
 | **TD-08** | Desktop Parity | Homepage sections, PLP controls, Standalone Pages & Copy | Medium | Desktop Parity M2–M5 | ✅ **RESOLVED** (`8853fbb`) |
 | **TD-09** | Backend Auth | JWT Auth, RBAC, User Profiles & Seller Onboarding | High | Backend Phase 2 | ✅ **RESOLVED** (`be27ddc`) |
 | **TD-10** | Backend Catalog & Stock | Master 40 Horology Seed, Multi-Vendor Listings & Atomic Stock Locking | High | Backend Phase 3 | ✅ **RESOLVED** (35/35 Tests Green) |
+| **TD-11** | Backend Cart & Wishlist | Persistent Cart, Coupon Engine, Wishlist & 9-Axis Comparison Matrix | High | Backend Phase 4 | ✅ **RESOLVED** (56/56 Tests Green) |
 
 ---
 
@@ -124,4 +125,17 @@ With Desktop Parity Milestones 1–5 fully completed and verified, all frontend 
   * Pessimistic row locking (`PESSIMISTIC_WRITE`), movement audit logging, and transactional stock reservations.
   * 35/35 automated unit and integration tests passing in `mvn test` (100% green).
 * **Status:** ✅ **RESOLVED** in Backend Phase 3.
+
+---
+
+### TD-11: Backend Cart, Wishlist, Coupon Engine & Comparison Matrix (RESOLVED)
+* **Initial Problem:** Shopping cart calculations, promotional vouchers, collector wishlists, and 9-spec watch comparison were handled entirely client-side without persistence, promo limits, or inventory cross-validation.
+* **Resolution Applied (Backend Phase 4):**
+  * Flyway V8 schema with `coupons`, `carts`, `cart_items`, `wishlists`, `wishlist_items`, foreign keys, indices, and seed promotional codes.
+  * Promotional Coupon Engine with percentage/fixed calculation, min order validation, and admin CRUD.
+  * Dual-session shopping cart (`X-Session-ID` guest / JWT collector user) with atomic session merging, real-time stock checks, gift wrapping notes, and stateless totals calculation.
+  * Collector wishlist management with instant toggle, check, and atomic move-to-cart operations.
+  * 9-axis horological comparison matrix validating 2–4 watches across movement, case, crystal, water resistance, and warranty.
+  * 56/56 automated unit and integration tests passing in `mvn test` (100% green).
+* **Status:** ✅ **RESOLVED** in Backend Phase 4.
 
