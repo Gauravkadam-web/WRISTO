@@ -52,7 +52,7 @@ public class SecurityBaseConfig {
                         // Actuator Health & Metrics
                         .requestMatchers("/actuator/**").permitAll()
 
-                        // Public Catalog & Discovery Endpoints
+                        // Public Catalog, Search, Concierge, WebSocket & Discovery Endpoints
                         .requestMatchers(
                                 "/watches/**",
                                 "/brands/**",
@@ -62,6 +62,10 @@ public class SecurityBaseConfig {
                                 "/cart/**",
                                 "/checkout/**",
                                 "/payments/**",
+                                "/search/**",
+                                "/concierge/**",
+                                "/notifications/**",
+                                "/ws-wristo/**",
                                 "/health/**"
                         ).permitAll()
 

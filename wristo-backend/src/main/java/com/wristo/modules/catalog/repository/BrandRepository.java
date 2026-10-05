@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface BrandRepository extends JpaRepository<Brand, String> {
     Optional<Brand> findByNameIgnoreCase(String name);
     List<Brand> findAllByIsActiveTrueOrderByEstablishedAsc();
+    List<Brand> findByNameContainingIgnoreCaseAndIsActiveTrue(String query);
 }

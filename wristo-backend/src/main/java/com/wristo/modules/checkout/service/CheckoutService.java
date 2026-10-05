@@ -69,6 +69,7 @@ public class CheckoutService {
     private final UserRepository userRepository;
     private final com.wristo.modules.provenance.service.CertificateService certificateService;
     private final com.wristo.modules.provenance.service.ProvenanceService provenanceService;
+    private final com.wristo.modules.notification.service.NotificationPublisherService notificationPublisherService;
 
     public CheckoutService(
             CheckoutSessionRepository checkoutSessionRepository,
@@ -83,7 +84,8 @@ public class CheckoutService {
             SellerListingRepository sellerListingRepository,
             UserRepository userRepository,
             com.wristo.modules.provenance.service.CertificateService certificateService,
-            com.wristo.modules.provenance.service.ProvenanceService provenanceService
+            com.wristo.modules.provenance.service.ProvenanceService provenanceService,
+            com.wristo.modules.notification.service.NotificationPublisherService notificationPublisherService
     ) {
         this.checkoutSessionRepository = checkoutSessionRepository;
         this.orderRepository = orderRepository;
@@ -98,6 +100,7 @@ public class CheckoutService {
         this.userRepository = userRepository;
         this.certificateService = certificateService;
         this.provenanceService = provenanceService;
+        this.notificationPublisherService = notificationPublisherService;
     }
 
     public InitiateCheckoutResponse initiateCheckout(
@@ -371,6 +374,38 @@ public class CheckoutService {
         if (session != null) {
             session.setIsCompleted(true);
             checkoutSessionRepository.save(session);
+        }
+
+        // 12. Real-time Telemetry & Push Notification Broadcast
+        if (notificationPublisherService != null) {
+            try {
+                String city = (savedOrder.getShippingCity() != null && !savedOrder.getShippingCity().isBlank())
+                        ? savedOrder.getShippingCity() : "India";
+                String primaryModel = !orderItems.isEmpty() ? orderItems.get(0).getWatchModel() : "Luxury Timepiece";
+                String primaryId = !orderItems.isEmpty() ? orderItems.get(0).getWatch().getId() : "WRT-001";
+
+                notificationPublisherService.broadcastMarketTicker(new com.wristo.modules.notification.dto.LiveActivityEventDto(
+                        "ORDER_PLACED",
+                        "A collector in " + city + " just acquired " + primaryModel + " (" + primaryId + ")",
+                        primaryId,
+                        primaryModel,
+                        city
+                ));
+
+                if (user != null) {
+                    notificationPublisherService.sendUserOrderNotification(
+                            user.getId().toString(),
+                            new com.wristo.modules.notification.dto.OrderNotificationDto(
+                                    savedOrder.getOrderNumber(),
+                                    savedOrder.getStatus() != null ? savedOrder.getStatus().name() : "CONFIRMED",
+                                    "Order Confirmed",
+                                    "Your luxury order " + savedOrder.getOrderNumber() + " has been confirmed and reserved in the vault."
+                            )
+                    );
+                }
+            } catch (Exception ex) {
+                log.warn("Could not publish real-time notification for order {}: {}", savedOrder.getOrderNumber(), ex.getMessage());
+            }
         }
 
         log.info("Completed luxury checkout: Order {} (Cert: {}) created for {}",

@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
@@ -43,4 +44,21 @@ public interface WatchRepository extends JpaRepository<Watch, String>, JpaSpecif
 
     @Query("SELECT w.style, COUNT(w) FROM Watch w WHERE w.isActive = true GROUP BY w.style ORDER BY COUNT(w) DESC")
     List<Object[]> countWatchesByStyle();
+
+    @Query("SELECT w FROM Watch w WHERE w.isActive = true AND (" +
+            "LOWER(w.model) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "LOWER(w.brandName) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "LOWER(w.movement) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "LOWER(w.style) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "LOWER(w.dial) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "LOWER(w.material) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "LOWER(w.description) LIKE LOWER(CONCAT('%', :query, '%')))")
+    Page<Watch> searchFullText(@Param("query") String query, Pageable pageable);
+
+    @Query("SELECT w FROM Watch w WHERE w.isActive = true AND (" +
+            "LOWER(w.model) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "LOWER(w.brandName) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "LOWER(w.movement) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "LOWER(w.style) LIKE LOWER(CONCAT('%', :query, '%')))")
+    List<Watch> findTopSuggestions(@Param("query") String query, Pageable pageable);
 }

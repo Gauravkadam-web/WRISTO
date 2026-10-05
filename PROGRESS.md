@@ -386,8 +386,27 @@
   - **Backend Test Suite:** **77/77 automated unit and integration tests passing in `mvn test` (100% green)** across `AccountControllerTest`, `ProvenanceControllerTest`, `CheckoutControllerTest`, `OrderControllerTest`, `AdminOrderControllerTest`, `PaymentControllerTest`, `CouponControllerTest`, `CartControllerTest`, `WishlistControllerTest`, `ComparisonControllerTest`, `CatalogControllerTest`, `SellerListingControllerTest`, `AdminListingControllerTest`, `SellerInventoryControllerTest`, `SellerControllerTest`, `AdminSellerControllerTest`, `AuthControllerTest`, `UserControllerTest`, `JwtTokenProviderTest`, `HealthCheckControllerTest`, and `WristoApplicationTests`.
   - **Frontend Verification:** Next.js 16.3.7 Turbopack build verified (**61/61 static & dynamic routes compiled cleanly**).
 
-- [ ] **Phase 7: AI Concierge, Horological Search & Realtime WebSockets** ⏳ (Next Target)
-  - Horology-grounded AI concierge API powered by Gemini API (`/api/v1/concierge/**`).
-  - Instant search & autocomplete index (`/api/v1/search/**`).
-  - Real-time stock and order notification WebSocket service.
+- [x] **Phase 7: AI Concierge, Horological Search & Realtime WebSockets** ✅ (Implemented & 100% Test-Verified)
+  - **WebSocket STOMP Message Broker (`/ws-wristo`):**
+    - Configured `WebSocketConfig.java` with in-memory STOMP broker supporting `/topic` broadcast channels and `/queue` private user destinations.
+    - Added SockJS and native WebSocket endpoint `/ws-wristo` with dynamic CORS origin patterns.
+    - Implemented `NotificationPublisherService.java` broadcasting live market ticker events (`/topic/market-ticker`), stock level telemetry (`/topic/inventory-updates`), and targeted user order tracking updates (`/user/{userId}/queue/notifications`).
+    - Hooked real-time order broadcast into `CheckoutService` state machine.
+    - REST fallback endpoint (`/api/v1/notifications/ticker`) for initial UI hydration.
+  - **Instant Search & Autocomplete Engine (`/api/v1/search/**`):**
+    - High-performance prefix autocomplete (`/search/autocomplete`) matching brand houses, timepiece models, calibers, and category styles with aggregated match counts.
+    - Curated trending search queries & popular brands (`/search/popular`).
+    - Full-text multi-facet search engine (`/search/query`) over brand, model, dial, material, movement, and description with dynamic facet calculations.
+  - **AI Watch Concierge & Horological Advisor (`/api/v1/concierge/**`):**
+    - Multi-criteria consultative recommendation engine (`/concierge/recommendations`) scoring watches against occasions, case ergonomics, calibers, budget tiers, and natural language prompts, returning top 3 curated timepieces with compatibility scores (86%–99%) and dynamic editorial reasoning.
+    - Conversational Horological Advisor (`/concierge/chat`) integrated with Google Gemini LLM API via `GeminiClient` with an authoritative Swiss horologist system prompt grounded in the 40-watch catalog, accompanied by an intelligent deterministic luxury fallback engine.
+    - Prebaked luxury inquiry scenarios discovery (`/concierge/prebaked-inquiries`).
+  - **Security & Access Rules:** Configured public access in `SecurityBaseConfig.java` for `/search/**`, `/concierge/**`, `/notifications/**`, and `/ws-wristo/**`.
+  - **Backend Test Suite:** **86/86 automated unit and integration tests passing in `mvn test` (100% green)** across `SearchControllerTest`, `ConciergeControllerTest`, `NotificationControllerTest`, `AccountControllerTest`, `ProvenanceControllerTest`, `CheckoutControllerTest`, `OrderControllerTest`, `AdminOrderControllerTest`, `PaymentControllerTest`, `CouponControllerTest`, `CartControllerTest`, `WishlistControllerTest`, `ComparisonControllerTest`, `CatalogControllerTest`, `SellerListingControllerTest`, `AdminListingControllerTest`, `SellerInventoryControllerTest`, `SellerControllerTest`, `AdminSellerControllerTest`, `AuthControllerTest`, `UserControllerTest`, `JwtTokenProviderTest`, `HealthCheckControllerTest`, and `WristoApplicationTests`.
+  - **Frontend Verification:** Next.js 16.3.7 Turbopack build verified (**61/61 static & dynamic routes compiled cleanly**).
+
+- [ ] **Phase 8: Editorial Journal & Content Management API** ⏳ (Next Target)
+  - Editorial article publishing and horological guides backend (`/api/v1/journal/**`).
+  - Admin article moderation & tag taxonomies (`/api/v1/admin/journal/**`).
+
 
