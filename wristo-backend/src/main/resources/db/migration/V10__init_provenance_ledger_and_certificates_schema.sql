@@ -5,7 +5,7 @@
 
 -- 1. Collector Profiles Table (VIP tiers, wrist size, luxury notification preferences)
 CREATE TABLE IF NOT EXISTS collector_profiles (
-    user_id VARCHAR(36) PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    user_id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
     salutation VARCHAR(32) NOT NULL DEFAULT 'COLLECTOR',
     vip_tier VARCHAR(64) NOT NULL DEFAULT 'GRAND_COMPLICATION_PATRON',
     wrist_size_mm INT NOT NULL DEFAULT 175,
@@ -24,8 +24,8 @@ CREATE TABLE IF NOT EXISTS authenticity_certificates (
     id VARCHAR(36) PRIMARY KEY,
     certificate_number VARCHAR(32) NOT NULL UNIQUE,
     order_id VARCHAR(36) REFERENCES orders(id) ON DELETE SET NULL,
-    watch_id VARCHAR(36) NOT NULL REFERENCES watches(id) ON DELETE CASCADE,
-    user_id VARCHAR(36) REFERENCES users(id) ON DELETE SET NULL,
+    watch_id VARCHAR(32) NOT NULL REFERENCES watches(id) ON DELETE CASCADE,
+    user_id UUID REFERENCES users(id) ON DELETE SET NULL,
     issued_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     master_horologist VARCHAR(255) NOT NULL DEFAULT 'Adrien de Beauharnais',
     master_horologist_title VARCHAR(255) NOT NULL DEFAULT 'Master Horologist & Vault Director',
@@ -47,10 +47,10 @@ CREATE INDEX IF NOT EXISTS idx_certs_user_id ON authenticity_certificates(user_i
 -- 3. Digital Provenance Records Table (Immutable ownership timeline)
 CREATE TABLE IF NOT EXISTS provenance_records (
     id VARCHAR(36) PRIMARY KEY,
-    watch_id VARCHAR(36) NOT NULL REFERENCES watches(id) ON DELETE CASCADE,
+    watch_id VARCHAR(32) NOT NULL REFERENCES watches(id) ON DELETE CASCADE,
     certificate_id VARCHAR(36) REFERENCES authenticity_certificates(id) ON DELETE SET NULL,
     order_id VARCHAR(36) REFERENCES orders(id) ON DELETE SET NULL,
-    current_user_id VARCHAR(36) REFERENCES users(id) ON DELETE SET NULL,
+    current_user_id UUID REFERENCES users(id) ON DELETE SET NULL,
     serial_number VARCHAR(64) NOT NULL,
     ownership_start_date TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     ownership_end_date TIMESTAMP WITH TIME ZONE,
@@ -72,7 +72,7 @@ CREATE INDEX IF NOT EXISTS idx_prov_hash ON provenance_records(provenance_hash);
 CREATE TABLE IF NOT EXISTS watch_service_records (
     id VARCHAR(36) PRIMARY KEY,
     provenance_id VARCHAR(36) NOT NULL REFERENCES provenance_records(id) ON DELETE CASCADE,
-    watch_id VARCHAR(36) NOT NULL REFERENCES watches(id) ON DELETE CASCADE,
+    watch_id VARCHAR(32) NOT NULL REFERENCES watches(id) ON DELETE CASCADE,
     service_date TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     service_type VARCHAR(64) NOT NULL,
     service_center VARCHAR(255) NOT NULL DEFAULT 'WRISTO Geneva Vault Atelier',

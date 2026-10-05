@@ -53,7 +53,7 @@ CREATE TABLE order_items (
     order_id VARCHAR(36) NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
     watch_id VARCHAR(32) NOT NULL REFERENCES watches(id),
     seller_id VARCHAR(32) REFERENCES sellers(id) ON DELETE SET NULL,
-    seller_listing_id VARCHAR(36) REFERENCES seller_listings(id) ON DELETE SET NULL,
+    seller_listing_id UUID REFERENCES seller_listings(id) ON DELETE SET NULL,
     watch_model VARCHAR(255) NOT NULL,
     watch_brand VARCHAR(100) NOT NULL,
     watch_image_url VARCHAR(500),
