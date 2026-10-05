@@ -77,3 +77,13 @@ wristo:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://127.0.0.1:3000}
   ai:
     gemini-api-key: ${GEMINI_API_KEY:}
+  payment:
+    mode: ${PAYMENT_GATEWAY_MODE:sandbox}
+    razorpay:
+      key-id: ${RAZORPAY_KEY_ID:rzp_test_mock_wristo}
+      key-secret: ${RAZORPAY_KEY_SECRET:mock_secret_wristo}
+      webhook-secret: ${RAZORPAY_WEBHOOK_SECRET:mock_webhook_wristo}
+    stripe:
+      publishable-key: ${STRIPE_PUBLISHABLE_KEY:pk_test_mock_wristo}
+      secret-key: ${STRIPE_SECRET_KEY:sk_test_mock_wristo}
+      webhook-secret: ${STRIPE_WEBHOOK_SECRET:whsec_mock_wristo}

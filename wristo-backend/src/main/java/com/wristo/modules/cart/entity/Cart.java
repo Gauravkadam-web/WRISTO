@@ -3,6 +3,8 @@ package com.wristo.modules.cart.entity;
 import com.wristo.common.entity.BaseAuditEntity;
 import com.wristo.modules.auth.entity.User;
 import com.wristo.modules.coupon.entity.Coupon;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +19,7 @@ public class Cart extends BaseAuditEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", unique = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
     @Column(name = "session_id", length = 64, unique = true)

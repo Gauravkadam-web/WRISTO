@@ -60,6 +60,8 @@ public class SecurityBaseConfig {
                                 "/compare/**",
                                 "/coupons/**",
                                 "/cart/**",
+                                "/checkout/**",
+                                "/payments/**",
                                 "/health/**"
                         ).permitAll()
 
@@ -68,6 +70,11 @@ public class SecurityBaseConfig {
 
                         // Wishlist (Authenticated Collector)
                         .requestMatchers("/wishlist/**").authenticated()
+
+                        // Orders - Authenticated Customer & Public Tracking
+                        .requestMatchers("/orders/my-orders").authenticated()
+                        .requestMatchers("/orders/*/cancel").authenticated()
+                        .requestMatchers("/orders/**").permitAll()
 
                         // Seller Onboarding
                         .requestMatchers("/seller/onboard").authenticated()

@@ -62,7 +62,21 @@ public enum ErrorCode {
 
     // Comparison Domain
     COMPARE_MIN_LIMIT("COMPARE_MIN_LIMIT", "At least 2 watches are required for side-by-side comparison", HttpStatus.BAD_REQUEST),
-    COMPARE_MAX_LIMIT("COMPARE_MAX_LIMIT", "Comparison is limited to a maximum of 4 watches", HttpStatus.BAD_REQUEST);
+    COMPARE_MAX_LIMIT("COMPARE_MAX_LIMIT", "Comparison is limited to a maximum of 4 watches", HttpStatus.BAD_REQUEST),
+
+    // Checkout & Order Domain
+    CHECKOUT_SESSION_EXPIRED("CHECKOUT_SESSION_EXPIRED", "Checkout session has expired. Please re-initiate checkout", HttpStatus.BAD_REQUEST),
+    CHECKOUT_SESSION_NOT_FOUND("CHECKOUT_SESSION_NOT_FOUND", "Checkout session not found", HttpStatus.NOT_FOUND),
+    CHECKOUT_INSUFFICIENT_STOCK("CHECKOUT_INSUFFICIENT_STOCK", "One or more timepieces in checkout are no longer available in the requested quantity", HttpStatus.CONFLICT),
+    ORDER_NOT_FOUND("ORDER_NOT_FOUND", "Order reference was not located", HttpStatus.NOT_FOUND),
+    ORDER_INVALID_STATE_TRANSITION("ORDER_INVALID_STATE_TRANSITION", "Invalid order status transition requested", HttpStatus.BAD_REQUEST),
+    ORDER_CANCEL_NOT_ALLOWED("ORDER_CANCEL_NOT_ALLOWED", "Order cannot be cancelled in its current fulfillment status", HttpStatus.BAD_REQUEST),
+
+    // Payment Domain
+    PAYMENT_NOT_FOUND("PAYMENT_NOT_FOUND", "Payment record not found", HttpStatus.NOT_FOUND),
+    PAYMENT_SIGNATURE_INVALID("PAYMENT_SIGNATURE_INVALID", "Payment signature verification failed", HttpStatus.BAD_REQUEST),
+    PAYMENT_GATEWAY_ERROR("PAYMENT_GATEWAY_ERROR", "Payment gateway provider returned an error", HttpStatus.BAD_GATEWAY),
+    PAYMENT_ALREADY_PROCESSED("PAYMENT_ALREADY_PROCESSED", "Payment has already been processed for this order", HttpStatus.CONFLICT);
 
     private final String code;
     private final String message;

@@ -2,6 +2,8 @@ package com.wristo.modules.auth.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wristo.common.entity.BaseAuditEntity;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import jakarta.persistence.*;
 
 import java.util.UUID;
@@ -18,6 +20,7 @@ public class UserAddress extends BaseAuditEntity {
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
     @Column(name = "label", length = 32, nullable = false)

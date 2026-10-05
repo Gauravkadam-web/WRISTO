@@ -343,12 +343,29 @@
   - **Backend Test Suite:** **56/56 automated unit and integration tests passing in `mvn test` (100% green)** across `CouponControllerTest`, `CartControllerTest`, `WishlistControllerTest`, `ComparisonControllerTest`, `CatalogControllerTest`, `SellerListingControllerTest`, `AdminListingControllerTest`, `SellerInventoryControllerTest`, `SellerControllerTest`, `AdminSellerControllerTest`, `AuthControllerTest`, `UserControllerTest`, `JwtTokenProviderTest`, `HealthCheckControllerTest`, and `WristoApplicationTests`.
   - **Frontend Verification:** Next.js 16.3.7 Turbopack build verified (**61/61 static & dynamic routes compiled cleanly**).
 
-- [ ] **Phase 5: Order Processing, Luxury Checkout & Payment Integration** ⏳ (Next Target)
-  - Multi-step checkout state machine with inventory reservation coordination (`/api/v1/checkout/**`).
-  - Order management and tracking (`/api/v1/orders/**`).
-  - Razorpay/Stripe luxury payment gateway integration & webhook handling (`/api/v1/payments/**`).
+- [x] **Phase 5: Order Processing, Luxury Checkout & Payment Integration** ✅ (Implemented & 100% Test-Verified)
+  - **Database Migration:** `V9__init_orders_checkout_payments_schema.sql` (luxury `orders`, `order_items`, `order_status_history`, `payments`, `checkout_sessions`, foreign keys with cascading/set-null constraints, and high-performance indices).
+  - **Luxury Checkout State Machine (`/api/v1/checkout/**`):**
+    - Multi-step checkout state machine (`/checkout/initiate`, `/checkout/{sessionId}`, `/checkout/{sessionId}/shipping-address`, `/checkout/{sessionId}/delivery-tier`, `/checkout/{sessionId}/payment-method`, `/checkout/{sessionId}/complete`).
+    - 15-minute stock hold via `InventoryService` preventing concurrent double-allocation of rare timepieces.
+    - Automatic generation of sequential luxury order reference numbers (`WRT-2026-XXXXX`) and cryptographic authenticity certificate identifiers (`CERT-CHRONO-XXXXX`).
+    - Seamless cart clearing, payment recording, and reservation resolution upon successful checkout completion.
+  - **Customer Order Tracking & History (`/api/v1/orders/**`):**
+    - Authenticated collector order history (`/orders/my-orders`) with pagination support.
+    - Reference-based and public email-verified order inspection (`/orders/{orderNumber}`).
+    - Safe order cancellation (`/orders/{orderNumber}/cancel`) with automatic inventory restock and return movement audit logging.
+  - **Admin Boutique Order Moderation (`/api/v1/admin/orders/**`):**
+    - Comprehensive admin order listing with multi-status filtering and sorting (`/admin/orders`).
+    - Horological order lifecycle progression (`/admin/orders/{orderNumber}/status`) enforcing state machine transitions (`PENDING_PAYMENT` -> `CONFIRMED` -> `PROCESSING_VAULT` -> `DISPATCHED` -> `DELIVERED`).
+    - Armored courier tracking assignment and estimated delivery scheduling.
+  - **Payment Gateway Adapter & Webhooks (`/api/v1/payments/**`):**
+    - Multi-gateway intent initialization (`/payments/create-intent` supporting Razorpay, Stripe, and Mock Sandbox).
+    - Cryptographic HMAC-SHA256 signature verification (`/payments/verify`).
+    - Asynchronous payment webhook ingestion (`/payments/webhook`) handling payment captured, failed, and refund events.
+  - **Backend Test Suite:** **66/66 automated unit and integration tests passing in `mvn test` (100% green)** across `CheckoutControllerTest`, `OrderControllerTest`, `AdminOrderControllerTest`, `PaymentControllerTest`, `CouponControllerTest`, `CartControllerTest`, `WishlistControllerTest`, `ComparisonControllerTest`, `CatalogControllerTest`, `SellerListingControllerTest`, `AdminListingControllerTest`, `SellerInventoryControllerTest`, `SellerControllerTest`, `AdminSellerControllerTest`, `AuthControllerTest`, `UserControllerTest`, `JwtTokenProviderTest`, `HealthCheckControllerTest`, and `WristoApplicationTests`.
+  - **Frontend Verification:** Next.js 16.3.7 Turbopack build verified (**61/61 static & dynamic routes compiled cleanly**).
 
-- [ ] **Phase 6: Client Account, Provenance Ledger & Certificates** ⏳
+- [ ] **Phase 6: Client Account, Provenance Ledger & Certificates** ⏳ (Next Target)
   - Client profile and order history (`/api/v1/account/**`).
   - Digital Provenance Ledger and cryptographic authenticity certificate verification (`/api/v1/provenance/**`).
 

@@ -3,6 +3,8 @@ package com.wristo.modules.seller.entity;
 import com.wristo.common.entity.BaseAuditEntity;
 import com.wristo.modules.auth.entity.User;
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import java.util.UUID;
 
 @Entity
@@ -18,10 +20,12 @@ public class SellerUser extends BaseAuditEntity {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "seller_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Seller seller;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
     @Enumerated(EnumType.STRING)

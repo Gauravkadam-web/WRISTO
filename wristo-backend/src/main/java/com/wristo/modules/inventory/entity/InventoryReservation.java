@@ -4,6 +4,9 @@ import com.wristo.common.entity.BaseAuditEntity;
 import com.wristo.modules.auth.entity.User;
 import jakarta.persistence.*;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import java.time.Instant;
 import java.util.UUID;
 
@@ -21,6 +24,7 @@ public class InventoryReservation extends BaseAuditEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     private User user;
 
     @Column(name = "quantity", nullable = false)

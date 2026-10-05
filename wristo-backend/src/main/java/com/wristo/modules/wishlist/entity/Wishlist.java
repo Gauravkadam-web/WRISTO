@@ -2,6 +2,8 @@ package com.wristo.modules.wishlist.entity;
 
 import com.wristo.common.entity.BaseAuditEntity;
 import com.wristo.modules.auth.entity.User;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +18,7 @@ public class Wishlist extends BaseAuditEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
     public Wishlist() {

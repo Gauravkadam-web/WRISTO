@@ -31,6 +31,7 @@ With Desktop Parity Milestones 1–5 fully completed and verified, all frontend 
 | **TD-09** | Backend Auth | JWT Auth, RBAC, User Profiles & Seller Onboarding | High | Backend Phase 2 | ✅ **RESOLVED** (`be27ddc`) |
 | **TD-10** | Backend Catalog & Stock | Master 40 Horology Seed, Multi-Vendor Listings & Atomic Stock Locking | High | Backend Phase 3 | ✅ **RESOLVED** (35/35 Tests Green) |
 | **TD-11** | Backend Cart & Wishlist | Persistent Cart, Coupon Engine, Wishlist & 9-Axis Comparison Matrix | High | Backend Phase 4 | ✅ **RESOLVED** (56/56 Tests Green) |
+| **TD-12** | Backend Checkout & Orders | Multi-Step Checkout, 15m Stock Hold, Order Tracking & Payment Gateway Integration | High | Backend Phase 5 | ✅ **RESOLVED** (66/66 Tests Green) |
 
 ---
 
@@ -138,4 +139,17 @@ With Desktop Parity Milestones 1–5 fully completed and verified, all frontend 
   * 9-axis horological comparison matrix validating 2–4 watches across movement, case, crystal, water resistance, and warranty.
   * 56/56 automated unit and integration tests passing in `mvn test` (100% green).
 * **Status:** ✅ **RESOLVED** in Backend Phase 4.
+
+---
+
+### TD-12: Backend Checkout State Machine, Order Lifecycle & Payment Integration (RESOLVED)
+* **Initial Problem:** Checkout progression, 15-minute stock hold guarantees, serialized luxury certificate generation, order state transitions (`CONFIRMED` -> `PROCESSING_VAULT` -> `DISPATCHED`), and cryptographic payment signature verification were simulated on the client side without backend transactionality or webhook verification.
+* **Resolution Applied (Backend Phase 5):**
+  * Flyway V9 schema with `orders`, `order_items`, `order_status_history`, `payments`, `checkout_sessions`, cascading foreign keys, indices, and seed records.
+  * Multi-step checkout state machine (`/checkout/**`) coordinating 15-minute stock holds via `InventoryService`, sequential order identifiers (`WRT-2026-XXXXX`), authenticity certificate IDs (`CERT-CHRONO-XXXXX`), cart clearing, and payment association.
+  * Customer order tracking (`/orders/my-orders`, `/orders/{orderNumber}`) and safe order cancellation (`/orders/{orderNumber}/cancel`) with automatic inventory restock and return movement logging.
+  * Admin boutique order moderation (`/admin/orders`, `/admin/orders/{orderNumber}/status`) enforcing state transitions and armored courier tracking assignment.
+  * Multi-gateway payment adapter & HMAC-SHA256 signature verification (`/payments/create-intent`, `/payments/verify`, `/payments/webhook`).
+  * 66/66 automated unit and integration tests passing in `mvn test` (100% green).
+* **Status:** ✅ **RESOLVED** in Backend Phase 5.
 

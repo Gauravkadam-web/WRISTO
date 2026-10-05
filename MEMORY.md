@@ -21,6 +21,9 @@ WRISTO is designed as an ultra-luxury editorial watch boutique — pairing the a
 4. **URL-First State Synchronization:** All catalog filter selections (`brand`, `movement`, `style`, `maxPrice`, `sort`, `q`) synchronize 2-way with Next.js `searchParams` (`/watches?brand=AUREN&movement=Automatic`).
 5. **Desktop Web Parity Scope:** Desktop web experience (1440px and responsive desktop) is the primary target baseline following `ref_images/` boards. Mobile native app and PWA are deferred per explicit user guidance.
 6. **Explicit Permission for Git Commits & Pushes:** NEVER execute `git commit` or `git push` without obtaining explicit prior confirmation from the user. Always present changes/diffs and ask for approval first.
+7. **User Greeting Protocol:** Always greet the user as **"Gaurav Bhau"** at the start of every response/conversation.
+8. **Strict .env Privacy Invariant:** NEVER access, view, read, print, or expose the user's private `.env` file under any circumstance. Always inspect `.env.example` instead.
+9. **Zero Hardcoded Secrets:** All API keys, database credentials, JWT secrets, payment gateway keys (Razorpay, Stripe) must be 100% environment-driven via `application.yml` and `process.env`.
 
 ---
 
@@ -419,7 +422,13 @@ WRISTO/
     - Shopping Cart & Stateless Calculations (`/cart`, `/cart/items/**`, `/cart/coupon`, `/cart/gift-options`, `/cart/delivery-options`, `/cart/calculate-totals`).
     - Collector Vault Wishlist Management (`/wishlist`, `/wishlist/items/**`, `/wishlist/toggle/**`, `/wishlist/check/**`, `/wishlist/items/**/move-to-cart`).
     - 9-Axis Horological Comparison Engine (`/compare?ids=...`).
-    - Test Suite: **56/56 unit & integration tests passing (100% green)** in `mvn test`.
+  - **Phase 5: Order Processing, Luxury Checkout & Payment Integration** ✅:
+    - Flyway V9 (`orders`, `order_items`, `order_status_history`, `payments`, `checkout_sessions`, cascading foreign keys, indices).
+    - Luxury Checkout State Machine (`/checkout/**`) with 15-minute stock hold coordination, sequential serial generation (`WRT-2026-XXXXX` & `CERT-CHRONO-XXXXX`), cart clearing, and payment association.
+    - Customer Order Tracking & History (`/orders/my-orders`, `/orders/{orderNumber}`, `/orders/{orderNumber}/cancel` with automated inventory restock).
+    - Admin Boutique Order Moderation (`/admin/orders`, `/admin/orders/{orderNumber}/status`).
+    - Multi-Gateway Payment System & HMAC-SHA256 Verification (`/payments/create-intent`, `/payments/verify`, `/payments/webhook`).
+    - Test Suite: **66/66 unit & integration tests passing (100% green)** in `mvn test`.
 - **Master Specification Document:** [`docs/backend_architecture_specification.md`](file:///e:/WRISTO/docs/backend_architecture_specification.md) & [`docs/WRISTO_Production_Ready_SRS_v1.0.md`](file:///e:/WRISTO/docs/WRISTO_Production_Ready_SRS_v1.0.md).
 
 ---
