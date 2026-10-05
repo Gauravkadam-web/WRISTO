@@ -64,6 +64,7 @@ public class SecurityBaseConfig {
                                 "/payments/**",
                                 "/search/**",
                                 "/concierge/**",
+                                "/journal/**",
                                 "/notifications/**",
                                 "/ws-wristo/**",
                                 "/health/**"

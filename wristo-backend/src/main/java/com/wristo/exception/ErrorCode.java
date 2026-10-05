@@ -76,7 +76,12 @@ public enum ErrorCode {
     PAYMENT_NOT_FOUND("PAYMENT_NOT_FOUND", "Payment record not found", HttpStatus.NOT_FOUND),
     PAYMENT_SIGNATURE_INVALID("PAYMENT_SIGNATURE_INVALID", "Payment signature verification failed", HttpStatus.BAD_REQUEST),
     PAYMENT_GATEWAY_ERROR("PAYMENT_GATEWAY_ERROR", "Payment gateway provider returned an error", HttpStatus.BAD_GATEWAY),
-    PAYMENT_ALREADY_PROCESSED("PAYMENT_ALREADY_PROCESSED", "Payment has already been processed for this order", HttpStatus.CONFLICT);
+    PAYMENT_ALREADY_PROCESSED("PAYMENT_ALREADY_PROCESSED", "Payment has already been processed for this order", HttpStatus.CONFLICT),
+
+    // Editorial Journal Domain
+    ARTICLE_NOT_FOUND("ARTICLE_NOT_FOUND", "Editorial article not found", HttpStatus.NOT_FOUND),
+    ARTICLE_ALREADY_EXISTS("ARTICLE_ALREADY_EXISTS", "An article with this slug already exists", HttpStatus.CONFLICT),
+    AUTHOR_NOT_FOUND("AUTHOR_NOT_FOUND", "Editorial author profile not found", HttpStatus.NOT_FOUND);
 
     private final String code;
     private final String message;
