@@ -86,12 +86,14 @@
 | Layer | Technology |
 |---|---|
 | **Frontend Framework** | [Next.js 16+ (App Router)](https://nextjs.org/) + [React 19](https://react.dev/) |
-| **Language** | [TypeScript 5](https://www.typescriptlang.org/) (Strict Mode) |
-| **Bundler & Tooling** | Turbopack |
+| **Language** | [TypeScript 5](https://www.typescriptlang.org/) (Strict Mode) & [Java 21 LTS](https://openjdk.org/) |
+| **Backend Framework** | [Spring Boot 3.3.4](https://spring.io/projects/spring-boot) (Spring Security, Spring Data JPA, Actuator) |
+| **Database & Migration** | PostgreSQL 16 + [Flyway](https://flywaydb.org/) (Migrations V1 through V11) |
+| **AI Horology Concierge** | Google Gemini API + Live Catalog Tool-Calling & Deterministic Fallback |
+| **Realtime Messaging** | Spring STOMP / SockJS WebSockets (`/ws-wristo`) |
+| **DevOps & Containers** | Multi-stage Docker, Docker Compose, GitHub Actions CI/CD |
 | **Styling** | Vanilla CSS3 Custom Design Tokens (11-step typography scale tokens, HSL luxury palettes) |
-| **State Management** | React Context (`CartContext`, `WishlistContext`, `SearchContext`, `ComparisonContext`) with LocalStorage Sync |
-| **Architecture Pattern** | Decoupled Service Layer (`productService`, `orderService`, `accountService`, `journalService`) |
-| **Planned Backend** | Java 21 + Spring Boot 3.3+ + PostgreSQL |
+| **Testing** | JUnit 5 + MockMvc + H2 (103/103 tests green), Next.js Standalone Build (61/61 routes) |
 
 ---
 
@@ -99,130 +101,83 @@
 
 ```
 WRISTO/
+├── .github/workflows/ci.yml                     # GitHub Actions CI/CD Pipeline (Backend & Frontend)
+├── docker-compose.yml                           # Local 1-command orchestration (PostgreSQL + Backend + Frontend)
+├── wristo-backend/                              # Production Java 21 LTS + Spring Boot 3.3+ Backend
+│   ├── Dockerfile                               # Multi-stage Eclipse Temurin 21 production container
+│   ├── src/main/java/com/wristo/                # Modular Monolith Architecture (17 domain packages)
+│   ├── src/main/resources/db/migration/         # Flyway Migrations (V1 to V11)
+│   ├── src/test/                                # 103 Unit & MockMvc Integration Tests (100% Passing)
+│   └── pom.xml                                  # Maven dependencies
 ├── wristo-next/                                 # Production Next.js 16+ Web Application
-│   ├── src/
-│   │   ├── app/                                 # App Router (61 SSG & Dynamic routes)
-│   │   │   ├── layout.tsx                       # Root Layout (Fonts, Cart/Wishlist/Comparison/Search Providers)
-│   │   │   ├── globals.css                      # Master Design Tokens, 11-step typography scale
-│   │   │   ├── page.tsx                         # Home / Discover Page
-│   │   │   ├── wishlist/                        # Dedicated Standalone Wishlist Page (/wishlist)
-│   │   │   ├── cart/                            # Dedicated Standalone Shopping Cart Page (/cart)
-│   │   │   ├── brands/                          # Curated Brand Houses Showcase Page (/brands)
-│   │   │   ├── watches/                         # Catalog PLP Route (/watches)
-│   │   │   ├── product/[id]/                    # Dynamic SSG Product Detail Pages (40 watches)
-│   │   │   ├── compare/                         # Watch Comparison Matrix Route (/compare)
-│   │   │   ├── checkout/                        # Multi-Step Checkout (/checkout) & Confirmation (/checkout/success)
-│   │   │   ├── account/                         # Client Account & Provenance Ledger (/account)
-│   │   │   ├── concierge/                       # AI Watch Concierge (/concierge)
-│   │   │   ├── journal/                         # Editorial Journal (/journal & /journal/[slug])
-│   │   │   ├── not-found.tsx                    # Luxury 404 Recovery Screen
-│   │   │   ├── error.tsx                        # Global Fault Boundary
-│   │   │   ├── robots.ts                        # SEO robots.txt Generator
-│   │   │   └── sitemap.ts                       # Dynamic XML Sitemap (58 indexed routes)
-│   │   ├── components/                          # Modular UI components (catalog, home, layout, product, comparison, search, checkout, account)
-│   │   ├── context/                             # CartContext, WishlistContext, SearchContext, ComparisonContext
-│   │   ├── data/                                # 40-watch master dataset, brands, categories
-│   │   ├── services/                            # productService.ts, orderService.ts, accountService.ts, journalService.ts
-│   │   └── types/                               # product.ts, filter.ts, order.ts, account.ts, journal.ts
-│   ├── public/assets/                           # Watch photography, brand logos, banners, SVG seals
+│   ├── Dockerfile                               # Multi-stage Node 20 standalone container
+│   ├── src/app/                                 # App Router (61 SSG & Dynamic routes)
+│   ├── src/components/                          # Modular UI components (catalog, home, product, search, etc.)
+│   ├── src/services/                            # Decoupled service contracts
 │   ├── package.json                             # Dependencies
 │   └── tsconfig.json                            # Strict TypeScript Configuration
-├── prompts/                                     # Master Prompts Archive (All major engineering & design prompts)
-│   ├── README.md                                # Prompts Directory Index & Catalog
-│   ├── 01_master_architecture_and_brand_system.md
-│   ├── 02_core_commerce_phases_1_to_10.md
-│   ├── 03_desktop_parity_roadmap_milestones_1_to_5.md
-│   ├── 04_backend_architecture_and_spring_boot_spec.md
-│   └── 05_gsap_scroll_scrubbed_watch_animation.md
-├── assets/                                      # Original raw image & brand assets
-├── css/                                         # Original vanilla CSS reference stylesheet
-├── js/                                          # Original vanilla JS prototype scripts
-├── docs/                                        # Master specifications, architecture docs, parity analysis
-│   ├── WRISTO_MASTER_DEVELOPMENT_PROMPT.md
-│   ├── WRISTO_Design_Tokens_and_Interactions.md
+├── docs/                                        # Master specifications, SRS, parity analysis
 │   ├── WRISTO_Production_Ready_SRS_v1.0.md
-│   ├── backend_architecture_specification.md
-│   ├── desktop_web_parity_analysis.md
-│   └── session_summary.md
-├── screenshots/                                 # Centralized multi-viewport visual QA regression captures
+│   └── backend_architecture_specification.md
 ├── MEMORY.md                                    # Repository architectural memory & design invariants
 ├── PROGRESS.md                                  # Milestones & roadmap tracking
 ├── TECHNICALDEBT.md                             # Technical debt registry & resolution plans
-└── README.md                                    # This file
+└── README.md                                    # Master project documentation
 ```
 
 ---
 
 ## 🏁 Quickstart & Local Development
 
-### Prerequisites
-- Node.js 18.18+ or Node.js 20+
-- npm or pnpm
-
-### Running the Production Next.js App
+### Option 1: Single-Command Docker Compose (Full-Stack)
 ```bash
-# 1. Navigate to the Next.js directory
-cd wristo-next
-
-# 2. Install dependencies
-npm install
-
-# 3. Start the Turbopack development server
-npm run dev
-
-# 4. Open in your browser:
-#    Home:        http://localhost:3000
-#    Catalog:     http://localhost:3000/watches
-#    Wishlist:    http://localhost:3000/wishlist
-#    Cart:        http://localhost:3000/cart
-#    Brands:      http://localhost:3000/brands
-#    Compare:     http://localhost:3000/compare
-#    Concierge:   http://localhost:3000/concierge
-#    Journal:     http://localhost:3000/journal
-#    Account:     http://localhost:3000/account
-#    Checkout:    http://localhost:3000/checkout
+# Starts PostgreSQL 16, Spring Boot Backend (8080), and Next.js Frontend (3000)
+docker compose up --build
 ```
 
-### Production Build & Typecheck
+### Option 2: Running Backend & Frontend Locally
+
+#### 1. Backend (Java 21 + Maven + PostgreSQL)
 ```bash
+cd wristo-backend
+mvn spring-boot:run
+# Swagger UI available at: http://localhost:8080/swagger-ui/index.html
+# Health check available at: http://localhost:8080/actuator/health
+```
+
+#### 2. Frontend (Next.js 16+)
+```bash
+cd wristo-next
+npm install
+npm run dev
+# Web application available at: http://localhost:3000
+```
+
+### Option 3: Automated Test Suites
+```bash
+# Backend Test Suite (103 tests)
+cd wristo-backend
+mvn clean test
+
+# Frontend Production Build (61 routes)
 cd wristo-next
 npm run build
 ```
 
 ---
 
-## 🗺️ Roadmap & Milestones
+## 🗺️ Completed Milestones & Backend Architecture (100% Complete)
 
-### Core Architecture & Commerce Lifecycle (100% Completed)
-- [x] **Milestone 1:** Luxury Hero Section Refinement ✅
-- [x] **Milestone 2:** Official Brand Identity & Vector Logo Lockup ✅
-- [x] **Milestone 3:** "Modern Looks. Timeless Feel." Editorial Campaign Banner ✅
-- [x] **Milestone 4:** Multi-Viewport Visual Regression & Quality Assurance ✅
-- [x] **Milestone 5:** Phase 3 — Production Next.js Catalog (PLP) Architecture ✅
-- [x] **Milestone 6:** Phase 4 — Product Detail Experience (PDP with 3D tilt, zoom gallery, specs matrix) ✅
-- [x] **Milestone 7:** Phase 5 — Instant Search & Autocomplete Overlay (`⌘K`) ✅
-- [x] **Milestone 8:** Typography & Design Token Scale Alignment (Section 3 Parity) ✅
-- [x] **Milestone 9:** Phase 6 — Full Cart Drawer, Promo Engine & Multi-Step Luxury Checkout Sequence ✅
-- [x] **Milestone 10:** Phase 7 — Client Account & Provenance Ledger (`/account`) ✅
-- [x] **Milestone 11:** Phase 8 — AI Watch Concierge (`/concierge`) ✅
-- [x] **Milestone 12:** Phase 9 — Editorial Journal (`/journal` & `/journal/[slug]`) ✅
-- [x] **Milestone 13:** Phase 10 — Launch Hardening, Rich SEO & Dynamic Sitemap (57 routes, `eb9b5ad`) ✅
-- [x] **Milestone 14:** Desktop Web Parity & Content Audit (`docs/desktop_web_parity_analysis.md`) ✅
-- [x] **Milestone 15:** Desktop Parity Milestone 1 — Watch Comparison Engine (`8ccebb4`, 58 routes) ✅
-
-### Desktop Parity Roadmap (100% Complete)
-- [x] **Parity Milestone 1:** Watch Comparison Engine (Floating dock, `/compare` matrix, quick actions, `8935832`) ✅
-- [x] **Parity Milestone 2:** Homepage Parity & Section Restoration (Popular Brands strip, Curated Occasions 4 tall cards, App promo, Blog preview, Trust strip copy, `2ba36df`) ✅
-- [x] **Parity Milestone 3:** Catalog / PLP Enhancements (Shop by Category left jump list, 4 circular category chips, card bottom status pills, `d9ef911`) ✅
-- [x] **Parity Milestone 4:** Dedicated Standalone Desktop Pages (`/wishlist`, `/cart`, `/brands`, Account persona updated to `Gaurav Kadam`, `8853fbb`) ✅
-- [x] **Parity Milestone 5:** Header, Footer & Search Copy Polish (Pune contact details, social links, payment gateway badges, search keywords, `8853fbb`) ✅
-
----
-
-## 🛠️ Backend Architecture & Specification
-
-For complete details on the target Java 21 + Spring Boot 3.3+ microframework, PostgreSQL schema, Flyway migrations, Redis caching, and REST API contracts matching this Next.js frontend, see the master specification:
-- 📖 **[Backend Architecture & API Specification](file:///e:/WRISTO/docs/backend_architecture_specification.md)**
+### Backend Modular Monolith Phases (Flyway V1–V11)
+- [x] **Phase 1:** Foundation, Architecture, Flyway V1/V2, Global Exception Handling, Base DTOs ✅
+- [x] **Phase 2:** Authentication & RBAC (JJWT 0.12.6, BCrypt), User Profiles, Seller Onboarding ✅
+- [x] **Phase 3:** 40 Master Watches, Multi-Vendor Listings, PESSIMISTIC_WRITE Atomic Inventory Locking ✅
+- [x] **Phase 4:** Persistent Cart, Promotional Coupon Engine, Wishlist, 9-Axis Comparison Matrix ✅
+- [x] **Phase 5:** Luxury Checkout State Machine, 15m Stock Hold, Order Splitting, Multi-Gateway Payments ✅
+- [x] **Phase 6:** Cryptographic Digital Authenticity Certificates, Guilloché Rosette, Provenance Ledger, VIP Account ✅
+- [x] **Phase 7:** AI Watch Concierge (Gemini API), Multi-Field Search Tokenizer, STOMP WebSockets (`/ws-wristo`) ✅
+- [x] **Phase 8:** Editorial Journal Public APIs, Admin CMS CRUD, Author Profiles, Lead Story Election ✅
+- [x] **Phase 9 (DevOps):** Multi-Stage Dockerfiles, `docker-compose.yml`, GitHub Actions CI/CD Pipeline (`ci.yml`) ✅
 
 ---
 

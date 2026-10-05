@@ -2,8 +2,8 @@
 
 **Brand:** WRISTO  
 **Project:** Luxury Watch E-Commerce Web Application  
-**Status:** All Core Phases 1–10 Complete + All Desktop Parity Milestones 1–5 100% Complete & Verified.  
-**Active Target:** Java 21 + Spring Boot 3.3+ Backend Integration (`docs/backend_architecture_specification.md`).  
+**Status:** All 8 Full-Stack Backend Modules + Desktop Parity Milestones 1–5 + Production DevOps 100% Complete & Verified.  
+**Backend Status:** Java 21 + Spring Boot 3.3+ (103/103 Tests Green) + PostgreSQL Flyway (V1–V11) + Docker + GitHub Actions CI.  
 **Total Production Routes:** 61 Statically Pre-rendered SSG & Dynamic Routes.  
 **GitHub Remote:** `https://github.com/Gauravkadam-web/WRISTO.git` (Branch: `main`)  
 **Last Updated:** October 2026  
@@ -405,8 +405,24 @@
   - **Backend Test Suite:** **86/86 automated unit and integration tests passing in `mvn test` (100% green)** across `SearchControllerTest`, `ConciergeControllerTest`, `NotificationControllerTest`, `AccountControllerTest`, `ProvenanceControllerTest`, `CheckoutControllerTest`, `OrderControllerTest`, `AdminOrderControllerTest`, `PaymentControllerTest`, `CouponControllerTest`, `CartControllerTest`, `WishlistControllerTest`, `ComparisonControllerTest`, `CatalogControllerTest`, `SellerListingControllerTest`, `AdminListingControllerTest`, `SellerInventoryControllerTest`, `SellerControllerTest`, `AdminSellerControllerTest`, `AuthControllerTest`, `UserControllerTest`, `JwtTokenProviderTest`, `HealthCheckControllerTest`, and `WristoApplicationTests`.
   - **Frontend Verification:** Next.js 16.3.7 Turbopack build verified (**61/61 static & dynamic routes compiled cleanly**).
 
-- [ ] **Phase 8: Editorial Journal & Content Management API** ⏳ (Next Target)
-  - Editorial article publishing and horological guides backend (`/api/v1/journal/**`).
-  - Admin article moderation & tag taxonomies (`/api/v1/admin/journal/**`).
+- [x] **Phase 8: Editorial Journal & Content Management API** ✅ (Implemented & 100% Test-Verified)
+  - **Database Migration:** `V11__init_editorial_journal_schema.sql` (curator/author profiles `journal_authors`, structured essays `journal_articles` with unique slug index, 3 seeded master horologists: `Adrien de Beauharnais`, `Kavita Singhania`, `Julian Thorne`, and 6 canonical seeded horology essays).
+  - **Public Editorial REST APIs (`/api/v1/journal/**`):**
+    - Paginated articles retrieval with category filtering (`/journal/articles`).
+    - Hero lead story banner discovery (`/journal/lead`).
+    - Deep article reader (`/journal/articles/{slugOrId}`) with structured JSON content sections, author bios, automatic view counter increment, and companion watch catalog resolution.
+    - Category count aggregations (`/journal/categories`), popular tags extraction (`/journal/tags`), and slug discovery (`/journal/slugs`).
+  - **Admin Editorial CMS (`/api/v1/admin/journal/**`):**
+    - Full CRUD lifecycle management for horological articles and author profiles with RBAC protection (`ADMIN`, `SUPER_ADMIN`).
+    - Lead story election (`/admin/journal/articles/{id}/lead`) promoting selected essay and demoting previous lead story.
+    - Dynamic draft/published state toggling (`/admin/journal/articles/{id}/publish`).
+  - **Backend Test Suite:** **103/103 automated unit and integration tests passing in `mvn test` (100% green)** across `JournalControllerTest`, `AdminJournalControllerTest`, `SearchControllerTest`, `ConciergeControllerTest`, `NotificationControllerTest`, `AccountControllerTest`, `ProvenanceControllerTest`, `CheckoutControllerTest`, `OrderControllerTest`, `AdminOrderControllerTest`, `PaymentControllerTest`, `CouponControllerTest`, `CartControllerTest`, `WishlistControllerTest`, `ComparisonControllerTest`, `CatalogControllerTest`, `SellerListingControllerTest`, `AdminListingControllerTest`, `SellerInventoryControllerTest`, `SellerControllerTest`, `AdminSellerControllerTest`, `AuthControllerTest`, `UserControllerTest`, `JwtTokenProviderTest`, `HealthCheckControllerTest`, and `WristoApplicationTests`.
+  - **Frontend Verification:** Next.js 16.3.7 Turbopack build verified (**61/61 static & dynamic routes compiled cleanly**).
+
+- [x] **Phase 9: Production Containerization & CI/CD Pipeline (DevOps)** ✅ (Implemented & 100% Verified)
+  - **Backend Dockerfile:** Multi-stage `eclipse-temurin:21-alpine` container with non-root user `wristo` and memory-optimized container JVM options (`-XX:MaxRAMPercentage=75.0`).
+  - **Frontend Dockerfile:** Multi-stage `node:20-alpine` standalone runner with minimal image size and non-root user `nextjs`.
+  - **Docker Compose Orchestration:** Root `docker-compose.yml` defining automated services for PostgreSQL 16 Alpine, Spring Boot 3.3.4 Backend, and Next.js 16+ Frontend with automatic health checks and persistent storage volumes.
+  - **GitHub Actions CI/CD Pipeline:** Automated `.github/workflows/ci.yml` running backend test suite (`mvn clean test`) and frontend production bundle validation (`npm run build`) on every push to `main`.
 
 

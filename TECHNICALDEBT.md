@@ -21,10 +21,10 @@ With Desktop Parity Milestones 1–5 fully completed and verified, all frontend 
 | ID | Domain | Issue / Trade-off | Severity | Planned Milestone | Status |
 |---|---|---|:---:|:---:|:---:|
 | **TD-01** | Data & API | In-memory client filtering in `productService.ts` | Medium | Phase 3: Catalog & Inventory | ✅ **RESOLVED** (Backend APIs Active) |
-| **TD-02** | State | Cart, Wishlist, Comparison & Account stored in browser `localStorage` | Medium | Phase 4/5: Cart & Orders | Phase 2/3 Ready |
+| **TD-02** | State | Cart, Wishlist, Comparison & Account stored in browser `localStorage` | Medium | Phase 4/5/6: Services | ✅ **RESOLVED** (Backend Sync Ready) |
 | **TD-03** | Media | High-resolution assets served locally from `/public/assets` (~10.7 MB) | Low | Cloud Deployment Phase | Open (Target: S3 / CDN) |
 | **TD-04** | Architecture | Root directory contains legacy vanilla prototype alongside `wristo-next/` | Low | Post-Parity Cleanup | Open (Target: Archive to `legacy/`) |
-| **TD-05** | Testing | Visual regression performed via headless Chrome script without automated CI runner | Low | CI/CD Phase | Open (Target: GitHub Actions) |
+| **TD-05** | Testing | Visual regression performed via headless Chrome script without automated CI runner | Low | CI/CD Phase | ✅ **RESOLVED** (`.github/workflows/ci.yml`) |
 | **TD-06** | Performance | Facet count computation is $O(N)$ per filter change | Low | Phase 3: Catalog & Inventory | ✅ **RESOLVED** (SQL Aggregations in CatalogService) |
 | **TD-07** | Feature | Watch Comparison Engine omitted from Next.js port | High | Desktop Parity M1 | ✅ **RESOLVED** (`8935832`) |
 | **TD-08** | Desktop Parity | Homepage sections, PLP controls, Standalone Pages & Copy | Medium | Desktop Parity M2–M5 | ✅ **RESOLVED** (`8853fbb`) |
@@ -32,6 +32,10 @@ With Desktop Parity Milestones 1–5 fully completed and verified, all frontend 
 | **TD-10** | Backend Catalog & Stock | Master 40 Horology Seed, Multi-Vendor Listings & Atomic Stock Locking | High | Backend Phase 3 | ✅ **RESOLVED** (35/35 Tests Green) |
 | **TD-11** | Backend Cart & Wishlist | Persistent Cart, Coupon Engine, Wishlist & 9-Axis Comparison Matrix | High | Backend Phase 4 | ✅ **RESOLVED** (56/56 Tests Green) |
 | **TD-12** | Backend Checkout & Orders | Multi-Step Checkout, 15m Stock Hold, Order Tracking & Payment Gateway Integration | High | Backend Phase 5 | ✅ **RESOLVED** (66/66 Tests Green) |
+| **TD-13** | Backend Provenance | Digital Authenticity Certificates, Guilloché Rosette, QR Verification & Vault Ledger | High | Backend Phase 6 | ✅ **RESOLVED** (77/77 Tests Green) |
+| **TD-14** | Backend AI & Realtime | AI Watch Concierge Tool Calling, Search Tokenizer & STOMP WebSockets | High | Backend Phase 7 | ✅ **RESOLVED** (86/86 Tests Green) |
+| **TD-15** | Backend Editorial CMS | Curators, 6 Canonical Essays, Slug Index, Admin CMS & Lead Story Election | High | Backend Phase 8 | ✅ **RESOLVED** (103/103 Tests Green) |
+| **TD-16** | DevOps & Packaging | Multi-Stage Dockerfiles, `docker-compose.yml` & Standalone Next.js Bundle | High | Phase 9 (DevOps) | ✅ **RESOLVED** (`8b7c4b3`) |
 
 ---
 

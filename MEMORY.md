@@ -422,13 +422,26 @@ WRISTO/
     - Shopping Cart & Stateless Calculations (`/cart`, `/cart/items/**`, `/cart/coupon`, `/cart/gift-options`, `/cart/delivery-options`, `/cart/calculate-totals`).
     - Collector Vault Wishlist Management (`/wishlist`, `/wishlist/items/**`, `/wishlist/toggle/**`, `/wishlist/check/**`, `/wishlist/items/**/move-to-cart`).
     - 9-Axis Horological Comparison Engine (`/compare?ids=...`).
-  - **Phase 5: Order Processing, Luxury Checkout & Payment Integration** ✅:
-    - Flyway V9 (`orders`, `order_items`, `order_status_history`, `payments`, `checkout_sessions`, cascading foreign keys, indices).
-    - Luxury Checkout State Machine (`/checkout/**`) with 15-minute stock hold coordination, sequential serial generation (`WRT-2026-XXXXX` & `CERT-CHRONO-XXXXX`), cart clearing, and payment association.
-    - Customer Order Tracking & History (`/orders/my-orders`, `/orders/{orderNumber}`, `/orders/{orderNumber}/cancel` with automated inventory restock).
-    - Admin Boutique Order Moderation (`/admin/orders`, `/admin/orders/{orderNumber}/status`).
-    - Multi-Gateway Payment System & HMAC-SHA256 Verification (`/payments/create-intent`, `/payments/verify`, `/payments/webhook`).
-    - Test Suite: **66/66 unit & integration tests passing (100% green)** in `mvn test`.
+  - **Phase 6: Provenance Ledger, Digital Authenticity Certificates & Collector VIP Profile** ✅:
+    - Flyway V10 (`authenticity_certificates`, `provenance_records`, `watch_service_records`, `collector_profiles`, `user_preferences`, unique certificate index).
+    - Cryptographic Authenticity Certificate Generation with unique SHA-256 signatures, guilloché rosette pattern IDs, and tamper-evident QR verification hashes.
+    - Public Authenticity Verification (`/provenance/verify/{certificateNumber}`).
+    - Authenticated Collector Vault & Ownership Ledger (`/provenance/my-vault`, `/provenance/watch/{watchId}/service-record`).
+    - VIP Tier Evaluation & Client Account (`/account/profile`, `/account/vault`, `/account/preferences`, `/account/tier`).
+  - **Phase 7: AI Horology Concierge & Instant Search Autocomplete** ✅:
+    - Multi-field search tokenizer and PostgreSQL FTS (`/search/autocomplete`, `/search/instant`, `/search/full`).
+    - AI Watch Concierge with live catalog tool-calling, intent extraction, and zero-hallucination recommendation fallback (`/concierge/chat`, `/concierge/recommendations`, `/concierge/suggested-prompts`).
+    - Real-time STOMP WebSockets over SockJS (`/ws-wristo`) and in-app broadcast notifications (`/notifications/**`).
+  - **Phase 8: Editorial Journal & Content Management API** ✅:
+    - Flyway V11 (`journal_authors`, `journal_articles`, unique slug index, 3 seeded master horologists/curators, 6 seeded canonical essays).
+    - Public Editorial REST APIs (`/journal/articles`, `/journal/lead`, `/journal/articles/{slugOrId}`, `/journal/categories`, `/journal/tags`, `/journal/slugs`).
+    - Admin Editorial CMS (`/admin/journal/articles/**`, `/admin/journal/authors/**`) with RBAC enforcement (`ADMIN`, `SUPER_ADMIN`), draft/published state toggling, and lead story election.
+  - **DevOps & Production Readiness** ✅:
+    - Multi-stage Dockerfile for `wristo-backend` (Eclipse Temurin 21 + Maven multi-stage build with non-root runner).
+    - Multi-stage Dockerfile for `wristo-next` (Node 20 Alpine standalone output).
+    - `docker-compose.yml` for unified single-command local container orchestration (`PostgreSQL 16` + `Backend` + `Frontend`).
+    - GitHub Actions CI/CD Pipeline (`.github/workflows/ci.yml`) validating both `mvn clean test` and `npm run build` on every push.
+    - Test Suite: **103/103 unit & integration tests passing (100% green)** in `mvn test`.
 - **Master Specification Document:** [`docs/backend_architecture_specification.md`](file:///e:/WRISTO/docs/backend_architecture_specification.md) & [`docs/WRISTO_Production_Ready_SRS_v1.0.md`](file:///e:/WRISTO/docs/WRISTO_Production_Ready_SRS_v1.0.md).
 
 ---
