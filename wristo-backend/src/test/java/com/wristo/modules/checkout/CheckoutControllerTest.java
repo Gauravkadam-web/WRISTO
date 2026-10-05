@@ -125,6 +125,18 @@ class CheckoutControllerTest {
     private UserRepository userRepository;
 
     @Autowired
+    private com.wristo.modules.provenance.repository.WatchServiceRecordRepository watchServiceRecordRepository;
+
+    @Autowired
+    private com.wristo.modules.provenance.repository.ProvenanceRecordRepository provenanceRecordRepository;
+
+    @Autowired
+    private com.wristo.modules.provenance.repository.AuthenticityCertificateRepository authenticityCertificateRepository;
+
+    @Autowired
+    private com.wristo.modules.account.repository.CollectorProfileRepository collectorProfileRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -141,6 +153,10 @@ class CheckoutControllerTest {
 
     @BeforeEach
     void setUp() {
+        watchServiceRecordRepository.deleteAll();
+        provenanceRecordRepository.deleteAll();
+        authenticityCertificateRepository.deleteAll();
+        collectorProfileRepository.deleteAll();
         paymentRepository.deleteAll();
         orderStatusHistoryRepository.deleteAll();
         orderItemRepository.deleteAll();

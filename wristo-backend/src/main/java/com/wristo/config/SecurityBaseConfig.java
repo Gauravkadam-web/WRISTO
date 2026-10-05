@@ -83,7 +83,15 @@ public class SecurityBaseConfig {
                         .requestMatchers("/seller/**").hasAnyRole("SELLER", "SELLER_STAFF", "ADMIN")
 
                         // Admin Portal
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
+
+                        // Provenance & Digital Certificates (Phase 6)
+                        .requestMatchers("/provenance/verify/**").permitAll()
+                        .requestMatchers("/provenance/watch/*/history").permitAll()
+                        .requestMatchers("/provenance/**").authenticated()
+
+                        // Collector Account & VIP (Phase 6)
+                        .requestMatchers("/account/**").authenticated()
 
                         // User & Profile Endpoints
                         .requestMatchers("/user/**").authenticated()

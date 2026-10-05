@@ -67,6 +67,8 @@ public class CheckoutService {
     private final WatchRepository watchRepository;
     private final SellerListingRepository sellerListingRepository;
     private final UserRepository userRepository;
+    private final com.wristo.modules.provenance.service.CertificateService certificateService;
+    private final com.wristo.modules.provenance.service.ProvenanceService provenanceService;
 
     public CheckoutService(
             CheckoutSessionRepository checkoutSessionRepository,
@@ -79,7 +81,9 @@ public class CheckoutService {
             PaymentService paymentService,
             WatchRepository watchRepository,
             SellerListingRepository sellerListingRepository,
-            UserRepository userRepository
+            UserRepository userRepository,
+            com.wristo.modules.provenance.service.CertificateService certificateService,
+            com.wristo.modules.provenance.service.ProvenanceService provenanceService
     ) {
         this.checkoutSessionRepository = checkoutSessionRepository;
         this.orderRepository = orderRepository;
@@ -92,6 +96,8 @@ public class CheckoutService {
         this.watchRepository = watchRepository;
         this.sellerListingRepository = sellerListingRepository;
         this.userRepository = userRepository;
+        this.certificateService = certificateService;
+        this.provenanceService = provenanceService;
     }
 
     public InitiateCheckoutResponse initiateCheckout(
@@ -309,6 +315,20 @@ public class CheckoutService {
         }
 
         savedOrder.setItems(orderItems);
+
+        // 6b. Issue Authenticity Certificates & Record Provenance Ledger
+        boolean isFirstItem = true;
+        for (OrderItem oi : orderItems) {
+            try {
+                String certNum = isFirstItem ? savedOrder.getCertificateNumber() : null;
+                com.wristo.modules.provenance.entity.AuthenticityCertificate cert = certificateService.issueCertificate(
+                        savedOrder, oi.getWatch(), user, certNum);
+                provenanceService.recordAcquisition(savedOrder, oi.getWatch(), user, cert, oi.getTotalPrice());
+                isFirstItem = false;
+            } catch (Exception e) {
+                log.warn("Could not automatically issue certificate/provenance for item {}: {}", oi.getId(), e.getMessage());
+            }
+        }
 
         // 7. Audit Status History
         OrderStatusHistory history = new OrderStatusHistory();

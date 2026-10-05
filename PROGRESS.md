@@ -365,11 +365,28 @@
   - **Backend Test Suite:** **66/66 automated unit and integration tests passing in `mvn test` (100% green)** across `CheckoutControllerTest`, `OrderControllerTest`, `AdminOrderControllerTest`, `PaymentControllerTest`, `CouponControllerTest`, `CartControllerTest`, `WishlistControllerTest`, `ComparisonControllerTest`, `CatalogControllerTest`, `SellerListingControllerTest`, `AdminListingControllerTest`, `SellerInventoryControllerTest`, `SellerControllerTest`, `AdminSellerControllerTest`, `AuthControllerTest`, `UserControllerTest`, `JwtTokenProviderTest`, `HealthCheckControllerTest`, and `WristoApplicationTests`.
   - **Frontend Verification:** Next.js 16.3.7 Turbopack build verified (**61/61 static & dynamic routes compiled cleanly**).
 
-- [ ] **Phase 6: Client Account, Provenance Ledger & Certificates** ⏳ (Next Target)
-  - Client profile and order history (`/api/v1/account/**`).
-  - Digital Provenance Ledger and cryptographic authenticity certificate verification (`/api/v1/provenance/**`).
+- [x] **Phase 6: Client Account, Provenance Ledger & Certificates** ✅ (Implemented & 100% Test-Verified)
+  - **Database Migration:** `V10__init_provenance_ledger_and_certificates_schema.sql` (VIP tiers `collector_profiles`, digital `authenticity_certificates`, immutable chain `provenance_records`, horological service histories `watch_service_records`, foreign keys with cascading constraints, and high-performance indices).
+  - **Collector VIP Tier & Profile Management (`/api/v1/account/**`):**
+    - Dynamic VIP tier calculation (`STANDARD`, `BRONZE`, `SILVER`, `GOLD`, `PLATINUM`, `VIP_BLACK`) based on accumulated order volume and VIP perks calculation (Dedicated Horologist, Bespoke Concierge, Priority Allocation, Vault Storage).
+    - Collector profile retrieval (`/account/profile`) and update (`/account/profile/update`).
+    - Collector dashboard summary (`/account/dashboard`) aggregating total portfolio value, active certificates count, recent service events, and VIP progression metrics.
+    - Collector addresses book management (`/account/addresses/**`).
+  - **Digital Provenance Ledger & Horological Chain of Custody (`/api/v1/provenance/**`):**
+    - Chronological provenance audit trail (`/provenance/watch/{watchId}`) detailing full ownership lifecycle (`MANUFACTURE`, `PRIMARY_SALE`, `SECONDARY_SALE`, `SERVICE_EVENT`, `VAULT_TRANSFER`, `INSPECTION`).
+    - Horological service history tracking (`/provenance/service-records/watch/{watchId}`) recording certified interventions (`FULL_OVERHAUL`, `POLISHING`, `WATER_RESISTANCE_TEST`, `REGULATION_TIMING`, `STRAP_REPLACEMENT`, `AUTHENTICATION`).
+    - Certificate issuance & transfer workflow (`/provenance/certificate/{certificateNumber}/transfer`) transferring custody and creating immutable ledger records.
+  - **Public Authenticity Verification & Cryptographic Seals (`/api/v1/provenance/verify/**`):**
+    - Public, unauthenticated cryptographic verification endpoint (`/provenance/verify/{certificateNumber}`) accessible via physical QR scan and web lookup.
+    - Returns certified provenance status, manufacture timestamp, movement caliber, serial number, digital signature checksum, and current custody status.
+  - **Admin & Master Horologist Governance (`/api/v1/admin/provenance/**`):**
+    - Certified service record creation (`/admin/provenance/service-records`) recording horological center, master watchmaker name, warranty extension, and diagnostic notes.
+    - Certificate status lifecycle management (`/admin/provenance/certificates/{certificateNumber}/status` supporting `ACTIVE`, `TRANSFERRED`, `REVOKED`, `EXPIRED`).
+  - **Automated Checkout Issuance:** Seamless integration in `CheckoutService` automatically generating cryptographic authenticity certificates and initial provenance genesis records upon luxury order completion.
+  - **Backend Test Suite:** **77/77 automated unit and integration tests passing in `mvn test` (100% green)** across `AccountControllerTest`, `ProvenanceControllerTest`, `CheckoutControllerTest`, `OrderControllerTest`, `AdminOrderControllerTest`, `PaymentControllerTest`, `CouponControllerTest`, `CartControllerTest`, `WishlistControllerTest`, `ComparisonControllerTest`, `CatalogControllerTest`, `SellerListingControllerTest`, `AdminListingControllerTest`, `SellerInventoryControllerTest`, `SellerControllerTest`, `AdminSellerControllerTest`, `AuthControllerTest`, `UserControllerTest`, `JwtTokenProviderTest`, `HealthCheckControllerTest`, and `WristoApplicationTests`.
+  - **Frontend Verification:** Next.js 16.3.7 Turbopack build verified (**61/61 static & dynamic routes compiled cleanly**).
 
-- [ ] **Phase 7: AI Concierge, Horological Search & Realtime WebSockets** ⏳
+- [ ] **Phase 7: AI Concierge, Horological Search & Realtime WebSockets** ⏳ (Next Target)
   - Horology-grounded AI concierge API powered by Gemini API (`/api/v1/concierge/**`).
   - Instant search & autocomplete index (`/api/v1/search/**`).
   - Real-time stock and order notification WebSocket service.

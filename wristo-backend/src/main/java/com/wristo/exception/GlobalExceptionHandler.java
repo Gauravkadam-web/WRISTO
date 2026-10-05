@@ -65,6 +65,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    public ResponseEntity<ApiErrorResponse> handleAccessDeniedException(org.springframework.security.access.AccessDeniedException ex) {
+        log.warn("AccessDeniedException caught: {}", ex.getMessage());
+        ApiErrorResponse response = ApiErrorResponse.of(
+                ErrorCode.FORBIDDEN_OPERATION.getCode(),
+                "You do not possess sufficient permissions for this operation"
+        );
+        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiErrorResponse> handleGenericException(Exception ex) {
         log.error("Unhandled exception caught in GlobalExceptionHandler", ex);
