@@ -407,7 +407,13 @@ WRISTO/
     - `JwtTokenProvider`, `JwtAuthenticationFilter`, `JwtAuthenticationEntryPoint`, `UserPrincipal`, `CustomUserDetailsService`.
     - Auth & User endpoints: `/auth/register`, `/auth/login`, `/auth/refresh-token`, `/auth/logout`, `/auth/me`, `/user/profile`, `/user/addresses/**`.
     - Seller & Admin endpoints: `/seller/onboard`, `/seller/me`, `/seller/staff/**`, `/seller/documents`, `/seller/brand-authorizations`, `/admin/sellers/**`.
-    - Test Suite: **20/20 unit & integration tests passing (100% green)** in `mvn test`.
+  - **Phase 3: Catalog, Seller Listings & Inventory** ✅:
+    - Flyway V5 (`40 master timepieces` + `40 technical horology specs`), V6 (`seller_listings`, `inventories`, `inventory_movements`, `inventory_reservations`), V7 (Live demo seller listings and stock for verified boutique `seller-auren-in`).
+    - Multi-facet catalog search & aggregation (`/watches`, `/watches/{id}`, `/watches/{id}/similar`, `/watches/{id}/listings`, `/brands`, `/categories`).
+    - Seller listing management & unique SKU isolation (`/seller/listings/**`).
+    - Admin listing governance & approval state machine (`/admin/listings/**`).
+    - Seller inventory management with row-locking (`PESSIMISTIC_WRITE`), movement audit history, and transactional stock reservations (`/seller/inventory/**`).
+    - Test Suite: **35/35 unit & integration tests passing (100% green)** in `mvn test`.
 - **Master Specification Document:** [`docs/backend_architecture_specification.md`](file:///e:/WRISTO/docs/backend_architecture_specification.md) & [`docs/WRISTO_Production_Ready_SRS_v1.0.md`](file:///e:/WRISTO/docs/WRISTO_Production_Ready_SRS_v1.0.md).
 
 ---

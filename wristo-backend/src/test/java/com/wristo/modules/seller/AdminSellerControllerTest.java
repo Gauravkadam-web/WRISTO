@@ -3,11 +3,15 @@ package com.wristo.modules.seller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wristo.modules.auth.entity.User;
 import com.wristo.modules.auth.repository.UserRepository;
+import com.wristo.modules.inventory.repository.InventoryMovementRepository;
+import com.wristo.modules.inventory.repository.InventoryRepository;
+import com.wristo.modules.inventory.repository.InventoryReservationRepository;
 import com.wristo.modules.seller.dto.SellerStatusUpdateRequest;
 import com.wristo.modules.seller.entity.Seller;
 import com.wristo.modules.seller.entity.SellerStatus;
 import com.wristo.modules.seller.repository.SellerBrandAuthorizationRepository;
 import com.wristo.modules.seller.repository.SellerDocumentRepository;
+import com.wristo.modules.seller.repository.SellerListingRepository;
 import com.wristo.modules.seller.repository.SellerRepository;
 import com.wristo.modules.seller.repository.SellerUserRepository;
 import com.wristo.security.jwt.JwtTokenProvider;
@@ -51,6 +55,18 @@ class AdminSellerControllerTest {
     private SellerBrandAuthorizationRepository sellerBrandAuthorizationRepository;
 
     @Autowired
+    private SellerListingRepository sellerListingRepository;
+
+    @Autowired
+    private InventoryRepository inventoryRepository;
+
+    @Autowired
+    private InventoryMovementRepository inventoryMovementRepository;
+
+    @Autowired
+    private InventoryReservationRepository inventoryReservationRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -64,6 +80,10 @@ class AdminSellerControllerTest {
 
     @BeforeEach
     void setUp() {
+        inventoryMovementRepository.deleteAll();
+        inventoryReservationRepository.deleteAll();
+        inventoryRepository.deleteAll();
+        sellerListingRepository.deleteAll();
         sellerBrandAuthorizationRepository.deleteAll();
         sellerDocumentRepository.deleteAll();
         sellerUserRepository.deleteAll();

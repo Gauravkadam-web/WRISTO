@@ -20,85 +20,75 @@ With Desktop Parity Milestones 1–5 fully completed and verified, all frontend 
 
 | ID | Domain | Issue / Trade-off | Severity | Planned Milestone | Status |
 |---|---|---|:---:|:---:|:---:|
-| **TD-01** | Data & API | In-memory client filtering in `productService.ts` | Medium | Phase 3: Catalog & Inventory | Scheduled for Phase 3 |
-| **TD-02** | State | Cart, Wishlist, Comparison & Account stored in browser `localStorage` | Medium | Phase 4/5: Cart & Orders | Phase 2 Auth Ready |
+| **TD-01** | Data & API | In-memory client filtering in `productService.ts` | Medium | Phase 3: Catalog & Inventory | ✅ **RESOLVED** (Backend APIs Active) |
+| **TD-02** | State | Cart, Wishlist, Comparison & Account stored in browser `localStorage` | Medium | Phase 4/5: Cart & Orders | Phase 2/3 Ready |
 | **TD-03** | Media | High-resolution assets served locally from `/public/assets` (~10.7 MB) | Low | Cloud Deployment Phase | Open (Target: S3 / CDN) |
 | **TD-04** | Architecture | Root directory contains legacy vanilla prototype alongside `wristo-next/` | Low | Post-Parity Cleanup | Open (Target: Archive to `legacy/`) |
 | **TD-05** | Testing | Visual regression performed via headless Chrome script without automated CI runner | Low | CI/CD Phase | Open (Target: GitHub Actions) |
-| **TD-06** | Performance | Facet count computation is $O(N)$ per filter change | Low | Phase 3: Catalog & Inventory | Scheduled for Phase 3 |
+| **TD-06** | Performance | Facet count computation is $O(N)$ per filter change | Low | Phase 3: Catalog & Inventory | ✅ **RESOLVED** (SQL Aggregations in CatalogService) |
 | **TD-07** | Feature | Watch Comparison Engine omitted from Next.js port | High | Desktop Parity M1 | ✅ **RESOLVED** (`8935832`) |
 | **TD-08** | Desktop Parity | Homepage sections, PLP controls, Standalone Pages & Copy | Medium | Desktop Parity M2–M5 | ✅ **RESOLVED** (`8853fbb`) |
 | **TD-09** | Backend Auth | JWT Auth, RBAC, User Profiles & Seller Onboarding | High | Backend Phase 2 | ✅ **RESOLVED** (`be27ddc`) |
+| **TD-10** | Backend Catalog & Stock | Master 40 Horology Seed, Multi-Vendor Listings & Atomic Stock Locking | High | Backend Phase 3 | ✅ **RESOLVED** (35/35 Tests Green) |
 
 ---
 
 ## 3. Detailed Debt Analysis & Resolution Plan
 
-### TD-01: In-Memory Client Filtering vs. Server-Side SQL Filtering
-* **Current State:** `src/services/productService.ts` implements `getCatalogProducts()`, which filters the 40-product array in-memory using JavaScript `.filter()`, `.sort()`, and `.slice()`.
-* **Impact:** For 40 watches, response latency is instantaneous (<2ms). However, this approach does not scale when the catalog grows to 5,000+ SKUs.
-* **Resolution Plan:**
-  * When Spring Boot is deployed, update `productService.ts` to call:
-    ```typescript
-    const res = await fetch(`${API_BASE}/api/v1/watches?${queryParams}`);
-    return await res.json();
-    ```
-  * Backend will implement Spring Data JPA Specifications (`JpaSpecificationExecutor`) with indexes on `brand`, `movement`, `gender`, and `price` (see `docs/backend_architecture_specification.md`).
-  * **Zero React UI components will need modification** thanks to the decoupled service contract.
+### TD-01: In-Memory Client Filtering vs. Server-Side SQL Filtering (RESOLVED)
+* **Initial Problem:** `src/services/productService.ts` originally implemented `getCatalogProducts()` filtering in-memory.
+* **Resolution Applied (Backend Phase 3):**
+  * Built Spring Data JPA multi-facet catalog queries in `WatchRepository` and `CatalogService`.
+  * Exposed `/api/v1/watches`, `/api/v1/brands`, and `/api/v1/categories` with pagination (`PageResponse`), dynamic facet counts, and sorting.
+* **Status:** ✅ **RESOLVED** with Spring Boot Phase 3 Catalog APIs.
 
 ---
 
 ### TD-02: Client-Side Session State (Cart, Wishlist, Comparison, Account)
 * **Current State:** `CartContext.tsx`, `WishlistContext.tsx`, `ComparisonContext.tsx`, and `accountService.ts` persist state to browser `localStorage` under `wristo_cart`, `wristo_wishlist`, `wristo_comparison`, and `wristo_orders`.
 * **Impact:** Items do not synchronize across devices, and user state is lost if browser cache is cleared.
-* **Resolution Plan:**
-  * Introduce guest session UUIDs saved in secure cookies.
-  * In Spring Boot backend, synchronize local storage with `CartService` (Redis-backed) and `AccountService` on user login/signup via JWT.
+* **Resolution Plan:** In Phase 4/5, synchronize client-side cart/wishlist with Spring Boot Redis-backed Cart & Orders APIs.
+* **Status:** Open (Scheduled for Phase 4/5).
 
 ---
 
 ### TD-03: Media Delivery & Remote Image Optimization
 * **Current State:** All 40 watch product cutouts, hero banners, and brand logos are bundled locally inside `wristo-next/public/assets/` (~10.7 MB).
-* **Impact:** Git repository holds binary image files, and scaling to thousands of watches will inflate repository size.
-* **Resolution Plan:**
-  * Migrate image assets to an external CDN (Cloudinary / Supabase Storage / AWS S3).
-  * Update `next.config.ts` to allow remote domains via `images.remotePatterns`.
+* **Impact:** Git repository holds binary image files.
+* **Resolution Plan:** Migrate image assets to an external CDN / S3 bucket during Cloud Deployment Phase.
+* **Status:** Open.
 
 ---
 
 ### TD-04: Dual Codebase Structure (Vanilla Prototype + Next.js App)
-* **Current State:** The workspace contains both the original single-page vanilla prototype (`index.html`, `js/app.js`, `css/styles.css`) in the root and the production Next.js application in `wristo-next/`.
-* **Impact:** Risk of editing root prototype files instead of `wristo-next/src/` components.
-* **Resolution Plan:**
-  * Keep the root prototype as historical reference until backend is deployed.
-  * Move root prototype files into an archived folder (`prototype/` or `legacy/`) once all backend endpoints are connected.
+* **Current State:** Workspace holds both vanilla prototype in root and production Next.js app in `wristo-next/`.
+* **Resolution Plan:** Move root prototype files into `legacy/` once all backend endpoints are connected.
+* **Status:** Open.
 
 ---
 
 ### TD-05: Automated End-to-End Test Suite (CI/CD)
-* **Current State:** Visual regression testing is executed via PowerShell headless Chrome scripts with output screenshots stored in `screenshots/`.
-* **Impact:** Verification is semi-automated and requires local execution.
-* **Resolution Plan:**
-  * Implement Playwright or Cypress test suites in `wristo-next/tests/e2e/`.
-  * Add GitHub Actions workflow (`.github/workflows/ci.yml`) to test `npm run build` and run linting on every push and pull request.
+* **Current State:** Visual regression testing is executed via PowerShell headless Chrome scripts.
+* **Resolution Plan:** Implement GitHub Actions workflow (`.github/workflows/ci.yml`) for automated builds & tests.
+* **Status:** Open.
 
 ---
 
-### TD-06: Dynamic Facet Count Computation
-* **Current State:** `productService.ts` computes facet counts for each filter category by iterating over the filtered dataset for each selection.
-* **Impact:** In-memory loop is fast for 40 items, but computation complexity scales with product variations.
-* **Resolution Plan:** Delegate facet counting to PostgreSQL aggregation queries (`SELECT brand, COUNT(*) FROM products GROUP BY brand`) or Elasticsearch aggregations.
+### TD-06: Dynamic Facet Count Computation (RESOLVED)
+* **Initial Problem:** In-memory loop in client was fast for 40 items, but required SQL aggregation for enterprise scaling.
+* **Resolution Applied (Backend Phase 3):**
+  * Implemented `CatalogService.computeFacets()` with grouped count queries across brands, movements, styles, case sizes, and price boundaries.
+* **Status:** ✅ **RESOLVED** in Backend Phase 3.
 
 ---
 
 ### TD-07: Watch Comparison Engine (RESOLVED)
-* **Initial Problem:** In `js/app.js`, side-by-side comparison was a primary feature (`renderComparison`, `toggleComparison`). During initial Next.js porting, this was left as an empty state (`useState(false)` in `ProductActions.tsx`).
+* **Initial Problem:** In `js/app.js`, side-by-side comparison was a primary feature (`renderComparison`, `toggleComparison`). During initial Next.js porting, this was left as an empty state.
 * **Resolution Applied (`8935832`):**
   * Created `ComparisonContext.tsx` with max 4 watches, localStorage persistence, and toast notifications.
   * Built `FloatingComparisonDock.tsx` (bottom luxury tray with watch chips and minimize pill).
   * Built dedicated `/compare` route & `ComparisonClient.tsx` with 9-spec technical horology matrix.
-  * Connected `Header.tsx` (scale icon with badge), `ProductCard.tsx` (card hover "Compare" button), and `ProductActions.tsx` (PDP toggle).
-  * 58/58 static routes compiled cleanly.
+  * Connected `Header.tsx`, `ProductCard.tsx`, and `ProductActions.tsx`.
 * **Status:** ✅ **RESOLVED** in commit `8935832`.
 
 ---
@@ -111,6 +101,27 @@ With Desktop Parity Milestones 1–5 fully completed and verified, all frontend 
   * **Milestone 3:** Catalog / PLP Enhancements — Built Shop by Category jump list, 4 circular category chips, and card bottom pill badges (`d9ef911`).
   * **Milestone 4:** Dedicated Standalone Desktop Pages — Implemented dedicated `/wishlist`, `/cart`, and `/brands` full-page layouts, and updated account persona to `Gaurav Kadam` (`8853fbb`).
   * **Milestone 5:** Header, Footer & Search Copy Polish — Updated header nav, Pune contact details, social links, payment gateway badges, and search keywords (`8853fbb`).
-  * **Verification:** `npm run build` compiled **61/61 static and dynamic routes** cleanly with zero TypeScript errors.
 * **Status:** ✅ **RESOLVED** across Milestones 1 to 5.
+
+---
+
+### TD-09: Backend Authentication & Seller Onboarding (RESOLVED)
+* **Initial Problem:** Backend lacked authentication, user profile management, seller KYC onboarding, and RBAC authorization.
+* **Resolution Applied (`be27ddc`):**
+  * Flyway V3 & V4 schemas for auth, refresh tokens, sellers, seller users, documents, and brand authorizations.
+  * Stateless JJWT 0.12.6 with HMAC-SHA256, UserPrincipal, and Spring Security 6 RBAC filter chains.
+  * Full controller suites for auth, user profiles, addresses, seller onboarding, staff roles, and admin KYC verification.
+* **Status:** ✅ **RESOLVED** in Backend Phase 2.
+
+---
+
+### TD-10: Backend Catalog, Seller Listings & Inventory Management (RESOLVED)
+* **Initial Problem:** Backend lacked master 40 timepiece horology specs, multi-vendor seller listings, and transactional inventory controls.
+* **Resolution Applied (Backend Phase 3):**
+  * Flyway V5 (40 master watches + 40 horology specs), V6 (`seller_listings`, `inventories`, `inventory_movements`, `inventory_reservations`), and V7 (seed demo listings).
+  * Multi-facet catalog search, dynamic facet aggregations, companion recommendations, and active offers.
+  * Multi-vendor listing creation with SKU isolation and admin approval workflow.
+  * Pessimistic row locking (`PESSIMISTIC_WRITE`), movement audit logging, and transactional stock reservations.
+  * 35/35 automated unit and integration tests passing in `mvn test` (100% green).
+* **Status:** ✅ **RESOLVED** in Backend Phase 3.
 

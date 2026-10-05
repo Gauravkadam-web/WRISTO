@@ -29,7 +29,16 @@ public enum ErrorCode {
     SELLER_STAFF_NOT_FOUND("SELLER_STAFF_NOT_FOUND", "Staff member not found in seller organization", HttpStatus.NOT_FOUND),
     DOCUMENT_NOT_FOUND("DOCUMENT_NOT_FOUND", "Seller verification document was not found", HttpStatus.NOT_FOUND),
     BRAND_AUTHORIZATION_ALREADY_EXISTS("BRAND_AUTHORIZATION_ALREADY_EXISTS", "Brand authorization already requested or granted for this brand", HttpStatus.CONFLICT),
-    BRAND_AUTHORIZATION_NOT_FOUND("BRAND_AUTHORIZATION_NOT_FOUND", "Brand authorization record not found", HttpStatus.NOT_FOUND);
+    BRAND_AUTHORIZATION_NOT_FOUND("BRAND_AUTHORIZATION_NOT_FOUND", "Brand authorization record not found", HttpStatus.NOT_FOUND),
+    SELLER_NOT_AUTHORIZED_FOR_BRAND("SELLER_NOT_AUTHORIZED_FOR_BRAND", "Seller is not authorized to sell this brand", HttpStatus.FORBIDDEN),
+
+    // Listing & Inventory Domain
+    SELLER_LISTING_NOT_FOUND("SELLER_LISTING_NOT_FOUND", "Seller listing not found", HttpStatus.NOT_FOUND),
+    SELLER_LISTING_ALREADY_EXISTS("SELLER_LISTING_ALREADY_EXISTS", "A listing with this SKU already exists for this seller", HttpStatus.CONFLICT),
+    INVENTORY_NOT_FOUND("INVENTORY_NOT_FOUND", "Inventory record not found", HttpStatus.NOT_FOUND),
+    RESERVATION_NOT_FOUND("RESERVATION_NOT_FOUND", "Stock reservation record not found", HttpStatus.NOT_FOUND),
+    RESERVATION_EXPIRED("RESERVATION_EXPIRED", "Stock reservation has expired", HttpStatus.CONFLICT),
+    INVALID_INVENTORY_ADJUSTMENT("INVALID_INVENTORY_ADJUSTMENT", "Inventory quantity adjustment would cause negative stock", HttpStatus.BAD_REQUEST);
 
     private final String code;
     private final String message;

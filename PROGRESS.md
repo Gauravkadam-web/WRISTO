@@ -300,5 +300,46 @@
   - Seller & RBAC Module: `Seller.java`, `SellerUser.java`, `SellerDocument.java`, `SellerBrandAuthorization.java`, `SellerService.java`, `AdminSellerService.java`, `SellerController.java` (`/seller/onboard`, `/seller/me`, `/seller/staff/**`, `/seller/documents`, `/seller/brand-authorizations`), `AdminSellerController.java` (`/admin/sellers/**` for approval, rejection, and KYC/brand verification).
   - Security Config: Registered `JwtAuthenticationFilter` in filter chain with strict RBAC: `/admin/**` -> `hasRole('ADMIN')`, `/seller/**` -> `hasAnyRole('SELLER', 'SELLER_STAFF', 'ADMIN')`, `/user/**` -> `authenticated()`.
   - Test Suite: **20/20 automated unit and integration tests passing in `mvn test` (100% green)** across `JwtTokenProviderTest`, `AuthControllerTest`, `UserControllerTest`, `SellerControllerTest`, `AdminSellerControllerTest`, `CatalogControllerTest`, `HealthCheckControllerTest`, and `WristoApplicationTests`.
-  - Frontend Verification: Next.js 16.3.7 Turbopack build verified (**61/61 static & dynamic routes compiled cleanly**).
+- [x] **Phase 3: Catalog, Seller Listings & Inventory** ✅ (Implemented & 100% Test-Verified)
+  - **Flyway Migrations:**
+    - `V5__seed_master_40_watches_and_specs.sql`: Canonical dataset of 40 luxury timepieces with full technical horology specs (calibers, power reserves, water resistance, crystal materials, case finishing, complications) synchronized with frontend dataset.
+    - `V6__init_seller_listings_and_inventory_schema.sql`: Multi-vendor seller listing schema (`seller_listings`), inventory tracking (`inventories`), inventory movement audit log (`inventory_movements`), and inventory reservation system (`inventory_reservations`).
+    - `V7__seed_demo_seller_listings_and_inventory.sql`: Seeded live demo seller listings and stock for verified boutique `seller-auren-in`.
+  - **Catalog Module (`/api/v1/watches/**`, `/api/v1/brands`, `/api/v1/categories`):**
+    - Multi-facet catalog search with dynamic facet aggregation (`CatalogFacetsResponse` computing live counts for brands, movements, styles, case sizes, and price bounds).
+    - Single timepiece endpoint (`/watches/{id}`) with full horology specs (`WatchDetailResponse`).
+    - Similar watches recommendation endpoint (`/watches/{id}/similar`).
+    - Active seller listings comparison endpoint (`/watches/{id}/listings`).
+    - Public brand houses (`/brands`) and categories (`/categories`) listing APIs.
+  - **Seller Listing Module (`/api/v1/seller/listings/**`):**
+    - Multi-vendor seller listing creation with automatic initial inventory provisioning (`CreateSellerListingRequest`, `SellerListingResponse`).
+    - Unique SKU isolation per seller and conflict detection.
+    - Seller listing updates (`UpdateSellerListingRequest`) and listing status state machine (`PENDING_APPROVAL`, `ACTIVE`, `INACTIVE`, `SUSPENDED`, `OUT_OF_STOCK`).
+  - **Admin Listing Governance (`/api/v1/admin/listings/**`):**
+    - Admin listing review, approval, and rejection with audit reasons (`AdminListingApprovalRequest`, `AdminListingService`).
+  - **Inventory & Movement Management (`/api/v1/seller/inventory/**`):**
+    - Atomic stock adjustments with row-level locking (`PESSIMISTIC_WRITE`) preventing negative inventory or concurrency drift.
+    - Movement audit logging (`RESTOCK`, `SALE`, `RESERVATION_HOLD`, `RESERVATION_RELEASE`, `RETURN`, `DAMAGE`, `MANUAL_ADJUSTMENT`).
+    - Transactional reservation lifecycle (`reserveStock`, `confirmReservation`, `releaseReservation`) with automatic expiration checks.
+  - **Backend Test Suite:** **35/35 automated unit and integration tests passing in `mvn test` (100% green)** across `CatalogControllerTest`, `SellerListingControllerTest`, `AdminListingControllerTest`, `SellerInventoryControllerTest`, `SellerControllerTest`, `AdminSellerControllerTest`, `AuthControllerTest`, `UserControllerTest`, `JwtTokenProviderTest`, `HealthCheckControllerTest`, and `WristoApplicationTests`.
+  - **Frontend Verification:** Next.js 16.3.7 Turbopack build verified (**61/61 static & dynamic routes compiled cleanly**).
+
+- [ ] **Phase 4: Cart, Wishlist & Comparison Backend Services** ⏳ (Next Target)
+  - Persistent cart endpoints with coupon engine integration (`/api/v1/cart/**`).
+  - Client wishlist synchronization with catalog metadata (`/api/v1/wishlist/**`).
+  - Watch comparison persistence and technical matrix comparison endpoint (`/api/v1/compare/**`).
+
+- [ ] **Phase 5: Order Processing, Luxury Checkout & Payment Integration** ⏳
+  - Multi-step checkout state machine with inventory reservation coordination (`/api/v1/checkout/**`).
+  - Order management and tracking (`/api/v1/orders/**`).
+  - Razorpay/Stripe luxury payment gateway integration & webhook handling (`/api/v1/payments/**`).
+
+- [ ] **Phase 6: Client Account, Provenance Ledger & Certificates** ⏳
+  - Client profile and order history (`/api/v1/account/**`).
+  - Digital Provenance Ledger and cryptographic authenticity certificate verification (`/api/v1/provenance/**`).
+
+- [ ] **Phase 7: AI Concierge, Horological Search & Realtime WebSockets** ⏳
+  - Horology-grounded AI concierge API powered by Gemini API (`/api/v1/concierge/**`).
+  - Instant search & autocomplete index (`/api/v1/search/**`).
+  - Real-time stock and order notification WebSocket service.
 
