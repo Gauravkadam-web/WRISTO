@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
+import { MapPin, Phone, Mail, Clock } from 'lucide-react';
 
 export default function Footer() {
   const pathname = usePathname();
@@ -76,19 +77,19 @@ export default function Footer() {
             <div className="footer-heading">Get In Touch</div>
             <div className="footer-contact-list">
               <div className="footer-contact-item">
-                <span className="footer-contact-icon">📍</span>
+                <span className="footer-contact-icon"><MapPin size={16} strokeWidth={1.5} /></span>
                 <span>Pune, Maharashtra, India</span>
               </div>
               <div className="footer-contact-item">
-                <span className="footer-contact-icon">📞</span>
+                <span className="footer-contact-icon"><Phone size={16} strokeWidth={1.5} /></span>
                 <a href="tel:+919876543210">+91 98765 43210</a>
               </div>
               <div className="footer-contact-item">
-                <span className="footer-contact-icon">✉️</span>
+                <span className="footer-contact-icon"><Mail size={16} strokeWidth={1.5} /></span>
                 <a href="mailto:support@wristo.com">support@wristo.com</a>
               </div>
               <div className="footer-contact-item">
-                <span className="footer-contact-icon">🕒</span>
+                <span className="footer-contact-icon"><Clock size={16} strokeWidth={1.5} /></span>
                 <span>Mon – Sat: 9:00 AM – 8:00 PM IST</span>
               </div>
             </div>

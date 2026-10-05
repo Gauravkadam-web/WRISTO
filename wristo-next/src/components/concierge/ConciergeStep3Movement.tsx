@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { MovementPreference } from '@/types/concierge';
+import { Cpu, Check } from 'lucide-react';
 
 interface Step3Props {
   selectedMovements: MovementPreference[];
@@ -93,14 +94,14 @@ export default function ConciergeStep3Movement({
               <div className="concierge-tile-header">
                 <span className="concierge-tech-badge">{opt.badge}</span>
                 <span className={`concierge-check-circle ${isSelected ? 'checked' : ''}`}>
-                  {isSelected ? '✓' : ''}
+                  {isSelected ? <Check size={12} strokeWidth={2.5} /> : ''}
                 </span>
               </div>
               <h3 className="concierge-tile-title">{opt.title}</h3>
               <span className="concierge-tile-tagline">{opt.tagline}</span>
               <p className="concierge-tile-desc">{opt.description}</p>
-              <div className="concierge-mech-note">
-                ⚙️ {opt.mechanism}
+              <div className="concierge-mech-note" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                <Cpu size={14} strokeWidth={1.5} style={{ color: 'var(--brand-bronze)' }} /> {opt.mechanism}
               </div>
             </button>
           );

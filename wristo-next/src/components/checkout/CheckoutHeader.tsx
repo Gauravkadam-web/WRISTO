@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { ShieldCheck } from 'lucide-react';
 
 export default function CheckoutHeader() {
   return (
@@ -21,7 +22,9 @@ export default function CheckoutHeader() {
           </Link>
 
           <div className="checkout-security-badge">
-            <span className="checkout-security-icon">🔒</span>
+            <span className="checkout-security-icon" style={{ display: 'inline-flex', alignItems: 'center' }}>
+              <ShieldCheck size={16} strokeWidth={1.5} style={{ color: 'var(--color-accent-gold)' }} />
+            </span>
             <span style={{ fontWeight: 600, color: '#FFFFFF' }}>256-Bit SSL Encrypted</span>
             <span style={{ color: '#666666' }}>•</span>
             <span style={{ color: '#A0A0A0' }}>Concierge: +91 (800) 974-786</span>

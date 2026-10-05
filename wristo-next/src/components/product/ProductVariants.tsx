@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Product } from '@/types/product';
+import { Check } from 'lucide-react';
 
 interface ProductVariantsProps {
   product: Product;
@@ -45,7 +46,9 @@ export default function ProductVariants({
                 aria-label={`Select color ${color}`}
               >
                 {selectedColor === color && (
-                  <span className="pdp-swatch-check">✓</span>
+                  <span className="pdp-swatch-check" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Check size={10} strokeWidth={3} />
+                  </span>
                 )}
               </button>
             ))}

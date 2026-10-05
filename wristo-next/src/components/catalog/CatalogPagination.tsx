@@ -62,8 +62,8 @@ export default function CatalogPagination({
           {isLoading ? 'Loading Timepieces...' : `Load More Timepieces (${remaining} remaining) ↓`}
         </button>
       ) : (
-        <div style={{ fontSize: '12px', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--color-text-muted)', fontWeight: 600 }}>
-          ✦ All Curated Timepieces Loaded ✦
+        <div style={{ fontSize: '11.5px', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--brand-bronze)', fontWeight: 600 }}>
+          All Curated Timepieces Loaded
         </div>
       )}
     </div>

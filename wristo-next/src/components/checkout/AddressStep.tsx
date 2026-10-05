@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { AlertCircle } from 'lucide-react';
 import { CustomerAddress } from '@/types/order';
 import { lookupPincode } from '@/services/orderService';
 
@@ -211,9 +212,13 @@ export default function AddressStep({ address, onChange, onNext }: AddressStepPr
             border: '1px solid #FFCDD2',
             borderRadius: '4px',
             color: '#C62828',
-            fontSize: '13px'
+            fontSize: '13px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
           }}>
-            ⚠️ {errorMsg}
+            <AlertCircle size={15} strokeWidth={1.5} />
+            <span>{errorMsg}</span>
           </div>
         )}
 

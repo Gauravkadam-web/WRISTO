@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArticleWithProducts } from '@/types/editorial';
+import { Lightbulb } from 'lucide-react';
 import FeaturedTimepiecesCarousel from './FeaturedTimepiecesCarousel';
 import ArticleNavigation from './ArticleNavigation';
 
@@ -113,7 +114,9 @@ export default function ArticleReader({ article }: ArticleReaderProps) {
 
               {sec.callout && (
                 <aside className="journal-callout-box">
-                  <div className="journal-callout-icon">💡</div>
+                  <div className="journal-callout-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Lightbulb size={20} strokeWidth={1.5} style={{ color: 'var(--color-accent-gold)' }} />
+                  </div>
                   <p className="journal-callout-text">{sec.callout}</p>
                 </aside>
               )}

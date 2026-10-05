@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { ShoppingBag, ArrowRight } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { CustomerAddress, DeliveryTier, PaymentMethodType } from '@/types/order';
 import { createOrder, DELIVERY_OPTIONS } from '@/services/orderService';
@@ -141,15 +142,28 @@ export default function CheckoutClient() {
       <div className="checkout-page-wrapper">
         <CheckoutHeader />
         <div className="checkout-container" style={{ textAlign: 'center', padding: '100px 20px' }}>
-          <div style={{ fontSize: '48px', marginBottom: '20px' }}>🛍️</div>
+          <div style={{
+            width: '64px',
+            height: '64px',
+            borderRadius: '50%',
+            background: 'rgba(176, 141, 107, 0.1)',
+            color: 'var(--brand-bronze)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto 20px'
+          }}>
+            <ShoppingBag size={30} strokeWidth={1.5} />
+          </div>
           <h1 className="checkout-card-title" style={{ fontSize: '32px', marginBottom: '12px' }}>
             Your Shopping Bag is Empty
           </h1>
           <p style={{ fontSize: '15px', color: 'var(--color-text-secondary)', maxWidth: '480px', margin: '0 auto 28px' }}>
             There are no timepieces currently in your shopping bag. Explore our 40-piece master collection to begin your acquisition.
           </p>
-          <Link href="/watches" className="btn btn-primary btn-lg">
-            Explore Curated Watches &rarr;
+          <Link href="/watches" className="btn btn-primary btn-lg" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+            <span>Explore Curated Watches</span>
+            <ArrowRight size={15} strokeWidth={1.5} />
           </Link>
         </div>
       </div>

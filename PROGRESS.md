@@ -5,7 +5,7 @@
 **Status:** All 8 Full-Stack Backend Modules + Desktop Parity Milestones 1–5 + Production DevOps 100% Complete & Verified.  
 **Backend Status:** Java 21 + Spring Boot 3.3+ (103/103 Tests Green) + PostgreSQL Flyway (V1–V11) + Docker + GitHub Actions CI.  
 **Total Production Routes:** 61 Statically Pre-rendered SSG & Dynamic Routes.  
-**GitHub Remote:** `https://github.com/Gauravkadam-web/WRISTO.git` (Branch: `main`)  
+**GitHub Remote:** `https://github.com/Gauravkadam-web/WRISTO.git` (Branch: `main`, Latest Push: `ce3d1d3`)  
 **Last Updated:** October 2026  
 
 ---
@@ -419,10 +419,15 @@
   - **Backend Test Suite:** **103/103 automated unit and integration tests passing in `mvn test` (100% green)** across `JournalControllerTest`, `AdminJournalControllerTest`, `SearchControllerTest`, `ConciergeControllerTest`, `NotificationControllerTest`, `AccountControllerTest`, `ProvenanceControllerTest`, `CheckoutControllerTest`, `OrderControllerTest`, `AdminOrderControllerTest`, `PaymentControllerTest`, `CouponControllerTest`, `CartControllerTest`, `WishlistControllerTest`, `ComparisonControllerTest`, `CatalogControllerTest`, `SellerListingControllerTest`, `AdminListingControllerTest`, `SellerInventoryControllerTest`, `SellerControllerTest`, `AdminSellerControllerTest`, `AuthControllerTest`, `UserControllerTest`, `JwtTokenProviderTest`, `HealthCheckControllerTest`, and `WristoApplicationTests`.
   - **Frontend Verification:** Next.js 16.3.7 Turbopack build verified (**61/61 static & dynamic routes compiled cleanly**).
 
-- [x] **Phase 9: Production Containerization & CI/CD Pipeline (DevOps)** ✅ (Implemented & 100% Verified)
+- [x] **Phase 9: Production Containerization, CI/CD & Cloud Deployment** ✅ (Implemented & 100% Verified)
   - **Backend Dockerfile:** Multi-stage `eclipse-temurin:21-alpine` container with non-root user `wristo` and memory-optimized container JVM options (`-XX:MaxRAMPercentage=75.0`).
   - **Frontend Dockerfile:** Multi-stage `node:20-alpine` standalone runner with minimal image size and non-root user `nextjs`.
   - **Docker Compose Orchestration:** Root `docker-compose.yml` defining automated services for PostgreSQL 16 Alpine, Spring Boot 3.3.4 Backend, and Next.js 16+ Frontend with automatic health checks and persistent storage volumes.
   - **GitHub Actions CI/CD Pipeline:** Automated `.github/workflows/ci.yml` running backend test suite (`mvn clean test`) and frontend production bundle validation (`npm run build`) on every push to `main`.
+  - **Cloud Production Architecture (Render Web Service + Supabase PostgreSQL Pooler):**
+    - Configured Render Web Service environment mappings to Spring Boot 3.3.4 `application.yml` and Next.js 16+ frontend.
+    - Resolved Supabase multi-tenant connection pooler routing requirements (`DB_USERNAME=postgres.<project-ref>`, `DB_PORT=6543`, `DB_NAME=postgres`).
+    - Aligned strict PostgreSQL foreign key constraints across Flyway migrations: `V9` (`order_items.seller_listing_id` -> `UUID`) and `V10` (`collector_profiles.user_id`, `authenticity_certificates.user_id`, `provenance_records.current_user_id` -> `UUID`, `watch_id` -> `VARCHAR(32)`).
+    - Verified **103/103 automated tests passing (100% green)** in `mvn clean test` and pushed to `main` as `ce3d1d3`.
 
 

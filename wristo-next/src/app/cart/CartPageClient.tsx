@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { ShieldCheck, Lock, Clock } from 'lucide-react';
 import { useCart, CartProductItem } from '@/context/CartContext';
 
 export default function CartPageClient() {
@@ -257,15 +258,21 @@ export default function CartPageClient() {
               {/* Trust Guarantees */}
               <div className="cart-trust-badges">
                 <div className="cart-trust-item">
-                  <span className="cart-trust-icon">🛡️</span>
+                  <span className="cart-trust-icon" style={{ display: 'inline-flex', alignItems: 'center' }}>
+                    <ShieldCheck size={14} strokeWidth={1.5} />
+                  </span>
                   <span>100% Authentic Guaranteed</span>
                 </div>
                 <div className="cart-trust-item">
-                  <span className="cart-trust-icon">🔒</span>
+                  <span className="cart-trust-icon" style={{ display: 'inline-flex', alignItems: 'center' }}>
+                    <Lock size={14} strokeWidth={1.5} />
+                  </span>
                   <span>Bank-Grade 256-Bit SSL Checkout</span>
                 </div>
                 <div className="cart-trust-item">
-                  <span className="cart-trust-icon">⏱️</span>
+                  <span className="cart-trust-icon" style={{ display: 'inline-flex', alignItems: 'center' }}>
+                    <Clock size={14} strokeWidth={1.5} />
+                  </span>
                   <span>7-Day Inspection &amp; Returns</span>
                 </div>
               </div>

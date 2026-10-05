@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Product } from '@/types/product';
 import { useCart } from '@/context/CartContext';
+import { Check } from 'lucide-react';
 
 interface CarouselProps {
   products: Product[];
@@ -73,10 +74,16 @@ export default function FeaturedTimepiecesCarousel({ products }: CarouselProps) 
                   <button
                     type="button"
                     className={`btn btn-sm ${isAdded ? 'btn-outline' : 'btn-primary'}`}
-                    style={{ flex: 1 }}
+                    style={{ flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
                     onClick={() => handleAdd(watch.id)}
                   >
-                    {isAdded ? '✓ Added' : 'Add to Bag'}
+                    {isAdded ? (
+                      <>
+                        <Check size={13} strokeWidth={2.5} /> Added
+                      </>
+                    ) : (
+                      'Add to Bag'
+                    )}
                   </button>
                   <Link
                     href={`/product/${watch.id}`}

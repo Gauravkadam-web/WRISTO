@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { Check, RotateCcw } from 'lucide-react';
 
 interface ConciergeHeaderProps {
   currentStep: number;
@@ -37,8 +38,9 @@ export default function ConciergeHeader({
             type="button"
             className="btn btn-outline btn-sm concierge-reset-btn"
             onClick={onReset}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
           >
-            &#x21bb; Refine Criteria
+            <RotateCcw size={13} strokeWidth={1.5} /> Refine Criteria
           </button>
         )}
       </div>
@@ -63,8 +65,8 @@ export default function ConciergeHeader({
                   onClick={() => isCompleted && onStepClick && onStepClick(stepNumber)}
                   style={{ cursor: isCompleted ? 'pointer' : 'default' }}
                 >
-                  <div className="concierge-step-circle">
-                    {isCompleted ? '✓' : stepNumber}
+                  <div className="concierge-step-circle" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {isCompleted ? <Check size={12} strokeWidth={2.5} /> : stepNumber}
                   </div>
                   <span className="concierge-step-label">{label}</span>
                 </div>

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
+import { Check, FileText, Printer, ArrowRight } from 'lucide-react';
 import { OrderRecord } from '@/types/order';
 import { getLatestOrder, getOrderById } from '@/services/orderService';
 import CheckoutHeader from '@/components/checkout/CheckoutHeader';
@@ -141,7 +142,9 @@ export default function SuccessClient() {
 
       <main className="checkout-success-wrap">
         <div className="success-hero-card">
-          <div className="success-gold-seal">✓</div>
+          <div className="success-gold-seal" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Check size={28} strokeWidth={2.5} />
+          </div>
           <h1 className="success-order-title">Your Timepiece Has Been Secured</h1>
           <p className="success-order-subtitle">
             Our master horologists have reserved your selection and begun technical movement inspection prior to insured dispatch.
@@ -150,8 +153,8 @@ export default function SuccessClient() {
           {/* Official Provenance Certificate Box */}
           <div className="provenance-certificate-card">
             <div className="provenance-card-header">
-              <div className="provenance-heading">
-                <span>📜</span>
+              <div className="provenance-heading" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <FileText size={16} strokeWidth={1.5} color="var(--brand-bronze)" />
                 <span>Certificate of Provenance &amp; Order Register</span>
               </div>
               <div className="provenance-cert-id">
@@ -272,14 +275,15 @@ export default function SuccessClient() {
               type="button"
               onClick={() => window.print()}
               className="btn btn-outline"
-              style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
             >
-              <span>🖨️</span>
+              <Printer size={15} strokeWidth={1.5} />
               <span>Print Certificate &amp; Receipt</span>
             </button>
 
-            <Link href="/watches" className="btn btn-primary">
-              Explore More Watches &rarr;
+            <Link href="/watches" className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+              <span>Explore More Watches</span>
+              <ArrowRight size={14} strokeWidth={1.5} />
             </Link>
           </div>
         </div>

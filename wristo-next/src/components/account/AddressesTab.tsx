@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { Star } from 'lucide-react';
 import { SavedAddress } from '@/types/account';
 import { lookupPincode } from '@/services/orderService';
 import { deleteAddress, saveAddress, setDefaultAddress } from '@/services/accountService';
@@ -135,7 +136,10 @@ export default function AddressesTab({ addresses, onRefreshAddresses }: Addresse
             <div className="account-address-head">
               <span className="account-address-label">{addr.label}</span>
               {addr.isDefault ? (
-                <span className="account-address-default-badge">★ Default Destination</span>
+                <span className="account-address-default-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                  <Star size={11} strokeWidth={2} fill="currentColor" />
+                  <span>Default Destination</span>
+                </span>
               ) : (
                 <button
                   type="button"

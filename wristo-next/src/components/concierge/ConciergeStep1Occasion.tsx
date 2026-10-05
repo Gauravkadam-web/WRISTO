@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { OccasionType } from '@/types/concierge';
+import { Wine, Landmark, Compass, Watch, Hourglass, Check } from 'lucide-react';
 
 interface Step1Props {
   selectedOccasions: OccasionType[];
@@ -11,7 +12,7 @@ interface Step1Props {
 
 interface TileOption {
   id: OccasionType;
-  icon: string;
+  icon: React.ReactNode;
   title: string;
   tagline: string;
   description: string;
@@ -20,35 +21,35 @@ interface TileOption {
 const OCCASION_TILES: TileOption[] = [
   {
     id: 'black_tie',
-    icon: '🍸',
+    icon: <Wine size={22} strokeWidth={1.5} />,
     title: 'Black Tie & Gala',
     tagline: 'Evening Soirées & Formal Dining',
     description: 'Slender gold or steel profiles designed to slip unencumbered beneath a double-cuffed tuxedo shirt.'
   },
   {
     id: 'executive_boardroom',
-    icon: '🏛️',
+    icon: <Landmark size={22} strokeWidth={1.5} />,
     title: 'Executive Boardroom',
     tagline: 'Corporate Leadership & Mergers',
     description: 'Understated horological gravitas with unblemished dials and commanding mechanical precision.'
   },
   {
     id: 'aviation_adventure',
-    icon: '🧭',
+    icon: <Compass size={22} strokeWidth={1.5} />,
     title: 'Aviation & Expedition',
     tagline: 'Regattas, Chronographs & Globetrotting',
     description: 'High-contrast luminescent markers, tachymeter bezels, and adventure-proof water resistance.'
   },
   {
     id: 'daily_luxury',
-    icon: '✨',
+    icon: <Watch size={22} strokeWidth={1.5} />,
     title: 'Minimalist Daily Luxury',
     tagline: 'Effortless Contemporary Style',
     description: 'Versatile monochrome watches engineered for seamless transitions from casual weekends to fine dining.'
   },
   {
     id: 'heritage_heirloom',
-    icon: '⏳',
+    icon: <Hourglass size={22} strokeWidth={1.5} />,
     title: 'Heritage Heirloom',
     tagline: 'Generational Investment & Art',
     description: 'Exposed balance wheels, intricate skeleton dials, and self-winding automatic calibers built to outlast generations.'
@@ -91,9 +92,9 @@ export default function ConciergeStep1Occasion({
               onClick={() => toggleOccasion(tile.id)}
             >
               <div className="concierge-tile-header">
-                <span className="concierge-tile-icon">{tile.icon}</span>
+                <span className="concierge-tile-icon" style={{ display: 'inline-flex', alignItems: 'center', color: 'var(--brand-bronze)' }}>{tile.icon}</span>
                 <span className={`concierge-check-circle ${isSelected ? 'checked' : ''}`}>
-                  {isSelected ? '✓' : ''}
+                  {isSelected ? <Check size={12} strokeWidth={2.5} /> : ''}
                 </span>
               </div>
               <h3 className="concierge-tile-title">{tile.title}</h3>

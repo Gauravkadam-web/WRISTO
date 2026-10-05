@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { BudgetTier } from '@/types/concierge';
+import { Check } from 'lucide-react';
 
 interface Step4Props {
   budgetTier: BudgetTier;
@@ -98,7 +99,7 @@ export default function ConciergeStep4BudgetMaterial({
                 <div className="concierge-mat-header">
                   <span className="concierge-mat-name">{mat.label}</span>
                   <span className={`concierge-check-circle ${isSelected ? 'checked' : ''}`}>
-                    {isSelected ? '✓' : ''}
+                    {isSelected ? <Check size={12} strokeWidth={2.5} /> : ''}
                   </span>
                 </div>
                 <span className="concierge-mat-desc">{mat.desc}</span>

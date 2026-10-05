@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { PaymentMethodType } from '@/types/order';
 import { PAYMENT_OPTIONS } from '@/services/orderService';
+import { Check, ShieldCheck, Sparkles } from 'lucide-react';
 
 interface PaymentStepProps {
   selectedPayment: PaymentMethodType;
@@ -100,11 +101,11 @@ export default function PaymentStep({
                       Verify UPI
                     </button>
                   </div>
-                  <div style={{ display: 'flex', gap: '12px', marginTop: '10px', fontSize: '11px', color: 'var(--color-text-muted)' }}>
-                    <span>✓ Google Pay</span>
-                    <span>✓ PhonePe</span>
-                    <span>✓ Paytm</span>
-                    <span>✓ Cred UPI</span>
+                  <div style={{ display: 'flex', gap: '16px', marginTop: '10px', fontSize: '11px', color: 'var(--color-text-muted)' }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Check size={12} strokeWidth={2} style={{ color: 'var(--color-success)' }} /> Google Pay</span>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Check size={12} strokeWidth={2} style={{ color: 'var(--color-success)' }} /> PhonePe</span>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Check size={12} strokeWidth={2} style={{ color: 'var(--color-success)' }} /> Paytm</span>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Check size={12} strokeWidth={2} style={{ color: 'var(--color-success)' }} /> Cred UPI</span>
                   </div>
                 </div>
               )}
@@ -172,8 +173,8 @@ export default function PaymentStep({
 
                     {totalAmount >= 10000 && (
                       <div className="checkout-field-full" style={{ marginTop: '8px', paddingTop: '10px', borderTop: '1px solid var(--color-border-light)' }}>
-                        <label className="checkout-label" style={{ fontSize: '11px', color: 'var(--color-gold-hover)' }}>
-                          ✨ 0% No-Cost EMI Available for this timepiece:
+                        <label className="checkout-label" style={{ fontSize: '11px', color: 'var(--color-gold-hover)', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                          <Sparkles size={14} strokeWidth={1.5} /> 0% No-Cost EMI Available for this timepiece:
                         </label>
                         <div style={{ display: 'flex', gap: '8px', marginTop: '6px' }}>
                           <button
@@ -245,9 +246,15 @@ export default function PaymentStep({
                   marginBottom: '10px',
                   fontSize: '12px',
                   color: 'var(--color-text-secondary)',
-                  lineHeight: 1.5
+                  lineHeight: 1.5,
+                  display: 'flex',
+                  gap: '10px',
+                  alignItems: 'flex-start'
                 }}>
-                  🛡️ <strong>Horological Inspection Protocol:</strong> Your timepiece arrives in an armored security box with a serialized tamper-evident seal. You are invited to inspect the outer seal and documentation with the courier before releasing payment via Cash or Mobile UPI.
+                  <ShieldCheck size={18} strokeWidth={1.5} style={{ color: 'var(--brand-bronze)', flexShrink: 0, marginTop: '2px' }} />
+                  <div>
+                    <strong>Horological Inspection Protocol:</strong> Your timepiece arrives in an armored security box with a serialized tamper-evident seal. You are invited to inspect the outer seal and documentation with the courier before releasing payment via Cash or Mobile UPI.
+                  </div>
                 </div>
               )}
             </div>

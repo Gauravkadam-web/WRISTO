@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { CaseErgonomics } from '@/types/concierge';
+import { Ruler } from 'lucide-react';
 
 interface Step2Props {
   caseErgonomics: CaseErgonomics;
@@ -89,8 +90,8 @@ export default function ConciergeStep2Ergonomics({
               <h3 className="concierge-tile-title">{opt.title}</h3>
               <span className="concierge-tile-tagline">{opt.tagline}</span>
               <p className="concierge-tile-desc">{opt.description}</p>
-              <div className="concierge-wrist-guide">
-                <span>📏</span> {opt.wristRecommendation}
+              <div className="concierge-wrist-guide" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                <Ruler size={14} strokeWidth={1.5} style={{ color: 'var(--brand-bronze)' }} /> {opt.wristRecommendation}
               </div>
             </button>
           );

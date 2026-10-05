@@ -89,6 +89,53 @@ export function validateCoupon(
   }
 
   const normalized = code.trim().toUpperCase();
+
+  // 1. Check dynamic admin coupons first
+  let dynamicCoupons: any[] = [];
+  if (typeof window !== 'undefined') {
+    try {
+      const stored = localStorage.getItem('wristo_admin_coupons');
+      if (stored) {
+        dynamicCoupons = JSON.parse(stored);
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  const matchedDynamic = dynamicCoupons.find((c: any) => c.code.toUpperCase() === normalized && c.active);
+
+  if (matchedDynamic) {
+    if (subtotal < (matchedDynamic.minOrderAmount || 0)) {
+      return {
+        valid: false,
+        message: `Privilege code "${matchedDynamic.code}" requires a minimum order value of $${matchedDynamic.minOrderAmount.toLocaleString()}.`
+      };
+    }
+
+    let calculatedDiscount = 0;
+    if (matchedDynamic.discountType === 'PERCENTAGE') {
+      calculatedDiscount = Math.round((subtotal * matchedDynamic.discountValue) / 100);
+      if (matchedDynamic.maxDiscountAmount && calculatedDiscount > matchedDynamic.maxDiscountAmount) {
+        calculatedDiscount = matchedDynamic.maxDiscountAmount;
+      }
+    } else {
+      calculatedDiscount = Math.min(matchedDynamic.discountValue, subtotal);
+    }
+
+    return {
+      valid: true,
+      coupon: {
+        code: matchedDynamic.code,
+        description: `Exclusive Privilege Concession (${matchedDynamic.discountValue}${matchedDynamic.discountType === 'PERCENTAGE' ? '%' : '$'} off)`,
+        discountType: matchedDynamic.discountType.toLowerCase() as 'percentage' | 'fixed',
+        discountValue: matchedDynamic.discountValue,
+        calculatedDiscount
+      }
+    };
+  }
+
+  // 2. Check static default coupons
   const matched = AVAILABLE_COUPONS.find(c => c.code === normalized);
 
   if (!matched) {

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useComparison } from '@/context/ComparisonContext';
 import { PRODUCTS } from '@/data/products';
+import { Sparkles } from 'lucide-react';
 
 export default function FloatingComparisonDock() {
   const pathname = usePathname();
@@ -28,7 +29,7 @@ export default function FloatingComparisonDock() {
         {toastMessage && (
           <div className="toast-container" role="status" aria-live="polite">
             <div className="toast">
-              <span style={{ color: 'var(--color-gold, #DEC095)' }}>✦</span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', color: 'var(--color-gold, #DEC095)' }}><Sparkles size={14} strokeWidth={1.5} /></span>
               <span>{toastMessage}</span>
               <button
                 type="button"
@@ -56,7 +57,7 @@ export default function FloatingComparisonDock() {
       {toastMessage && (
         <div className="toast-container" role="status" aria-live="polite">
           <div className="toast">
-            <span style={{ color: 'var(--color-gold, #DEC095)' }}>✦</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', color: 'var(--color-gold, #DEC095)' }}><Sparkles size={14} strokeWidth={1.5} /></span>
             <span>{toastMessage}</span>
             <button
               type="button"

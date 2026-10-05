@@ -3,6 +3,16 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import {
+  Watch,
+  FileText,
+  Sparkles,
+  Check,
+  Phone,
+  Mail,
+  ArrowRight,
+  Award
+} from 'lucide-react';
 import { CollectorProfile } from '@/types/account';
 import { OrderRecord } from '@/types/order';
 
@@ -32,7 +42,9 @@ export default function OverviewTab({
       {/* 3 Vault Metrics Grid */}
       <div className="account-kpi-grid">
         <div className="account-kpi-card">
-          <div className="account-kpi-icon">⌚</div>
+          <div className="account-kpi-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Watch size={22} strokeWidth={1.5} color="var(--brand-bronze)" />
+          </div>
           <div className="account-kpi-info">
             <div className="account-kpi-val">{totalPiecesAcquired}</div>
             <div className="account-kpi-label">Acquired Timepieces</div>
@@ -47,7 +59,9 @@ export default function OverviewTab({
         </div>
 
         <div className="account-kpi-card">
-          <div className="account-kpi-icon">📜</div>
+          <div className="account-kpi-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <FileText size={22} strokeWidth={1.5} color="var(--brand-bronze)" />
+          </div>
           <div className="account-kpi-info">
             <div className="account-kpi-val">{orders.length}</div>
             <div className="account-kpi-label">Registered Provenances</div>
@@ -62,7 +76,9 @@ export default function OverviewTab({
         </div>
 
         <div className="account-kpi-card">
-          <div className="account-kpi-icon">💎</div>
+          <div className="account-kpi-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Sparkles size={22} strokeWidth={1.5} color="var(--brand-bronze)" />
+          </div>
           <div className="account-kpi-info">
             <div className="account-kpi-val">{wishlistCount}</div>
             <div className="account-kpi-label">Pieces in Private Vault</div>
@@ -107,8 +123,9 @@ export default function OverviewTab({
                     })}
                   </div>
                 </div>
-                <span className="account-order-status confirmed">
-                  ✓ {latestOrder.status.toUpperCase()}
+                <span className="account-order-status confirmed" style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                  <Check size={12} strokeWidth={2.5} />
+                  <span>{latestOrder.status.toUpperCase()}</span>
                 </span>
               </div>
 
@@ -142,25 +159,42 @@ export default function OverviewTab({
                   type="button"
                   className="btn btn-outline btn-sm"
                   onClick={() => onViewCertificate(latestOrder)}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                 >
-                  📜 View Provenance Certificate
+                  <Award size={14} strokeWidth={1.5} />
+                  <span>View Provenance Certificate</span>
                 </button>
                 <Link
                   href={`/checkout/success?orderId=${latestOrder.orderId}`}
                   className="btn btn-primary btn-sm"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                 >
-                  View Receipt &rarr;
+                  <span>View Receipt</span>
+                  <ArrowRight size={13} strokeWidth={1.5} />
                 </Link>
               </div>
             </div>
           ) : (
             <div className="account-empty-spotlight">
-              <span style={{ fontSize: '36px', marginBottom: '12px' }}>⌚</span>
+              <div style={{
+                width: '56px',
+                height: '56px',
+                borderRadius: '50%',
+                background: 'rgba(176, 141, 107, 0.1)',
+                color: 'var(--brand-bronze)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 12px'
+              }}>
+                <Watch size={26} strokeWidth={1.5} />
+              </div>
               <p style={{ color: 'var(--color-text-secondary)', fontSize: '14px', marginBottom: '16px' }}>
                 Your horological collection has not yet begun. Browse our 40-piece master archive to select your inaugural timepiece.
               </p>
-              <Link href="/watches" className="btn btn-primary btn-sm">
-                Explore Master Catalog &rarr;
+              <Link href="/watches" className="btn btn-primary btn-sm" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                <span>Explore Master Catalog</span>
+                <ArrowRight size={13} strokeWidth={1.5} />
               </Link>
             </div>
           )}
@@ -178,14 +212,18 @@ export default function OverviewTab({
 
           <div className="account-concierge-contact-box">
             <div className="account-concierge-row">
-              <span className="account-concierge-icon">📞</span>
+              <span className="account-concierge-icon" style={{ display: 'inline-flex', alignItems: 'center' }}>
+                <Phone size={15} strokeWidth={1.5} />
+              </span>
               <div>
                 <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>Dedicated Line</div>
                 <div style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>+91 (800) 974-786</div>
               </div>
             </div>
             <div className="account-concierge-row">
-              <span className="account-concierge-icon">✉️</span>
+              <span className="account-concierge-icon" style={{ display: 'inline-flex', alignItems: 'center' }}>
+                <Mail size={15} strokeWidth={1.5} />
+              </span>
               <div>
                 <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>Private Desk</div>
                 <div style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>concierge@wristo.com</div>
@@ -195,15 +233,15 @@ export default function OverviewTab({
 
           <div className="account-perks-list">
             <div className="account-perk-item">
-              <span>✓</span>
+              <Check size={14} strokeWidth={2} color="var(--brand-bronze)" />
               <span>Complimentary insured domestic &amp; international vault courier</span>
             </div>
             <div className="account-perk-item">
-              <span>✓</span>
+              <Check size={14} strokeWidth={2} color="var(--brand-bronze)" />
               <span>Bespoke wrist calibration &amp; custom sizing before shipment</span>
             </div>
             <div className="account-perk-item">
-              <span>✓</span>
+              <Check size={14} strokeWidth={2} color="var(--brand-bronze)" />
               <span>Complimentary serialized leather travel pouch on eligible acquisitions</span>
             </div>
           </div>

@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { FileText, Check, Gift, ArrowRight, ShieldCheck } from 'lucide-react';
 import { OrderRecord } from '@/types/order';
 
 interface OrdersTabProps {
@@ -49,15 +50,28 @@ export default function OrdersTab({ orders, onViewCertificate }: OrdersTabProps)
 
       {filteredOrders.length === 0 ? (
         <div className="account-orders-empty">
-          <div style={{ fontSize: '42px', marginBottom: '16px' }}>📜</div>
+          <div style={{
+            width: '64px',
+            height: '64px',
+            borderRadius: '50%',
+            background: 'rgba(176, 141, 107, 0.1)',
+            color: 'var(--brand-bronze)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto 16px'
+          }}>
+            <FileText size={28} strokeWidth={1.5} />
+          </div>
           <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '22px', marginBottom: '8px' }}>
             No Acquisitions Found
           </h3>
           <p style={{ color: 'var(--color-text-secondary)', fontSize: '14px', maxWidth: '440px', margin: '0 auto 24px' }}>
             There are no recorded orders matching this filter. Explore our 40-piece archive to secure an authentic timepiece.
           </p>
-          <Link href="/watches" className="btn btn-primary">
-            Explore Master Archive &rarr;
+          <Link href="/watches" className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+            <span>Explore Master Archive</span>
+            <ArrowRight size={14} strokeWidth={1.5} />
           </Link>
         </div>
       ) : (
@@ -68,8 +82,9 @@ export default function OrdersTab({ orders, onViewCertificate }: OrdersTabProps)
               <div className="account-order-card-head">
                 <div className="account-order-id-block">
                   <span className="account-order-num">{order.orderId}</span>
-                  <span className="account-order-cert-pill">
-                    📜 {order.certificateId}
+                  <span className="account-order-cert-pill" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                    <FileText size={12} strokeWidth={1.5} />
+                    <span>{order.certificateId}</span>
                   </span>
                 </div>
                 <div className="account-order-head-right">
@@ -80,8 +95,9 @@ export default function OrdersTab({ orders, onViewCertificate }: OrdersTabProps)
                       year: 'numeric'
                     })}
                   </span>
-                  <span className="account-order-status confirmed">
-                    ✓ Secured &amp; Inspected
+                  <span className="account-order-status confirmed" style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                    <Check size={12} strokeWidth={2.5} />
+                    <span>Secured &amp; Inspected</span>
                   </span>
                 </div>
               </div>
@@ -143,8 +159,11 @@ export default function OrdersTab({ orders, onViewCertificate }: OrdersTabProps)
 
               {/* Gift message banner if present */}
               {order.isGiftWrapped && order.giftMessage && (
-                <div className="account-order-gift-banner">
-                  🎁 <strong>Bespoke Gift Note:</strong> &ldquo;{order.giftMessage}&rdquo;
+                <div className="account-order-gift-banner" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Gift size={15} strokeWidth={1.5} color="var(--brand-bronze)" />
+                  <span>
+                    <strong>Bespoke Gift Note:</strong> &ldquo;{order.giftMessage}&rdquo;
+                  </span>
                 </div>
               )}
 
@@ -154,14 +173,18 @@ export default function OrdersTab({ orders, onViewCertificate }: OrdersTabProps)
                   type="button"
                   className="btn btn-outline btn-sm"
                   onClick={() => onViewCertificate(order)}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                 >
-                  📜 View Provenance Certificate
+                  <FileText size={13} strokeWidth={1.5} />
+                  <span>View Provenance Certificate</span>
                 </button>
                 <Link
                   href={`/checkout/success?orderId=${order.orderId}`}
                   className="btn btn-primary btn-sm"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                 >
-                  View Receipt &rarr;
+                  <span>View Receipt</span>
+                  <ArrowRight size={13} strokeWidth={1.5} />
                 </Link>
               </div>
             </div>

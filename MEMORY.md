@@ -5,7 +5,7 @@
 **Platform:** Ultra-Luxury Multi-Brand Watch E-Commerce Experience  
 **Core Technologies:** Next.js 16+ (App Router, Turbopack, React 19, TypeScript), Vanilla CSS Custom Tokens, Decoupled Service Architecture (Spring Boot-Ready)  
 **Total Production Routes:** 61 Statically Pre-rendered SSG Routes (40 Watches + 6 Journal Articles + Standalone Wishlist, Cart, Brands & Core Pages)  
-**GitHub Remote:** `https://github.com/Gauravkadam-web/WRISTO.git` (Branch: `main`)  
+**GitHub Remote:** `https://github.com/Gauravkadam-web/WRISTO.git` (Branch: `main`, Latest Push: `ce3d1d3`)  
 **Last Updated:** October 2026  
 
 ---
@@ -422,6 +422,13 @@ WRISTO/
     - Shopping Cart & Stateless Calculations (`/cart`, `/cart/items/**`, `/cart/coupon`, `/cart/gift-options`, `/cart/delivery-options`, `/cart/calculate-totals`).
     - Collector Vault Wishlist Management (`/wishlist`, `/wishlist/items/**`, `/wishlist/toggle/**`, `/wishlist/check/**`, `/wishlist/items/**/move-to-cart`).
     - 9-Axis Horological Comparison Engine (`/compare?ids=...`).
+  - **Phase 5: Order Processing, Luxury Checkout & Payment Integration** ✅:
+    - Flyway V9 (`orders`, `order_items`, `order_status_history`, `payments`, `checkout_sessions`, foreign keys, indices).
+    - Multi-step checkout state machine (`/checkout/initiate`, `/checkout/{sessionId}/**`, `/checkout/{sessionId}/complete`).
+    - 15-minute transactional inventory stock hold preventing concurrent over-allocation.
+    - Automated sequential order identifier generation (`WRT-2026-XXXXX`) and cryptographic authenticity certificate ID (`CERT-CHRONO-XXXXX`).
+    - Customer order history tracking (`/orders/my-orders`, `/orders/{orderNumber}`) and safe cancellation with auto-restock.
+    - Multi-gateway payment adapter supporting Razorpay, Stripe, and Mock Sandbox with HMAC-SHA256 signature verification.
   - **Phase 6: Provenance Ledger, Digital Authenticity Certificates & Collector VIP Profile** ✅:
     - Flyway V10 (`authenticity_certificates`, `provenance_records`, `watch_service_records`, `collector_profiles`, `user_preferences`, unique certificate index).
     - Cryptographic Authenticity Certificate Generation with unique SHA-256 signatures, guilloché rosette pattern IDs, and tamper-evident QR verification hashes.
@@ -436,11 +443,12 @@ WRISTO/
     - Flyway V11 (`journal_authors`, `journal_articles`, unique slug index, 3 seeded master horologists/curators, 6 seeded canonical essays).
     - Public Editorial REST APIs (`/journal/articles`, `/journal/lead`, `/journal/articles/{slugOrId}`, `/journal/categories`, `/journal/tags`, `/journal/slugs`).
     - Admin Editorial CMS (`/admin/journal/articles/**`, `/admin/journal/authors/**`) with RBAC enforcement (`ADMIN`, `SUPER_ADMIN`), draft/published state toggling, and lead story election.
-  - **DevOps & Production Readiness** ✅:
+  - **Phase 9: DevOps, Containerization & Cloud Deployment (Render + Supabase)** ✅:
     - Multi-stage Dockerfile for `wristo-backend` (Eclipse Temurin 21 + Maven multi-stage build with non-root runner).
     - Multi-stage Dockerfile for `wristo-next` (Node 20 Alpine standalone output).
     - `docker-compose.yml` for unified single-command local container orchestration (`PostgreSQL 16` + `Backend` + `Frontend`).
     - GitHub Actions CI/CD Pipeline (`.github/workflows/ci.yml`) validating both `mvn clean test` and `npm run build` on every push.
+    - Cloud Production Configuration: Render Web Service environment mappings, Supabase connection pooler multi-tenant routing (`DB_USERNAME=postgres.<project-ref>`), and PostgreSQL strict type alignment across Flyway `V9` & `V10` migrations (`ce3d1d3`).
     - Test Suite: **103/103 unit & integration tests passing (100% green)** in `mvn test`.
 - **Master Specification Document:** [`docs/backend_architecture_specification.md`](file:///e:/WRISTO/docs/backend_architecture_specification.md) & [`docs/WRISTO_Production_Ready_SRS_v1.0.md`](file:///e:/WRISTO/docs/WRISTO_Production_Ready_SRS_v1.0.md).
 

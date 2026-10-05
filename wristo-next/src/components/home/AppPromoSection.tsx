@@ -1,5 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
+import { Check } from 'lucide-react';
 
 export default function AppPromoSection() {
   return (
@@ -34,15 +35,21 @@ export default function AppPromoSection() {
               {/* Feature Highlights */}
               <div className="app-promo-features">
                 <div className="app-promo-feature-item">
-                  <span className="app-promo-check" aria-hidden="true">✓</span>
+                  <span className="app-promo-check" aria-hidden="true" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Check size={13} strokeWidth={2.5} />
+                  </span>
                   <span>Instant drop alerts for limited mechanical editions</span>
                 </div>
                 <div className="app-promo-feature-item">
-                  <span className="app-promo-check" aria-hidden="true">✓</span>
+                  <span className="app-promo-check" aria-hidden="true" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Check size={13} strokeWidth={2.5} />
+                  </span>
                   <span>Interactive 3D dial inspection &amp; virtual wrist try-on</span>
                 </div>
                 <div className="app-promo-feature-item">
-                  <span className="app-promo-check" aria-hidden="true">✓</span>
+                  <span className="app-promo-check" aria-hidden="true" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Check size={13} strokeWidth={2.5} />
+                  </span>
                   <span>Live insured custody tracking &amp; digital provenance certificates</span>
                 </div>
               </div>

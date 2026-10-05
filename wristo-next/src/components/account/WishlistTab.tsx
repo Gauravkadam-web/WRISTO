@@ -3,6 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Sparkles, ArrowRight } from 'lucide-react';
 import { useWishlist } from '@/context/WishlistContext';
 import { useCart } from '@/context/CartContext';
 import { PRODUCTS } from '@/data/products';
@@ -31,15 +32,28 @@ export default function WishlistTab() {
 
       {savedWatches.length === 0 ? (
         <div className="account-orders-empty">
-          <div style={{ fontSize: '42px', marginBottom: '16px' }}>💎</div>
+          <div style={{
+            width: '64px',
+            height: '64px',
+            borderRadius: '50%',
+            background: 'rgba(176, 141, 107, 0.1)',
+            color: 'var(--brand-bronze)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto 16px'
+          }}>
+            <Sparkles size={28} strokeWidth={1.5} />
+          </div>
           <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '22px', marginBottom: '8px' }}>
             Your Private Vault is Empty
           </h3>
           <p style={{ color: 'var(--color-text-secondary)', fontSize: '14px', maxWidth: '440px', margin: '0 auto 24px' }}>
             You haven&apos;t earmarked any timepieces for your private collection. Explore our curated master archives to save rare pieces.
           </p>
-          <Link href="/watches" className="btn btn-primary">
-            Explore Master Archive &rarr;
+          <Link href="/watches" className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+            <span>Explore Master Archive</span>
+            <ArrowRight size={14} strokeWidth={1.5} />
           </Link>
         </div>
       ) : (

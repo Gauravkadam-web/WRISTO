@@ -36,6 +36,7 @@ With Desktop Parity Milestones 1–5 fully completed and verified, all frontend 
 | **TD-14** | Backend AI & Realtime | AI Watch Concierge Tool Calling, Search Tokenizer & STOMP WebSockets | High | Backend Phase 7 | ✅ **RESOLVED** (86/86 Tests Green) |
 | **TD-15** | Backend Editorial CMS | Curators, 6 Canonical Essays, Slug Index, Admin CMS & Lead Story Election | High | Backend Phase 8 | ✅ **RESOLVED** (103/103 Tests Green) |
 | **TD-16** | DevOps & Packaging | Multi-Stage Dockerfiles, `docker-compose.yml` & Standalone Next.js Bundle | High | Phase 9 (DevOps) | ✅ **RESOLVED** (`8b7c4b3`) |
+| **TD-17** | Cloud DB Compatibility | PostgreSQL strict foreign key type compatibility on cloud poolers (V9/V10) | High | Phase 9 (Cloud) | ✅ **RESOLVED** (`ce3d1d3`) |
 
 ---
 
@@ -156,4 +157,53 @@ With Desktop Parity Milestones 1–5 fully completed and verified, all frontend 
   * Multi-gateway payment adapter & HMAC-SHA256 signature verification (`/payments/create-intent`, `/payments/verify`, `/payments/webhook`).
   * 66/66 automated unit and integration tests passing in `mvn test` (100% green).
 * **Status:** ✅ **RESOLVED** in Backend Phase 5.
+
+---
+
+### TD-13: Provenance Ledger & Digital Authenticity Certificates (RESOLVED)
+* **Initial Problem:** Collector certificates and provenance timeline lacked immutable cryptographic signatures and public QR verification endpoints.
+* **Resolution Applied (Backend Phase 6):**
+  * Flyway V10 schema with `authenticity_certificates`, `provenance_records`, `watch_service_records`, `collector_profiles`, and `user_preferences`.
+  * Generated SHA-256 signatures, guilloché rosette pattern IDs, and public verification endpoints (`/provenance/verify/{certificateNumber}`).
+  * 77/77 automated tests passing (100% green).
+* **Status:** ✅ **RESOLVED** in Backend Phase 6.
+
+---
+
+### TD-14: AI Watch Concierge & Real-time WebSockets (RESOLVED)
+* **Initial Problem:** Concierge advice was simulated in Next.js without live LLM tool-calling or real-time ticker updates.
+* **Resolution Applied (Backend Phase 7):**
+  * Configured Gemini API integration with fallback Swiss horologist engine (`/concierge/chat`, `/concierge/recommendations`).
+  * Implemented STOMP WebSockets (`/ws-wristo`) for market ticker and private user order tracking.
+  * 86/86 automated tests passing (100% green).
+* **Status:** ✅ **RESOLVED** in Backend Phase 7.
+
+---
+
+### TD-15: Editorial Journal & CMS Lifecycle (RESOLVED)
+* **Initial Problem:** Journal was statically rendered in client without backend CMS lifecycle management or lead story promotion.
+* **Resolution Applied (Backend Phase 8):**
+  * Flyway V11 schema with `journal_authors`, `journal_articles`, unique slug indexing, and seed curator profiles.
+  * Public article reading APIs and Admin CMS with RBAC enforcement (`ADMIN`, `SUPER_ADMIN`).
+  * 103/103 automated tests passing (100% green).
+* **Status:** ✅ **RESOLVED** in Backend Phase 8.
+
+---
+
+### TD-16: Production Containerization & CI/CD Pipeline (RESOLVED)
+* **Initial Problem:** Backend and frontend lacked multi-stage production Docker images and unified container orchestration.
+* **Resolution Applied (Phase 9):**
+  * Multi-stage Dockerfiles for backend (Eclipse Temurin 21) and frontend (Node 20 Alpine standalone).
+  * Unified `docker-compose.yml` and GitHub Actions CI workflow (`.github/workflows/ci.yml`).
+* **Status:** ✅ **RESOLVED** in commit `8b7c4b3`.
+
+---
+
+### TD-17: Cloud Database Multi-Tenant Strict Type Alignment (RESOLVED)
+* **Initial Problem:** In cloud PostgreSQL databases (Supabase), strict foreign key validation rejected `order_items.seller_listing_id` (defined as `VARCHAR(36)` while target was `UUID`) and `collector_profiles.user_id` (defined as `VARCHAR(36)` while target was `UUID`).
+* **Resolution Applied (`ce3d1d3`):**
+  * Fixed `V9__init_orders_checkout_payments_schema.sql` by setting `seller_listing_id UUID`.
+  * Fixed `V10__init_provenance_ledger_and_certificates_schema.sql` by setting `user_id UUID`, `current_user_id UUID`, and `watch_id VARCHAR(32)`.
+  * Verified 103/103 tests green in `mvn clean test`.
+* **Status:** ✅ **RESOLVED** in commit `ce3d1d3`.
 

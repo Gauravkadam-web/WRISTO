@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { Scale, ArrowRight } from 'lucide-react';
 import { useComparison } from '@/context/ComparisonContext';
 import { useCart } from '@/context/CartContext';
 import { PRODUCTS } from '@/data/products';
@@ -93,11 +94,10 @@ export default function ComparisonClient() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 margin: '0 auto 20px auto',
-                color: 'var(--color-gold, #DEC095)',
-                fontSize: '24px'
+                color: 'var(--brand-bronze, #B08D6B)'
               }}
             >
-              ⚖️
+              <Scale size={28} strokeWidth={1.5} />
             </div>
             <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: '22px', fontWeight: 600, marginBottom: '10px' }}>
               No Watches Selected for Comparison
@@ -105,8 +105,9 @@ export default function ComparisonClient() {
             <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)', marginBottom: '28px', lineHeight: 1.6 }}>
               You can compare up to 4 watches side-by-side to evaluate calibers, diameters, materials, and pricing.
             </p>
-            <Link href="/watches" className="btn btn-primary btn-lg">
-              Select Timepieces &rarr;
+            <Link href="/watches" className="btn btn-primary btn-lg" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+              <span>Select Timepieces</span>
+              <ArrowRight size={15} strokeWidth={1.5} />
             </Link>
           </div>
         ) : (

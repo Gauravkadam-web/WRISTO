@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { ShoppingBag } from 'lucide-react';
 import { useWishlist } from '@/context/WishlistContext';
 import { useCart } from '@/context/CartContext';
 import { PRODUCTS } from '@/data/products';
@@ -143,8 +144,10 @@ export default function WishlistClient() {
                         className="btn btn-wishlist-cart"
                         onClick={() => addToCart(watch.id)}
                         title={`Add ${watch.model} to shopping cart`}
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                       >
-                        Add to Cart 🛒
+                        <ShoppingBag size={14} strokeWidth={1.5} />
+                        <span>Add to Cart</span>
                       </button>
                     </td>
 

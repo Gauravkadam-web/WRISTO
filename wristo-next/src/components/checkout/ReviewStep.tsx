@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { CustomerAddress, DeliveryTier, PaymentMethodType } from '@/types/order';
 import { DELIVERY_OPTIONS, PAYMENT_OPTIONS } from '@/services/orderService';
+import { Gift, Award } from 'lucide-react';
 
 interface ReviewStepProps {
   address: CustomerAddress;
@@ -161,8 +162,8 @@ export default function ReviewStep({
             borderRadius: '8px',
             backgroundColor: '#FFFDF9'
           }}>
-            <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--color-gold-hover)', textTransform: 'uppercase' }}>
-              🎁 Complimentary Bespoke Gift Packaging
+            <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--color-gold-hover)', textTransform: 'uppercase', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <Gift size={15} strokeWidth={1.5} /> Complimentary Bespoke Gift Packaging
             </div>
             {giftMessage && (
               <p style={{ fontSize: '13px', fontStyle: 'italic', color: 'var(--color-text-secondary)', marginTop: '4px' }}>
@@ -182,7 +183,7 @@ export default function ReviewStep({
           gap: '12px',
           alignItems: 'flex-start'
         }}>
-          <span style={{ fontSize: '20px' }}>📜</span>
+          <Award size={22} strokeWidth={1.5} style={{ color: 'var(--brand-bronze)', flexShrink: 0, marginTop: '2px' }} />
           <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>
             <strong style={{ color: 'var(--color-text-primary)' }}>Horological Provenance Guarantee:</strong> Every timepiece is physically inspected by certified horologists before shipment. An individual serialized Certificate of Provenance is officially registered in your name upon order placement.
           </div>

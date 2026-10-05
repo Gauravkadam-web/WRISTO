@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { Check } from 'lucide-react';
 
 interface CheckoutStepperProps {
   currentStep: number;
@@ -23,8 +24,8 @@ export default function CheckoutStepper({ currentStep }: CheckoutStepperProps) {
         return (
           <React.Fragment key={s.step}>
             <div className={`step-node ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''}`}>
-              <div className="step-circle">
-                {isCompleted ? '✓' : s.step}
+              <div className="step-circle" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                {isCompleted ? <Check size={12} strokeWidth={2.5} /> : s.step}
               </div>
               <span className="step-label">{s.label}</span>
             </div>

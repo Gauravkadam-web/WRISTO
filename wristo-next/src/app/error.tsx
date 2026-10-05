@@ -2,6 +2,7 @@
 
 import React, { useEffect } from 'react';
 import Link from 'next/link';
+import { Cog, RotateCcw } from 'lucide-react';
 
 export default function ErrorBoundary({
   error,
@@ -18,8 +19,8 @@ export default function ErrorBoundary({
   return (
     <div className="error-boundary-wrapper">
       <div className="error-boundary-card">
-        <span className="error-boundary-icon" role="img" aria-label="Escapement Mechanism">
-          ⚙️
+        <span className="error-boundary-icon" aria-hidden="true" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Cog size={36} strokeWidth={1.5} color="var(--brand-bronze)" />
         </span>
         <h1 className="error-boundary-title">Mechanism Disengaged</h1>
         <p className="error-boundary-desc">
@@ -30,10 +31,10 @@ export default function ErrorBoundary({
             type="button"
             onClick={() => reset()}
             className="not-found-btn-primary"
-            style={{ cursor: 'pointer', border: 'none' }}
+            style={{ cursor: 'pointer', border: 'none', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
           >
             <span>Re-engage Escapement Mechanism</span>
-            <span>↺</span>
+            <RotateCcw size={14} strokeWidth={2} />
           </button>
           <Link href="/" className="not-found-btn-secondary">
             <span>Return to Salon Home</span>

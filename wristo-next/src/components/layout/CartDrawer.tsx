@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
+import { Gift, Sparkles, Tag } from 'lucide-react';
 
 export default function CartDrawer() {
   const {
@@ -109,8 +110,8 @@ export default function CartDrawer() {
         {cartProducts.length > 0 && (
           <div className="cart-threshold-wrap">
             <div className="cart-threshold-header">
-              <span className="cart-threshold-title">
-                <span>🎁</span>
+              <span className="cart-threshold-title" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                <Gift size={16} strokeWidth={1.5} style={{ color: 'var(--color-accent-gold)' }} />
                 <span>Horological Reward</span>
               </span>
               <span className={`cart-threshold-badge ${totals.giftPouchUnlocked ? 'unlocked' : ''}`}>
@@ -125,8 +126,8 @@ export default function CartDrawer() {
             </div>
             <p className="cart-threshold-desc">
               {totals.giftPouchUnlocked ? (
-                <span style={{ color: 'var(--color-success)', fontWeight: 600 }}>
-                  ✨ You have unlocked a Complimentary Handcrafted Leather Travel Case!
+                <span style={{ color: 'var(--color-success)', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                  <Sparkles size={15} strokeWidth={1.5} /> You have unlocked a Complimentary Handcrafted Leather Travel Case!
                 </span>
               ) : (
                 <>
@@ -230,8 +231,9 @@ export default function CartDrawer() {
             <div className="cart-promo-container">
               {appliedCoupon ? (
                 <div className="cart-coupon-pill">
-                  <span>
-                    🏷️ <strong>{appliedCoupon.code}</strong> (Saving ₹{appliedCoupon.calculatedDiscount.toLocaleString('en-IN')})
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                    <Tag size={14} strokeWidth={1.5} style={{ color: 'var(--color-accent-gold)' }} />
+                    <strong>{appliedCoupon.code}</strong> (Saving ₹{appliedCoupon.calculatedDiscount.toLocaleString('en-IN')})
                   </span>
                   <button
                     type="button"
@@ -270,13 +272,16 @@ export default function CartDrawer() {
 
             {/* Bespoke Gift Wrap Toggle */}
             <div className="cart-gift-container">
-              <label className="cart-gift-label">
+              <label className="cart-gift-label" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
                 <input
                   type="checkbox"
                   checked={isGiftWrapped}
                   onChange={e => setIsGiftWrapped(e.target.checked)}
                 />
-                <span>🎁 Bespoke Gift Box & Handwritten Calligraphy Note (Free)</span>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                  <Gift size={15} strokeWidth={1.5} style={{ color: 'var(--color-accent-gold)' }} />
+                  Bespoke Gift Box &amp; Handwritten Calligraphy Note (Free)
+                </span>
               </label>
               {isGiftWrapped && (
                 <div className="cart-gift-message-box">

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { Landmark, FileText, MapPin, Sparkles, Settings } from 'lucide-react';
 import { AccountTab } from '@/types/account';
 
 interface AccountNavProps {
@@ -18,12 +19,12 @@ export default function AccountNav({
   wishlistCount,
   addressCount
 }: AccountNavProps) {
-  const tabs: { id: AccountTab; label: string; icon: string; count?: number }[] = [
-    { id: 'overview', label: 'Overview', icon: '🏛️' },
-    { id: 'orders', label: 'Acquisitions & Provenance', icon: '📜', count: orderCount },
-    { id: 'addresses', label: 'Address Book', icon: '📍', count: addressCount },
-    { id: 'wishlist', label: 'Private Vault', icon: '💎', count: wishlistCount },
-    { id: 'settings', label: 'Horological Profile', icon: '⚙️' }
+  const tabs: { id: AccountTab; label: string; icon: React.ReactNode; count?: number }[] = [
+    { id: 'overview', label: 'Overview', icon: <Landmark size={15} strokeWidth={1.5} /> },
+    { id: 'orders', label: 'Acquisitions & Provenance', icon: <FileText size={15} strokeWidth={1.5} />, count: orderCount },
+    { id: 'addresses', label: 'Address Book', icon: <MapPin size={15} strokeWidth={1.5} />, count: addressCount },
+    { id: 'wishlist', label: 'Private Vault', icon: <Sparkles size={15} strokeWidth={1.5} />, count: wishlistCount },
+    { id: 'settings', label: 'Horological Profile', icon: <Settings size={15} strokeWidth={1.5} /> }
   ];
 
   return (
@@ -37,7 +38,9 @@ export default function AccountNav({
             className={`account-tab-btn ${isActive ? 'active' : ''}`}
             onClick={() => onSelectTab(tab.id)}
           >
-            <span className="account-tab-icon">{tab.icon}</span>
+            <span className="account-tab-icon" style={{ display: 'inline-flex', alignItems: 'center' }}>
+              {tab.icon}
+            </span>
             <span className="account-tab-label">{tab.label}</span>
             {typeof tab.count === 'number' && (
               <span className={`account-tab-count ${isActive ? 'active' : ''}`}>

@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
+import { Tag, ShieldCheck, RotateCcw, Clock } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { CustomerAddress, DeliveryTier, OrderCartItem, OrderTotals } from '@/types/order';
 import { DELIVERY_OPTIONS } from '@/services/orderService';
@@ -87,8 +88,9 @@ export default function OrderSummarySidebar({
       <div style={{ marginBottom: '16px' }}>
         {appliedCoupon ? (
           <div className="cart-coupon-pill">
-            <span>
-              🏷️ <strong>{appliedCoupon.code}</strong> (−₹{appliedCoupon.calculatedDiscount.toLocaleString('en-IN')})
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <Tag size={13} strokeWidth={1.5} />
+              <strong>{appliedCoupon.code}</strong> (−₹{appliedCoupon.calculatedDiscount.toLocaleString('en-IN')})
             </span>
             <button
               type="button"
@@ -181,15 +183,21 @@ export default function OrderSummarySidebar({
       {/* Luxury Trust Indicators */}
       <div className="checkout-trust-box">
         <div className="checkout-trust-item">
-          <span className="checkout-trust-icon">🛡️</span>
+          <span className="checkout-trust-icon" style={{ display: 'inline-flex', alignItems: 'center' }}>
+            <ShieldCheck size={14} strokeWidth={1.5} />
+          </span>
           <span>100% Authenticity Guarantee & Serialized Certificate</span>
         </div>
         <div className="checkout-trust-item">
-          <span className="checkout-trust-icon">🔄</span>
+          <span className="checkout-trust-icon" style={{ display: 'inline-flex', alignItems: 'center' }}>
+            <RotateCcw size={14} strokeWidth={1.5} />
+          </span>
           <span>30-Day Complimentary Inspection & Easy Return</span>
         </div>
         <div className="checkout-trust-item">
-          <span className="checkout-trust-icon">⏱️</span>
+          <span className="checkout-trust-icon" style={{ display: 'inline-flex', alignItems: 'center' }}>
+            <Clock size={14} strokeWidth={1.5} />
+          </span>
           <span>2-Year International Movement Warranty</span>
         </div>
       </div>

@@ -6,6 +6,7 @@ import { Product } from '@/types/product';
 import { useWishlist } from '@/context/WishlistContext';
 import { useCart } from '@/context/CartContext';
 import { useComparison } from '@/context/ComparisonContext';
+import { Star } from 'lucide-react';
 
 interface ProductCardProps {
   product: Product;
@@ -158,7 +159,9 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
 
         {/* Rating Row */}
         <div className="card-rating-row">
-          <span className="star-icon">★</span>
+          <span className="star-icon" style={{ display: 'inline-flex', alignItems: 'center', color: 'var(--color-accent-gold)' }}>
+            <Star size={12} fill="currentColor" strokeWidth={0} />
+          </span>
           <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>{product.rating}</span>
           <span>({product.reviewsCount})</span>
           <span style={{ margin: '0 4px', color: '#D9C9B8' }}>&bull;</span>

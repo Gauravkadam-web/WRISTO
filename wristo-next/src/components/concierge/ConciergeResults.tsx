@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ConciergeRecommendation } from '@/types/concierge';
 import { useCart } from '@/context/CartContext';
+import { Star, Crown, Check, Sparkles } from 'lucide-react';
 
 interface ResultsProps {
   recommendations: ConciergeRecommendation[];
@@ -50,8 +51,8 @@ export default function ConciergeResults({
               className={`concierge-result-card ${isTopMatch ? 'top-match' : ''}`}
             >
               {isTopMatch && (
-                <div className="concierge-top-badge">
-                  ★ HIGHEST HOROLOGICAL COMPATIBILITY
+                <div className="concierge-top-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                  <Sparkles size={13} strokeWidth={1.5} /> HIGHEST HOROLOGICAL COMPATIBILITY
                 </div>
               )}
 
@@ -89,8 +90,8 @@ export default function ConciergeResults({
                       ₹{watch.originalPrice.toLocaleString('en-IN')}
                     </span>
                   )}
-                  <span className="concierge-result-rating">
-                    ★ {watch.rating.toFixed(1)} ({watch.reviewsCount})
+                  <span className="concierge-result-rating" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                    <Star size={13} fill="currentColor" strokeWidth={0} style={{ color: 'var(--color-accent-gold)' }} /> {watch.rating.toFixed(1)} ({watch.reviewsCount})
                   </span>
                 </div>
 
@@ -103,8 +104,8 @@ export default function ConciergeResults({
 
                 {/* Editorial Reason Narrative */}
                 <div className="concierge-result-reason-card">
-                  <div className="concierge-reason-label">
-                    <span>👑</span> Concierge Editorial Reasoning:
+                  <div className="concierge-reason-label" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                    <Crown size={14} strokeWidth={1.5} style={{ color: 'var(--brand-bronze)' }} /> Concierge Editorial Reasoning:
                   </div>
                   <p className="concierge-reason-text">{rec.editorialReasoning}</p>
                 </div>
@@ -113,8 +114,8 @@ export default function ConciergeResults({
                 {rec.matchedAttributes.length > 0 && (
                   <div className="concierge-matched-pills">
                     {rec.matchedAttributes.map((attr) => (
-                      <span key={attr} className="concierge-match-pill">
-                        ✓ {attr}
+                      <span key={attr} className="concierge-match-pill" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                        <Check size={11} strokeWidth={2.5} /> {attr}
                       </span>
                     ))}
                   </div>
@@ -125,10 +126,16 @@ export default function ConciergeResults({
                   <button
                     type="button"
                     className={`btn btn-sm ${isAdded ? 'btn-outline' : 'btn-primary'}`}
-                    style={{ flex: 1 }}
+                    style={{ flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
                     onClick={() => handleAdd(rec)}
                   >
-                    {isAdded ? '✓ Added to Bag' : 'Add to Shopping Bag'}
+                    {isAdded ? (
+                      <>
+                        <Check size={14} strokeWidth={2} /> Added to Bag
+                      </>
+                    ) : (
+                      'Add to Shopping Bag'
+                    )}
                   </button>
                   <Link
                     href={`/product/${watch.id}`}

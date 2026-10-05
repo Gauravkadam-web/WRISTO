@@ -1,5 +1,29 @@
 # WRISTO — Session Summary & Changelog
 
+## Session 9: October 5, 2026
+
+**Focus Areas:** Production Cloud Deployment (Render Web Service + Supabase PostgreSQL Pooler), Multi-Tenant Connection Configuration (`postgres.<project-ref>` & DB name `postgres`), Flyway Schema Alignment for PostgreSQL Strict Typing (`V9` & `V10` Foreign Key UUID/VARCHAR fixes), 103/103 Test Suite Verification, Git Commit & Push (`ce3d1d3`).
+
+### 1. Executive Summary
+1. **Cloud Environment Configuration & Deployment:**
+   - Identified and documented Render Web Service environment variables binding to Spring Boot 3.3.4 `application.yml` and Next.js 16+ frontend.
+   - Solved Supabase connection pooler multi-tenant routing requirement (`ENOIDENTIFIER` error resolved by formatting `DB_USERNAME=postgres.<project-ref>`).
+   - Configured `DB_NAME=postgres` aligning with cloud PostgreSQL defaults over local `wristodb`.
+2. **Flyway Foreign Key Type Alignment (`V9` & `V10`):**
+   - Resolved PostgreSQL strict foreign key constraint error `42804` in `V9__init_orders_checkout_payments_schema.sql`: changed `order_items.seller_listing_id` from `VARCHAR(36)` to `UUID` to match `seller_listings(id)`.
+   - Hardened `V10__init_provenance_ledger_and_certificates_schema.sql`: aligned `collector_profiles.user_id`, `authenticity_certificates.user_id`, and `provenance_records.current_user_id` to `UUID` matching `users(id)`, and `watch_id` to `VARCHAR(32)` matching `watches(id)`.
+3. **Automated Test Suite Verification:** `mvn clean test` passed with **103/103 tests 100% green** across all 8 domain modules.
+4. **Git Commit & Push:** Committed and pushed to `main` as `ce3d1d3`.
+
+### 2. Key Files Modified
+| File | Action | Impact |
+|---|---|---|
+| `wristo-backend/src/main/resources/db/migration/V9__init_orders_checkout_payments_schema.sql` | Modified | Aligned `seller_listing_id` foreign key type to `UUID`. |
+| `wristo-backend/src/main/resources/db/migration/V10__init_provenance_ledger_and_certificates_schema.sql` | Modified | Aligned `user_id`, `current_user_id` to `UUID` and `watch_id` to `VARCHAR(32)`. |
+| `MEMORY.md`, `PROGRESS.md`, `TECHNICALDEBT.md` | Updated | Synchronized cloud deployment state, schema hardening notes, and test metrics. |
+
+---
+
 ## Session 8: October 2–4, 2026
 
 **Focus Areas:** Desktop Parity Milestones 2–5 Complete Implementation, Dedicated Standalone Desktop Pages (`/wishlist`, `/cart`, `/brands`), Homepage Sections Restoration (Popular Brands strip, Curated Occasions 4 cards, App Promo, Blog Preview), Catalog / PLP Enhancements (Shop by Category jump list, 4 circular category chips, card bottom pills), Copywriting & Contact Alignment (Pune, Maharashtra, payment badges), Backend Architecture Specification (`docs/backend_architecture_specification.md`), Master Prompts Archive (`prompts/`), Hero Section Polish (Clean Static Luxury Watch on Rock + Video Modal), 61 Production Routes Verified (`npm run build`).

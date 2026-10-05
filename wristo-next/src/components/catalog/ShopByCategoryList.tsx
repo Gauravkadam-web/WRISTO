@@ -1,24 +1,34 @@
 'use client';
 
 import React from 'react';
+import {
+  User,
+  Sparkles,
+  Users,
+  Clock,
+  Cog,
+  Watch,
+  Glasses,
+  ArrowRight
+} from 'lucide-react';
 
 export interface CategoryNavItem {
   id: string;
   label: string;
-  icon: string;
+  icon: React.ReactNode;
   filterKey: 'gender' | 'movement' | 'style' | 'category';
   filterValue: string;
 }
 
 const CATEGORY_NAV_ITEMS: CategoryNavItem[] = [
-  { id: 'men', label: 'Men', icon: '👔', filterKey: 'gender', filterValue: 'Men' },
-  { id: 'women', label: 'Women', icon: '👗', filterKey: 'gender', filterValue: 'Women' },
-  { id: 'unisex', label: 'Unisex', icon: '👥', filterKey: 'gender', filterValue: 'Unisex' },
-  { id: 'analog', label: 'Analog', icon: '⏱️', filterKey: 'movement', filterValue: 'Quartz' },
-  { id: 'automatic', label: 'Automatic', icon: '⚙️', filterKey: 'movement', filterValue: 'Automatic' },
-  { id: 'chronograph', label: 'Chronograph', icon: '⏱️', filterKey: 'style', filterValue: 'Chronograph' },
-  { id: 'smart', label: 'Smart Watches', icon: '⌚', filterKey: 'movement', filterValue: 'Smart Digital' },
-  { id: 'accessories', label: 'Accessories', icon: '👓', filterKey: 'category', filterValue: 'accessories' },
+  { id: 'men', label: 'Men', icon: <User size={15} strokeWidth={1.5} />, filterKey: 'gender', filterValue: 'Men' },
+  { id: 'women', label: 'Women', icon: <Sparkles size={15} strokeWidth={1.5} />, filterKey: 'gender', filterValue: 'Women' },
+  { id: 'unisex', label: 'Unisex', icon: <Users size={15} strokeWidth={1.5} />, filterKey: 'gender', filterValue: 'Unisex' },
+  { id: 'analog', label: 'Analog', icon: <Clock size={15} strokeWidth={1.5} />, filterKey: 'movement', filterValue: 'Quartz' },
+  { id: 'automatic', label: 'Automatic', icon: <Cog size={15} strokeWidth={1.5} />, filterKey: 'movement', filterValue: 'Automatic' },
+  { id: 'chronograph', label: 'Chronograph', icon: <Clock size={15} strokeWidth={1.5} />, filterKey: 'style', filterValue: 'Chronograph' },
+  { id: 'smart', label: 'Smart Watches', icon: <Watch size={15} strokeWidth={1.5} />, filterKey: 'movement', filterValue: 'Smart Digital' },
+  { id: 'accessories', label: 'Accessories', icon: <Glasses size={15} strokeWidth={1.5} />, filterKey: 'category', filterValue: 'accessories' },
 ];
 
 interface ShopByCategoryListProps {
@@ -62,13 +72,13 @@ export default function ShopByCategoryList({
               onClick={() => onSelectNavItem(item)}
             >
               <div className="category-item-left">
-                <span className="category-item-icon" aria-hidden="true">
+                <span className="category-item-icon" aria-hidden="true" style={{ display: 'inline-flex', alignItems: 'center' }}>
                   {item.icon}
                 </span>
                 <span className="category-item-label">{item.label}</span>
               </div>
-              <span className="category-item-arrow" aria-hidden="true">
-                &rarr;
+              <span className="category-item-arrow" aria-hidden="true" style={{ display: 'inline-flex', alignItems: 'center' }}>
+                <ArrowRight size={13} strokeWidth={1.5} />
               </span>
             </button>
           );

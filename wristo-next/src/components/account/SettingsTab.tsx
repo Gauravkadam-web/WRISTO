@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { Check } from 'lucide-react';
 import { CollectorProfile } from '@/types/account';
 import { updateCollectorProfile } from '@/services/accountService';
 
@@ -43,8 +44,9 @@ export default function SettingsTab({ profile, onUpdateProfile }: SettingsTabPro
       </div>
 
       {savedSuccess && (
-        <div className="account-save-alert">
-          ✓ Collector profile and wrist calibration saved successfully.
+        <div className="account-save-alert" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Check size={16} strokeWidth={2} />
+          <span>Collector profile and wrist calibration saved successfully.</span>
         </div>
       )}
 

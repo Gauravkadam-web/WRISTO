@@ -3,6 +3,7 @@
 import React from 'react';
 import { ConciergePreferences } from '@/types/concierge';
 import { PREBAKED_INQUIRIES, PrebakedInquiry } from '@/services/conciergeService';
+import { Lightbulb, Target, Ruler, Cpu, CircleDollarSign, Sparkles, Bot } from 'lucide-react';
 
 interface Step5Props {
   preferences: ConciergePreferences;
@@ -52,7 +53,7 @@ export default function ConciergeStep5NaturalLanguage({
                 className="concierge-inquiry-chip"
                 onClick={() => onApplyPrebaked(inq)}
               >
-                <span>💡</span> {inq.label}
+                <span style={{ display: 'inline-flex', alignItems: 'center' }}><Lightbulb size={13} strokeWidth={1.5} style={{ color: 'var(--brand-bronze)' }} /></span> {inq.label}
               </button>
             ))}
           </div>
@@ -63,21 +64,21 @@ export default function ConciergeStep5NaturalLanguage({
       <div className="concierge-summary-card">
         <h4 className="concierge-summary-title">Calibrated Horological Criteria</h4>
         <div className="concierge-summary-tags">
-          <span className="concierge-sum-tag">
-            🎯 Occasions: {preferences.occasion.join(', ').replace(/_/g, ' ')}
+          <span className="concierge-sum-tag" style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+            <Target size={13} strokeWidth={1.5} style={{ color: 'var(--brand-bronze)' }} /> Occasions: {preferences.occasion.join(', ').replace(/_/g, ' ')}
           </span>
-          <span className="concierge-sum-tag">
-            📐 Case: {preferences.caseErgonomics}
+          <span className="concierge-sum-tag" style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+            <Ruler size={13} strokeWidth={1.5} style={{ color: 'var(--brand-bronze)' }} /> Case: {preferences.caseErgonomics}
           </span>
-          <span className="concierge-sum-tag">
-            ⚙️ Caliber: {preferences.movement.join(', ')}
+          <span className="concierge-sum-tag" style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+            <Cpu size={13} strokeWidth={1.5} style={{ color: 'var(--brand-bronze)' }} /> Caliber: {preferences.movement.join(', ')}
           </span>
-          <span className="concierge-sum-tag">
-            💰 Tier: {preferences.budgetTier.replace(/_/g, ' ')}
+          <span className="concierge-sum-tag" style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+            <CircleDollarSign size={13} strokeWidth={1.5} style={{ color: 'var(--brand-bronze)' }} /> Tier: {preferences.budgetTier.replace(/_/g, ' ')}
           </span>
           {preferences.materials.length > 0 && (
-            <span className="concierge-sum-tag">
-              ✨ Materials: {preferences.materials.join(', ')}
+            <span className="concierge-sum-tag" style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+              <Sparkles size={13} strokeWidth={1.5} style={{ color: 'var(--brand-bronze)' }} /> Materials: {preferences.materials.join(', ')}
             </span>
           )}
         </div>
@@ -92,7 +93,9 @@ export default function ConciergeStep5NaturalLanguage({
           className="btn btn-primary btn-lg concierge-submit-btn"
           onClick={onSubmit}
         >
-          <span>✨</span> Consult Master Horologist AI &rarr;
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+            <Bot size={16} strokeWidth={1.5} /> Consult Master Horologist AI &rarr;
+          </span>
         </button>
       </div>
     </div>

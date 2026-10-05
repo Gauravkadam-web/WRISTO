@@ -271,30 +271,85 @@ const MASTER_ARTICLES: EditorialArticle[] = [
   }
 ];
 
-export async function getArticles(category?: string): Promise<EditorialArticle[]> {
-  if (!category || category === 'All Stories') {
-    return MASTER_ARTICLES;
+function getMergedArticles(): EditorialArticle[] {
+  if (typeof window !== 'undefined') {
+    try {
+      const stored = localStorage.getItem('wristo_admin_articles');
+      if (stored) {
+        const adminArticles = JSON.parse(stored);
+        // Map any admin articles into EditorialArticle shape if published
+        const publishedCustom: EditorialArticle[] = adminArticles
+          .filter((a: any) => a.published)
+          .map((a: any) => ({
+            id: a.id,
+            slug: a.slug,
+            title: a.title,
+            subtitle: a.excerpt,
+            excerpt: a.excerpt,
+            category: a.category === 'COLLECTING' ? 'Collector Guide' :
+                      a.category === 'SAVOIR-FAIRE' ? 'Horological Heritage' :
+                      a.category === 'INDUSTRY' ? 'Design & Metallurgy' : 'Technical Calibers',
+            author: {
+              name: a.authorName || 'WRISTO Editorial Guild',
+              role: a.authorRole || 'Horological Curator',
+              avatar: '/assets/brand/curator-avatar.png',
+              bio: 'Senior editorial contributor for the WRISTO Horological Journal.'
+            },
+            publishedAt: a.createdAt ? new Date(a.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'Recently Published',
+            readTime: a.readTime || '5 min read',
+            coverImage: a.coverImage || '/assets/products/watch-31.png',
+            tags: ['Horology', 'Luxury Watchmaking', a.category],
+            featuredProductIds: ['WRT-031', 'WRT-005', 'WRT-015'],
+            contentSections: [
+              {
+                heading: 'Editorial Insights',
+                paragraphs: [
+                  a.content || a.excerpt,
+                  'Every precision timepiece represented within this chronicle has undergone rigorous verification under the WRISTO horological standard.'
+                ]
+              }
+            ]
+          }));
+
+        // Filter out duplicates with master articles
+        const customSlugs = new Set(publishedCustom.map(c => c.slug));
+        const filteredMaster = MASTER_ARTICLES.filter(m => !customSlugs.has(m.slug));
+        return [...publishedCustom, ...filteredMaster];
+      }
+    } catch {
+      // Fallback to MASTER_ARTICLES
+    }
   }
-  return MASTER_ARTICLES.filter(a => a.category.toLowerCase() === category.toLowerCase());
+  return MASTER_ARTICLES;
+}
+
+export async function getArticles(category?: string): Promise<EditorialArticle[]> {
+  const articles = getMergedArticles();
+  if (!category || category === 'All Stories') {
+    return articles;
+  }
+  return articles.filter(a => a.category.toLowerCase() === category.toLowerCase());
 }
 
 export async function getFeaturedLeadArticle(): Promise<EditorialArticle> {
-  return MASTER_ARTICLES[0];
+  const articles = getMergedArticles();
+  return articles[0] || MASTER_ARTICLES[0];
 }
 
 export async function getArticleBySlug(slug: string): Promise<ArticleWithProducts | null> {
-  const index = MASTER_ARTICLES.findIndex(a => a.slug === slug);
+  const articles = getMergedArticles();
+  const index = articles.findIndex(a => a.slug === slug);
   if (index === -1) return null;
 
-  const article = MASTER_ARTICLES[index];
+  const article = articles[index];
   const featuredProducts = PRODUCTS.filter(p => article.featuredProductIds.includes(p.id));
 
   const prevArticle = index > 0
-    ? { slug: MASTER_ARTICLES[index - 1].slug, title: MASTER_ARTICLES[index - 1].title }
+    ? { slug: articles[index - 1].slug, title: articles[index - 1].title }
     : undefined;
 
-  const nextArticle = index < MASTER_ARTICLES.length - 1
-    ? { slug: MASTER_ARTICLES[index + 1].slug, title: MASTER_ARTICLES[index + 1].title }
+  const nextArticle = index < articles.length - 1
+    ? { slug: articles[index + 1].slug, title: articles[index + 1].title }
     : undefined;
 
   return {
@@ -306,7 +361,8 @@ export async function getArticleBySlug(slug: string): Promise<ArticleWithProduct
 }
 
 export async function getAllArticleSlugs(): Promise<string[]> {
-  return MASTER_ARTICLES.map(a => a.slug);
+  const articles = getMergedArticles();
+  return articles.map(a => a.slug);
 }
 
 export function getCategories(): string[] {
@@ -318,3 +374,4 @@ export function getCategories(): string[] {
     'Design & Metallurgy'
   ];
 }
+

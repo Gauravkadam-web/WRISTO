@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { ShieldCheck } from 'lucide-react';
 import { CollectorProfile } from '@/types/account';
 
 interface AccountHeaderProps {
@@ -40,7 +41,9 @@ export default function AccountHeader({ profile }: AccountHeaderProps) {
 
       <div className="account-hero-right">
         <div className="account-security-tag">
-          <span className="account-security-icon">🛡️</span>
+          <span className="account-security-icon" style={{ display: 'inline-flex', alignItems: 'center' }}>
+            <ShieldCheck size={16} strokeWidth={1.5} color="var(--brand-bronze)" />
+          </span>
           <div>
             <div style={{ fontWeight: 600, color: 'var(--color-text-primary)', fontSize: '12px' }}>
               Vault Protected Ledger

@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Product } from '@/types/product';
+import { Star } from 'lucide-react';
 
 interface ProductHeaderProps {
   product: Product;
@@ -40,7 +41,9 @@ export default function ProductHeader({ product }: ProductHeaderProps) {
       {/* Rating & In-Stock Availability Row */}
       <div className="card-rating-row pdp-rating-strip">
         <div className="pdp-stars-wrap">
-          <span className="star-icon">★</span>
+          <span className="star-icon" style={{ display: 'inline-flex', alignItems: 'center', color: 'var(--color-accent-gold)' }}>
+            <Star size={13} fill="currentColor" strokeWidth={0} />
+          </span>
           <span className="pdp-rating-num">{product.rating.toFixed(1)}</span>
         </div>
         <span className="pdp-reviews-count">({product.reviewsCount} verified owner reviews)</span>
