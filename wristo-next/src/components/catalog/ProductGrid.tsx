@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Watch } from 'lucide-react';
+import gsap from 'gsap';
 import { Product } from '@/types/product';
 import ProductCard from './ProductCard';
 
@@ -11,6 +12,29 @@ interface ProductGridProps {
 }
 
 export default function ProductGrid({ products, onResetFilters }: ProductGridProps) {
+  const gridRef = useRef<HTMLDivElement>(null);
+
+  // Subtle luxury stagger reveal when products are loaded or filtered
+  useEffect(() => {
+    if (!gridRef.current || typeof window === 'undefined') return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const cards = gridRef.current.querySelectorAll('.product-card');
+    if (cards.length > 0) {
+      gsap.fromTo(
+        cards,
+        { opacity: 0, y: 18 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.45,
+          stagger: 0.035,
+          ease: 'power2.out',
+        }
+      );
+    }
+  }, [products]);
+
   if (products.length === 0) {
     return (
       <div
@@ -57,7 +81,7 @@ export default function ProductGrid({ products, onResetFilters }: ProductGridPro
   }
 
   return (
-    <div className="product-grid" style={{ minHeight: '400px' }}>
+    <div className="product-grid" ref={gridRef} style={{ minHeight: '400px' }}>
       {products.map((product, index) => (
         <ProductCard
           key={product.id}

@@ -1,7 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 interface OccasionItem {
   id: string;
@@ -50,6 +56,7 @@ const OCCASIONS: OccasionItem[] = [
 export default function OccasionSection() {
   const [activePage, setActivePage] = useState(1);
   const totalPages = 2;
+  const sectionRef = useRef<HTMLElement>(null);
 
   const handlePrev = () => {
     setActivePage((prev) => (prev > 1 ? prev - 1 : totalPages));
@@ -59,8 +66,38 @@ export default function OccasionSection() {
     setActivePage((prev) => (prev < totalPages ? prev + 1 : 1));
   };
 
+  // ScrollTrigger luxury stagger reveal
+  useEffect(() => {
+    if (!sectionRef.current || typeof window === 'undefined') return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const ctx = gsap.context(() => {
+      const cards = sectionRef.current?.querySelectorAll('.occasion-card');
+      if (cards && cards.length > 0) {
+        gsap.fromTo(
+          cards,
+          { opacity: 0, y: 28 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.65,
+            stagger: 0.1,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: 'top 80%',
+              toggleActions: 'play none none none',
+            },
+          }
+        );
+      }
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <section className="section occasion-section" aria-label="Curated Occasions">
+    <section className="section occasion-section" aria-label="Curated Occasions" ref={sectionRef}>
       <div className="container">
         {/* Header Block with Left CTA & Right Carousel Controls */}
         <div className="occasion-header-wrap">

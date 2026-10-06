@@ -37,12 +37,12 @@ With Desktop Parity Milestones 1–5 fully completed and verified, all frontend 
 | **TD-15** | Backend Editorial CMS | Curators, 6 Canonical Essays, Slug Index, Admin CMS & Lead Story Election | High | Backend Phase 8 | ✅ **RESOLVED** (103/103 Tests Green) |
 | **TD-16** | DevOps & Packaging | Multi-Stage Dockerfiles, `docker-compose.yml` & Standalone Next.js Bundle | High | Phase 9 (DevOps) | ✅ **RESOLVED** (`8b7c4b3`) |
 | **TD-17** | Cloud DB Compatibility | PostgreSQL strict foreign key type compatibility on cloud poolers (V9/V10) | High | Phase 9 (Cloud) | ✅ **RESOLVED** (`ce3d1d3`) |
-| **TD-18** | Admin Currency & Icons | Inconsistent USD ($) formatting in Admin vs Storefront INR (₹) | Medium | Phase 1 (Frontend Refine) | Open (Ready for S11) |
-| **TD-19** | Typography & Numerics | Numeric jitter in price, spec and serial columns (missing tabular-nums) | Low | Phase 1 (Frontend Refine) | Open (Ready for S11) |
-| **TD-20** | Storefront Contrast | Mobile TrustStrip flex wrapping & Occasion card bottom scrim contrast | Low | Phase 1 (Frontend Refine) | Open (Ready for S11) |
-| **TD-21** | Hero Animation | Hero watch visual is static image; lacks GSAP 240-frame scroll canvas | High | Phase 2 (Hero Canvas) | Open (Planned S11) |
-| **TD-22** | 3D Horology Stage | PDP lacks interactive 360° turntable and exploded caliber view | Medium | Phase 3 (3D & SVG) | Open (Planned S11) |
-| **TD-23** | Certificate Animation | Provenance Certificate lacks animated SVG guilloché drawing & wax stamp | Medium | Phase 3 (3D & SVG) | Open (Planned S11) |
+| **TD-18** | Admin Currency & Icons | Inconsistent USD ($) formatting in Admin vs Storefront INR (₹) | Medium | Phase 1 (Frontend Refine) | ✅ **RESOLVED** (`73fc68c`) |
+| **TD-19** | Typography & Numerics | Numeric jitter in price, spec and serial columns (missing tabular-nums) | Low | Phase 1 (Frontend Refine) | ✅ **RESOLVED** (`73fc68c`) |
+| **TD-20** | Storefront Contrast | Mobile TrustStrip flex wrapping & Occasion card bottom scrim contrast | Low | Phase 1 (Frontend Refine) | ✅ **RESOLVED** (`73fc68c`) |
+| **TD-21** | Hero Animation | Hero watch visual is static image; lacks GSAP 240-frame scroll canvas | High | Phase 2 (Hero Canvas) | ✅ **RESOLVED** (Phase 2 Implemented) |
+| **TD-22** | 3D Horology Stage | PDP lacks interactive 360° turntable and exploded caliber view | Medium | Phase 3 (3D & SVG) | ✅ **RESOLVED** (Phase 3 Implemented) |
+| **TD-23** | Certificate Animation | Provenance Certificate lacks animated SVG guilloché drawing & wax stamp | Medium | Phase 3 (3D & SVG) | ✅ **RESOLVED** (Phase 3 Implemented) |
 
 ---
 
@@ -243,16 +243,20 @@ With Desktop Parity Milestones 1–5 fully completed and verified, all frontend 
 
 ---
 
-### TD-22: PDP 360° Interactive Watch Turntable & Exploded Caliber Layers
-* **Initial Problem:** Product detail page has cursor tilt but lacks true 360-degree horizontal rotation and layered caliber breakdown for mechanical timepieces.
-* **Resolution Plan:** Implement drag-to-rotate interaction in `ProductGallery.tsx` and an `ExplodedCaliberModal.tsx` for skeleton models (`WRT-004`, `WRT-008`, `WRT-016`) using GSAP 3D transforms with Lucide icons (no emojis).
-* **Status:** Open (Scheduled for Phase 3).
+### TD-22: PDP 360° Interactive Watch Turntable & Exploded Caliber Layers (RESOLVED)
+* **Initial Problem:** Product detail page had cursor tilt but lacked true 360-degree horizontal rotation and layered caliber breakdown for mechanical timepieces.
+* **Resolution Applied (Phase 3):**
+  * Implemented horizontal drag/touch 360° turntable stage in `ProductGallery.tsx` with dynamic sapphire crystal glint layer (`.pdp-sapphire-glint-layer`).
+  * Built `ExplodedCaliberModal.tsx` featuring 5-layer mechanical Z-axis exploded stage (sapphire crystal, bezel, guilloché dial, escapement/hands, oscillating rotor) with dynamic depth slider (0% to 140%), presets, and 3D orbit controls.
+* **Status:** ✅ **RESOLVED** in Phase 3.
 
 ---
 
-### TD-23: Provenance Certificate SVG Guilloché Drawing & Wax Stamp Animation
-* **Initial Problem:** Certificate modal renders static SVG without the prestigious, high-craft drawing sequence expected of Swiss authenticity documentation.
-* **Resolution Plan:** Add GSAP timeline to `CertificateModal.tsx` animating `strokeDashoffset` across rosette security curves and stamping down the gold holographic seal.
-* **Status:** Open (Scheduled for Phase 3).
+### TD-23: Provenance Certificate SVG Guilloché Drawing & Wax Stamp Animation (RESOLVED)
+* **Initial Problem:** Certificate modal rendered static SVG without the prestigious drawing sequence expected of Swiss authenticity documentation.
+* **Resolution Applied (Phase 3):**
+  * Added GSAP parametric timeline in `CertificateModal.tsx` animating `strokeDashoffset` across rosette security curves (1.1s, `power2.out`).
+  * Added holographic gold seal stamp impact animation (`scale: 2.4 -> 1.0`, `back.out(1.8)`) with staggered credential typewriter reveals.
+* **Status:** ✅ **RESOLVED** in Phase 3.
 
 

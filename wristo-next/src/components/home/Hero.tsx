@@ -1,15 +1,24 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Link from 'next/link';
+import { Play } from 'lucide-react';
+import ScrollCanvasHero from './ScrollCanvasHero';
 
 export default function Hero() {
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const heroSectionRef = useRef<HTMLElement | null>(null);
 
   return (
     <>
-      <section className="hero-section" id="hero-section">
+      <section className="hero-section" id="hero-section" ref={heroSectionRef}>
+        {/* Interactive 240-Frame GSAP 3D Scroll Canvas */}
+        <ScrollCanvasHero heroSectionRef={heroSectionRef} />
+
+        {/* High-Contrast Typographic Gradient Scrims */}
         <div className="hero-backdrop-overlay" />
+        <div className="hero-typography-scrim" />
+
         <div className="container hero-container">
           <div className="hero-grid">
             <div className="hero-content">
@@ -41,9 +50,7 @@ export default function Hero() {
                   onClick={() => setIsVideoModalOpen(true)}
                 >
                   <span className="hero-play-icon">
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
-                      <polygon points="6 3 20 12 6 21 6 3" />
-                    </svg>
+                    <Play size={10} fill="currentColor" strokeWidth={0} />
                   </span>
                   Watch Video
                 </button>
@@ -57,6 +64,14 @@ export default function Hero() {
                   <span className="hero-dot" />
                 </div>
                 <div className="hero-slide-num">01 / 03</div>
+              </div>
+            </div>
+
+            {/* Right Column Interactive 3D Escapement Telemetry */}
+            <div className="hero-interactive-telemetry" aria-hidden="true">
+              <div className="hero-3d-dial-indicator">
+                <span className="hero-3d-pulse-dot" />
+                <span className="hero-3d-label">3D ESCAPEMENT &bull; SCROLL TO EXPLORE</span>
               </div>
             </div>
           </div>

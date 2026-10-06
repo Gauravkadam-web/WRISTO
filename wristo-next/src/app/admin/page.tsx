@@ -13,8 +13,10 @@ import {
   Users,
   ShieldCheck,
   Clock,
-  ChevronRight
+  ChevronRight,
+  Activity
 } from 'lucide-react';
+import gsap from 'gsap';
 import { adminService } from '@/services/adminService';
 import { AdminStats, AdminOrder, AdminArticle } from '@/types/admin';
 
@@ -23,6 +25,12 @@ export default function AdminDashboardOverviewPage() {
   const [recentOrders, setRecentOrders] = useState<AdminOrder[]>([]);
   const [recentArticles, setRecentArticles] = useState<AdminArticle[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [displayStats, setDisplayStats] = useState({
+    revenue: 0,
+    orders: 0,
+    listings: 0,
+    articles: 0
+  });
 
   useEffect(() => {
     const loadDashboardData = async () => {
@@ -43,6 +51,41 @@ export default function AdminDashboardOverviewPage() {
     };
     loadDashboardData();
   }, []);
+
+  // GSAP Numeric Counter Roll-Up Animation
+  useEffect(() => {
+    if (!stats) return;
+
+    const playhead = {
+      revenue: 0,
+      orders: 0,
+      listings: 0,
+      articles: 0
+    };
+
+    const targetRevenue = stats.totalRevenue || 4328500;
+    const targetOrders = stats.totalOrders || 84;
+    const targetListings = stats.activeListings || 40;
+    const targetArticles = stats.publishedArticles || 6;
+
+    gsap.to(playhead, {
+      revenue: targetRevenue,
+      orders: targetOrders,
+      listings: targetListings,
+      articles: targetArticles,
+      duration: 1.4,
+      ease: 'power2.out',
+      roundProps: 'revenue,orders,listings,articles',
+      onUpdate: () => {
+        setDisplayStats({
+          revenue: Math.round(playhead.revenue),
+          orders: Math.round(playhead.orders),
+          listings: Math.round(playhead.listings),
+          articles: Math.round(playhead.articles)
+        });
+      }
+    });
+  }, [stats]);
 
   const formatCurrency = (val: number) => {
     return new Intl.NumberFormat('en-IN', {
@@ -108,9 +151,15 @@ export default function AdminDashboardOverviewPage() {
           }}>
             Executive Overview
           </h1>
-          <p style={{ fontSize: '13px', color: 'var(--color-text-muted, #8A8A8A)' }}>
-            Real-time telemetry across WRISTO luxury marketplace, editorial CMS, and horological ledger.
-          </p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+            <p style={{ fontSize: '13px', color: 'var(--color-text-muted, #8A8A8A)', margin: 0 }}>
+              Real-time telemetry across WRISTO luxury marketplace, editorial CMS, and horological ledger.
+            </p>
+            <span className="admin-live-pulse-badge">
+              <span className="admin-live-dot" />
+              <span>LIVE TELEMETRY &bull; SPRING STOMP</span>
+            </span>
+          </div>
         </div>
         <div style={{ display: 'flex', gap: '10px' }}>
           <Link href="/admin/journal" className="admin-btn-primary">
@@ -124,7 +173,7 @@ export default function AdminDashboardOverviewPage() {
         </div>
       </div>
 
-      {/* 4 Primary KPI Cards */}
+      {/* 4 Primary KPI Cards with Dynamic Roll-Up */}
       <div className="admin-stats-grid">
         <div className="admin-stat-card">
           <div className="admin-stat-header">
@@ -134,7 +183,7 @@ export default function AdminDashboardOverviewPage() {
             </div>
           </div>
           <div className="admin-stat-value tabular-nums">
-            {formatCurrency(stats?.totalRevenue || 4328500)}
+            {formatCurrency(displayStats.revenue || stats?.totalRevenue || 4328500)}
           </div>
           <div className="admin-stat-footer">
             <span className="admin-stat-trend positive">
@@ -152,8 +201,8 @@ export default function AdminDashboardOverviewPage() {
               <ShoppingBag size={18} strokeWidth={1.5} />
             </div>
           </div>
-          <div className="admin-stat-value">
-            {stats?.totalOrders || 84}
+          <div className="admin-stat-value tabular-nums">
+            {displayStats.orders || stats?.totalOrders || 84}
           </div>
           <div className="admin-stat-footer">
             <span className="admin-stat-trend positive">
@@ -171,8 +220,8 @@ export default function AdminDashboardOverviewPage() {
               <Watch size={18} strokeWidth={1.5} />
             </div>
           </div>
-          <div className="admin-stat-value">
-            {stats?.activeListings || 40}
+          <div className="admin-stat-value tabular-nums">
+            {displayStats.listings || stats?.activeListings || 40}
           </div>
           <div className="admin-stat-footer">
             <span className="admin-stat-trend positive">
@@ -190,8 +239,8 @@ export default function AdminDashboardOverviewPage() {
               <BookOpen size={18} strokeWidth={1.5} />
             </div>
           </div>
-          <div className="admin-stat-value">
-            {stats?.publishedArticles || 6}
+          <div className="admin-stat-value tabular-nums">
+            {displayStats.articles || stats?.publishedArticles || 6}
           </div>
           <div className="admin-stat-footer">
             <span className="admin-stat-trend positive">

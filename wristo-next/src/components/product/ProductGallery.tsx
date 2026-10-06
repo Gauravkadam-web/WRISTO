@@ -1,15 +1,17 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Image from 'next/image';
+import { RotateCw, Layers, ZoomIn, X, RotateCcw, Maximize2 } from 'lucide-react';
 import { Product } from '@/types/product';
+import ExplodedCaliberModal from './ExplodedCaliberModal';
 
 interface ProductGalleryProps {
   product: Product;
 }
 
 export default function ProductGallery({ product }: ProductGalleryProps) {
-  // Gallery images: 1. Main watch, 2. Dial macro view, 3. WRISTO Authenticity Seal
+  // Gallery items: 1. Primary view, 2. Dial macro view, 3. WRISTO Authenticity Seal
   const galleryItems = [
     { id: 'main', src: product.image, alt: `${product.brand} ${product.model} Main View`, label: 'Primary View' },
     { id: 'dial', src: product.image, alt: `${product.brand} ${product.model} Dial Detail`, label: 'Dial Macro', isMacro: true },
@@ -18,8 +20,17 @@ export default function ProductGallery({ product }: ProductGalleryProps) {
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [isExplodedOpen, setIsExplodedOpen] = useState(false);
+  const [is360Mode, setIs360Mode] = useState(false);
+  const [turntableAngle, setTurntableAngle] = useState(0);
   const [zoomLevel, setZoomLevel] = useState(1);
+  const [glintOffset, setGlintOffset] = useState({ x: 50, y: 50 });
+
   const stageRef = useRef<HTMLDivElement>(null);
+  const isDragging360Ref = useRef(false);
+  const startDragXRef = useRef(0);
+  const startAngleRef = useRef(0);
+
   const activeItem = galleryItems[activeIndex] || galleryItems[0];
 
   // 3D Tilt Interaction (Level 3 Depth for PDP, desktop only)
@@ -35,9 +46,23 @@ export default function ProductGallery({ product }: ProductGalleryProps) {
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
 
-    // Perspective: 1200px, rotateX: 1-3deg, rotateY: 2-4deg, scale: 1.01
-    const rotateX = ((centerY - y) / centerY) * 2.8;
-    const rotateY = ((x - centerX) / centerX) * 3.6;
+    // Glint coordinates for sapphire crystal reflection
+    setGlintOffset({
+      x: Math.round((x / rect.width) * 100),
+      y: Math.round((y / rect.height) * 100)
+    });
+
+    if (is360Mode) {
+      if (isDragging360Ref.current) {
+        const deltaX = e.clientX - startDragXRef.current;
+        setTurntableAngle(startAngleRef.current + deltaX * 0.65);
+      }
+      return;
+    }
+
+    // Standard subtle gyro-tilt when not in 360 mode
+    const rotateX = ((centerY - y) / centerY) * 3.2;
+    const rotateY = ((x - centerX) / centerX) * 4.2;
 
     const img = el.querySelector<HTMLImageElement>('.pdp-main-img');
     if (img) {
@@ -45,13 +70,43 @@ export default function ProductGallery({ product }: ProductGalleryProps) {
     }
   };
 
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!is360Mode) return;
+    isDragging360Ref.current = true;
+    startDragXRef.current = e.clientX;
+    startAngleRef.current = turntableAngle;
+  };
+
+  const handleMouseUp = () => {
+    isDragging360Ref.current = false;
+  };
+
   const handleMouseLeave = () => {
+    isDragging360Ref.current = false;
     const el = stageRef.current;
-    if (!el) return;
+    if (!el || is360Mode) return;
     const img = el.querySelector<HTMLImageElement>('.pdp-main-img');
     if (img) {
       img.style.transform = 'perspective(1200px) rotateX(0deg) rotateY(0deg) scale(1.0)';
     }
+  };
+
+  // Touch Support for 360° Drag
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!is360Mode || e.touches.length === 0) return;
+    isDragging360Ref.current = true;
+    startDragXRef.current = e.touches[0].clientX;
+    startAngleRef.current = turntableAngle;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!is360Mode || !isDragging360Ref.current || e.touches.length === 0) return;
+    const deltaX = e.touches[0].clientX - startDragXRef.current;
+    setTurntableAngle(startAngleRef.current + deltaX * 0.7);
+  };
+
+  const handleTouchEnd = () => {
+    isDragging360Ref.current = false;
   };
 
   // Keyboard navigation for lightbox
@@ -84,7 +139,10 @@ export default function ProductGallery({ product }: ProductGalleryProps) {
             aria-selected={activeIndex === idx}
             aria-label={item.label}
             className={`pdp-thumb-btn ${activeIndex === idx ? 'active' : ''}`}
-            onClick={() => setActiveIndex(idx)}
+            onClick={() => {
+              setActiveIndex(idx);
+              setIs360Mode(false);
+            }}
           >
             <img
               src={item.src}
@@ -95,54 +153,130 @@ export default function ProductGallery({ product }: ProductGalleryProps) {
         ))}
       </div>
 
-      {/* Main Interactive Stage with Level 3 Depth */}
-      <div
-        className="pdp-main-image-stage"
-        ref={stageRef}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
-      >
-        {/* Badges */}
-        <div className="pdp-stage-badges">
-          <span className="pill-badge gold">
-            {product.badge || 'VERIFIED AUTHENTIC'}
-          </span>
-          <span className="pdp-caliber-pill">
-            {product.movement}
-          </span>
-        </div>
-
-        {/* Zoom Lightbox Trigger Button */}
-        <button
-          type="button"
-          className="pdp-zoom-trigger-btn"
-          onClick={() => setIsLightboxOpen(true)}
-          title="Inspect Horological Finish (Click to Zoom)"
-          aria-label="Enlarge image"
+      {/* Main Interactive Stage */}
+      <div className="pdp-stage-column">
+        <div
+          className={`pdp-main-image-stage ${is360Mode ? 'pdp-turntable-active' : ''}`}
+          ref={stageRef}
+          onMouseMove={handleMouseMove}
+          onMouseDown={handleMouseDown}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseLeave}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          style={{ cursor: is360Mode ? (isDragging360Ref.current ? 'grabbing' : 'grab') : 'default' }}
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="11" cy="11" r="8" />
-            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            <line x1="11" y1="8" x2="11" y2="14" />
-            <line x1="8" y1="11" x2="14" y2="11" />
-          </svg>
-          <span className="pdp-zoom-btn-label">Inspect</span>
-        </button>
+          {/* Badges */}
+          <div className="pdp-stage-badges">
+            <span className="pill-badge gold">
+              {product.badge || 'VERIFIED AUTHENTIC'}
+            </span>
+            <span className="pdp-caliber-pill">
+              {product.movement}
+            </span>
+          </div>
 
-        {/* Display Watch Image with Crossfade */}
-        <div className="pdp-img-container" onClick={() => setIsLightboxOpen(true)}>
-          <img
-            key={activeItem.src + (activeItem.isMacro ? '-macro' : '')}
-            src={activeItem.src}
-            alt={activeItem.alt}
-            className={`pdp-main-img ${activeItem.isMacro ? 'pdp-macro-crop' : ''}`}
-          />
+          {/* Zoom Lightbox Trigger Button */}
+          <button
+            type="button"
+            className="pdp-zoom-trigger-btn"
+            onClick={() => setIsLightboxOpen(true)}
+            title="Inspect Horological Finish (Click to Zoom)"
+            aria-label="Enlarge image"
+          >
+            <ZoomIn size={16} strokeWidth={2} />
+            <span className="pdp-zoom-btn-label">Inspect</span>
+          </button>
+
+          {/* Display Watch Image with 360 Turntable Transform */}
+          <div
+            className="pdp-img-container"
+            onClick={() => {
+              if (!is360Mode) setIsLightboxOpen(true);
+            }}
+          >
+            <img
+              key={activeItem.src + (activeItem.isMacro ? '-macro' : '')}
+              src={activeItem.src}
+              alt={activeItem.alt}
+              className={`pdp-main-img ${activeItem.isMacro ? 'pdp-macro-crop' : ''}`}
+              style={
+                is360Mode
+                  ? {
+                      transform: `perspective(1200px) rotateY(${turntableAngle}deg)`,
+                      transition: isDragging360Ref.current ? 'none' : 'transform 0.15s ease-out',
+                    }
+                  : undefined
+              }
+            />
+
+            {/* Dynamic Sapphire Crystal Glint Overlay */}
+            <div
+              className="pdp-sapphire-glint-layer"
+              style={{
+                background: `radial-gradient(circle at ${glintOffset.x}% ${glintOffset.y}%, rgba(255,255,255,0.32) 0%, rgba(222,192,149,0.15) 30%, transparent 65%)`,
+              }}
+              aria-hidden="true"
+            />
+          </div>
+
+          {/* 360 Turntable Instruction Floating Pill */}
+          {is360Mode && (
+            <div className="pdp-turntable-instruction-pill" aria-hidden="true">
+              <RotateCw size={13} strokeWidth={2} className="spin-slow" />
+              <span>Drag to rotate timepiece &bull; {Math.round(((turntableAngle % 360) + 360) % 360)}°</span>
+            </div>
+          )}
+
+          <div className="pdp-stage-watermark">
+            SWISS HOROLOGY ARCHIVE &bull; WRISTO
+          </div>
         </div>
 
-        <div className="pdp-stage-watermark">
-          SWISS HOROLOGY ARCHIVE &bull; WRISTO
+        {/* Tactical 3D Inspection Action Toolbar */}
+        <div className="pdp-stage-toolbar">
+          <button
+            type="button"
+            className={`pdp-stage-tool-btn ${is360Mode ? 'active' : ''}`}
+            onClick={() => {
+              setIs360Mode(!is360Mode);
+              if (!is360Mode) setTurntableAngle(0);
+            }}
+          >
+            <RotateCw size={14} strokeWidth={1.8} />
+            <span>{is360Mode ? 'Exit 360° Stage' : '360° Turntable Mode'}</span>
+          </button>
+
+          <button
+            type="button"
+            className="pdp-stage-tool-btn"
+            onClick={() => setIsExplodedOpen(true)}
+          >
+            <Layers size={14} strokeWidth={1.8} />
+            <span>Exploded Caliber View</span>
+          </button>
+
+          {is360Mode && (
+            <button
+              type="button"
+              className="pdp-stage-tool-btn reset"
+              onClick={() => setTurntableAngle(0)}
+              title="Reset angle to 0°"
+            >
+              <RotateCcw size={13} strokeWidth={2} />
+              <span>Reset 0°</span>
+            </button>
+          )}
         </div>
       </div>
+
+      {/* Exploded Caliber Modal */}
+      <ExplodedCaliberModal
+        product={product}
+        isOpen={isExplodedOpen}
+        onClose={() => setIsExplodedOpen(false)}
+      />
 
       {/* Fullscreen Horological Lightbox Modal */}
       {isLightboxOpen && (
@@ -160,10 +294,7 @@ export default function ProductGallery({ product }: ProductGalleryProps) {
                   onClick={() => setZoomLevel(prev => Math.min(prev + 0.5, 3))}
                   title="Zoom In"
                 >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <line x1="12" y1="5" x2="12" y2="19" />
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                  </svg>
+                  <Maximize2 size={16} strokeWidth={2} />
                 </button>
                 <button
                   type="button"
@@ -171,9 +302,7 @@ export default function ProductGallery({ product }: ProductGalleryProps) {
                   onClick={() => setZoomLevel(prev => Math.max(prev - 0.5, 1))}
                   title="Zoom Out"
                 >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                  </svg>
+                  <RotateCcw size={16} strokeWidth={2} />
                 </button>
                 <button
                   type="button"
@@ -189,10 +318,7 @@ export default function ProductGallery({ product }: ProductGalleryProps) {
                   onClick={() => setIsLightboxOpen(false)}
                   title="Close Lightbox"
                 >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <line x1="18" y1="6" x2="6" y2="18" />
-                    <line x1="6" y1="6" x2="18" y2="18" />
-                  </svg>
+                  <X size={18} strokeWidth={2} />
                 </button>
               </div>
             </div>
