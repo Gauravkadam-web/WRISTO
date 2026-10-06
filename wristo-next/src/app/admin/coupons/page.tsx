@@ -10,7 +10,7 @@ import {
   CheckCircle,
   XCircle,
   Percent,
-  DollarSign
+  IndianRupee
 } from 'lucide-react';
 import { adminService } from '@/services/adminService';
 import { AdminCoupon } from '@/types/admin';
@@ -88,9 +88,9 @@ export default function AdminCouponsPage() {
 
   const formatCurrency = (val?: number) => {
     if (val === undefined || val === null) return '—';
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'INR',
       maximumFractionDigits: 0
     }).format(val);
   };
@@ -200,7 +200,7 @@ export default function AdminCouponsPage() {
                       </div>
                     </td>
                     <td>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600, color: 'var(--color-accent-champagne)' }}>
+                      <div className="tabular-nums" style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600, color: 'var(--color-accent-champagne)' }}>
                         {coupon.discountType === 'PERCENTAGE' ? (
                           <>
                             <Percent size={13} strokeWidth={2} />
@@ -208,24 +208,24 @@ export default function AdminCouponsPage() {
                           </>
                         ) : (
                           <>
-                            <DollarSign size={13} strokeWidth={2} />
+                            <IndianRupee size={13} strokeWidth={2} />
                             <span>{formatCurrency(coupon.discountValue)} OFF</span>
                           </>
                         )}
                       </div>
                     </td>
                     <td>
-                      <span style={{ fontSize: '12.5px', color: 'var(--color-text-secondary)' }}>
+                      <span className="tabular-nums" style={{ fontSize: '12.5px', color: 'var(--color-text-secondary)' }}>
                         Min {formatCurrency(coupon.minOrderAmount)}
                       </span>
                     </td>
                     <td>
-                      <div style={{ fontSize: '11.5px', color: 'var(--color-text-muted)' }}>
+                      <div className="tabular-nums" style={{ fontSize: '11.5px', color: 'var(--color-text-muted)' }}>
                         {coupon.validFrom} → {coupon.validUntil}
                       </div>
                     </td>
                     <td>
-                      <span style={{ fontSize: '12px', fontWeight: 500 }}>
+                      <span className="tabular-nums" style={{ fontSize: '12px', fontWeight: 500 }}>
                         {coupon.usedCount || 0} / {coupon.usageLimit || '∞'}
                       </span>
                     </td>

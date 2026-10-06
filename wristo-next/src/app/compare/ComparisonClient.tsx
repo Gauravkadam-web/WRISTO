@@ -41,7 +41,7 @@ export default function ComparisonClient() {
         >
           <div>
             <div className="section-label" style={{ color: 'var(--color-gold, #DEC095)' }}>
-              SPEC COMPARISON &bull; {selectedProducts.length} OF {maxItems} SELECTED
+              SPEC COMPARISON &bull; <span className="tabular-nums">{selectedProducts.length}</span> OF <span className="tabular-nums">{maxItems}</span> SELECTED
             </div>
             <h1 className="section-title" style={{ margin: '6px 0 10px 0' }}>
               Side-by-Side Horology Matrix
@@ -143,10 +143,10 @@ export default function ComparisonClient() {
                             {watch.model}
                           </Link>
                         </h3>
-                        <div className="comparison-price">
+                        <div className="comparison-price tabular-nums">
                           ₹{watch.price.toLocaleString('en-IN')}
                           {watch.originalPrice > watch.price && (
-                            <span style={{ fontSize: '13px', color: '#999', textDecoration: 'line-through', marginLeft: '6px', fontWeight: 400 }}>
+                            <span className="tabular-nums" style={{ fontSize: '13px', color: '#999', textDecoration: 'line-through', marginLeft: '6px', fontWeight: 400 }}>
                               ₹{watch.originalPrice.toLocaleString('en-IN')}
                             </span>
                           )}
@@ -193,7 +193,7 @@ export default function ComparisonClient() {
                 <tr>
                   <th>Case Diameter</th>
                   {selectedProducts.map((w) => (
-                    <td key={`case-${w?.id}`}>{w?.caseSize}</td>
+                    <td key={`case-${w?.id}`} className="tabular-nums">{w?.caseSize}</td>
                   ))}
                 </tr>
                 <tr>
@@ -218,7 +218,7 @@ export default function ComparisonClient() {
                   <th>Water Resistance</th>
                   {selectedProducts.map((w) => (
                     <td key={`water-${w?.id}`}>
-                      <span className="pill-badge black" style={{ fontSize: '11px', padding: '3px 8px' }}>
+                      <span className="pill-badge black tabular-nums" style={{ fontSize: '11px', padding: '3px 8px' }}>
                         {w?.waterResistance}
                       </span>
                     </td>

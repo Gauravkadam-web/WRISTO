@@ -170,10 +170,10 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
 
         {/* Price Row */}
         <div className="card-price-row">
-          <span className="card-price">₹{product.price.toLocaleString('en-IN')}</span>
-          <span className="card-original-price">₹{product.originalPrice.toLocaleString('en-IN')}</span>
+          <span className="card-price tabular-nums">₹{product.price.toLocaleString('en-IN')}</span>
+          <span className="card-original-price tabular-nums">₹{product.originalPrice.toLocaleString('en-IN')}</span>
           {discountPercent > 0 && (
-            <span className="card-discount-badge">{discountPercent}% off</span>
+            <span className="card-discount-badge tabular-nums">{discountPercent}% off</span>
           )}
         </div>
       </div>

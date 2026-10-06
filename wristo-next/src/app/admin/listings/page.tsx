@@ -79,9 +79,9 @@ export default function AdminListingsPage() {
   };
 
   const formatCurrency = (val: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'INR',
       maximumFractionDigits: 0
     }).format(val);
   };
@@ -223,7 +223,7 @@ export default function AdminListingsPage() {
                       </div>
                     </td>
                     <td>
-                      <span style={{
+                      <span className="tabular-nums" style={{
                         fontFamily: 'monospace',
                         fontSize: '12px',
                         color: 'var(--brand-bronze)',
@@ -237,13 +237,13 @@ export default function AdminListingsPage() {
                         <div style={{ fontSize: '12.5px', fontWeight: 500, color: 'var(--brand-ivory)' }}>
                           {listing.condition}
                         </div>
-                        <div style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>
+                        <div className="tabular-nums" style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>
                           {listing.year || '2023'}
                         </div>
                       </div>
                     </td>
                     <td>
-                      <span style={{ fontWeight: 700, color: 'var(--color-accent-champagne)', fontSize: '14px' }}>
+                      <span className="tabular-nums" style={{ fontWeight: 700, color: 'var(--color-accent-champagne)', fontSize: '14px' }}>
                         {formatCurrency(listing.price)}
                       </span>
                     </td>

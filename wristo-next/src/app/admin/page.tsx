@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import {
-  DollarSign,
+  IndianRupee,
   ShoppingBag,
   Watch,
   BookOpen,
@@ -45,9 +45,9 @@ export default function AdminDashboardOverviewPage() {
   }, []);
 
   const formatCurrency = (val: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'INR',
       maximumFractionDigits: 0
     }).format(val);
   };
@@ -130,10 +130,10 @@ export default function AdminDashboardOverviewPage() {
           <div className="admin-stat-header">
             <span className="admin-stat-label">Gross Marketplace Volume</span>
             <div className="admin-stat-icon">
-              <DollarSign size={18} strokeWidth={1.5} />
+              <IndianRupee size={18} strokeWidth={1.5} />
             </div>
           </div>
-          <div className="admin-stat-value">
+          <div className="admin-stat-value tabular-nums">
             {formatCurrency(stats?.totalRevenue || 4328500)}
           </div>
           <div className="admin-stat-footer">
@@ -316,7 +316,7 @@ export default function AdminDashboardOverviewPage() {
                       </div>
                     </td>
                     <td>
-                      <span style={{ fontWeight: 600, color: 'var(--color-accent-champagne)' }}>
+                      <span className="tabular-nums" style={{ fontWeight: 600, color: 'var(--color-accent-champagne)' }}>
                         {formatCurrency(order.totalAmount)}
                       </span>
                     </td>

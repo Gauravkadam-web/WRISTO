@@ -3,7 +3,7 @@
 import React from 'react';
 import { ConciergePreferences } from '@/types/concierge';
 import { PREBAKED_INQUIRIES, PrebakedInquiry } from '@/services/conciergeService';
-import { Lightbulb, Target, Ruler, Cpu, CircleDollarSign, Sparkles, Bot } from 'lucide-react';
+import { Lightbulb, Target, Ruler, Cpu, IndianRupee, Sparkles, Bot } from 'lucide-react';
 
 interface Step5Props {
   preferences: ConciergePreferences;
@@ -74,7 +74,7 @@ export default function ConciergeStep5NaturalLanguage({
             <Cpu size={13} strokeWidth={1.5} style={{ color: 'var(--brand-bronze)' }} /> Caliber: {preferences.movement.join(', ')}
           </span>
           <span className="concierge-sum-tag" style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
-            <CircleDollarSign size={13} strokeWidth={1.5} style={{ color: 'var(--brand-bronze)' }} /> Tier: {preferences.budgetTier.replace(/_/g, ' ')}
+            <IndianRupee size={13} strokeWidth={1.5} style={{ color: 'var(--brand-bronze)' }} /> Tier: {preferences.budgetTier.replace(/_/g, ' ')}
           </span>
           {preferences.materials.length > 0 && (
             <span className="concierge-sum-tag" style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>

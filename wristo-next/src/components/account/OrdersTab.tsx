@@ -81,8 +81,8 @@ export default function OrdersTab({ orders, onViewCertificate }: OrdersTabProps)
               {/* Order Card Head */}
               <div className="account-order-card-head">
                 <div className="account-order-id-block">
-                  <span className="account-order-num">{order.orderId}</span>
-                  <span className="account-order-cert-pill" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                  <span className="account-order-num tabular-nums">{order.orderId}</span>
+                  <span className="account-order-cert-pill tabular-nums" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                     <FileText size={12} strokeWidth={1.5} />
                     <span>{order.certificateId}</span>
                   </span>
@@ -118,11 +118,11 @@ export default function OrdersTab({ orders, onViewCertificate }: OrdersTabProps)
                     <div className="account-order-item-meta">
                       <span className="account-order-item-brand">{item.brand}</span>
                       <span className="account-order-item-model">{item.model}</span>
-                      <span className="account-order-item-price-qty">
+                      <span className="account-order-item-price-qty tabular-nums">
                         Qty: {item.quantity} &bull; ₹{item.price.toLocaleString('en-IN')} each
                       </span>
                     </div>
-                    <div className="account-order-item-total">
+                    <div className="account-order-item-total tabular-nums">
                       ₹{(item.price * item.quantity).toLocaleString('en-IN')}
                     </div>
                   </div>
@@ -151,7 +151,7 @@ export default function OrdersTab({ orders, onViewCertificate }: OrdersTabProps)
                 </div>
                 <div>
                   <span className="account-order-detail-label">Total Amount</span>
-                  <span className="account-order-detail-val total">
+                  <span className="account-order-detail-val total tabular-nums">
                     ₹{order.total.toLocaleString('en-IN')}
                   </span>
                 </div>

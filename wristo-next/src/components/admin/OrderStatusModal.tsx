@@ -46,9 +46,9 @@ export default function OrderStatusModal({
   };
 
   const formatCurrency = (val: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'INR',
       maximumFractionDigits: 0
     }).format(val);
   };
@@ -100,7 +100,7 @@ export default function OrderStatusModal({
               </div>
               <div>
                 <span style={{ color: 'var(--color-text-muted)', display: 'block', fontSize: '11px' }}>Total Acquisition Amount</span>
-                <strong style={{ color: 'var(--color-accent-champagne)', fontSize: '15px' }}>
+                <strong className="tabular-nums" style={{ color: 'var(--color-accent-champagne)', fontSize: '15px' }}>
                   {formatCurrency(order.totalAmount)}
                 </strong>
                 <div style={{ color: 'var(--brand-bronze)', fontSize: '11px' }}>{order.paymentStatus} • {order.paymentMethod}</div>
@@ -127,7 +127,7 @@ export default function OrderStatusModal({
                       <span style={{ color: 'var(--color-text-secondary)', marginLeft: '6px' }}>{item.model}</span>
                       <span style={{ fontSize: '11px', color: 'var(--color-text-muted)', marginLeft: '6px' }}>x{item.quantity}</span>
                     </div>
-                    <span style={{ fontWeight: 600, color: 'var(--color-accent-champagne)' }}>
+                    <span className="tabular-nums" style={{ fontWeight: 600, color: 'var(--color-accent-champagne)' }}>
                       {formatCurrency(item.unitPrice * item.quantity)}
                     </span>
                   </div>

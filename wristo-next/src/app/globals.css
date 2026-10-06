@@ -221,6 +221,13 @@
   text-transform: uppercase;
 }
 
+/* Numeric Alignment Utility */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  letter-spacing: -0.01em;
+}
+
 .catalog-empty-title {
   font-family: var(--font-serif);
   font-size: 22px;
@@ -1211,7 +1218,14 @@ body:not([data-current-view="home"]) .site-header {
 @media (max-width: 600px) {
   .trust-strip-grid {
     grid-template-columns: 1fr;
-    gap: 18px;
+    gap: 12px;
+  }
+  .trust-strip-item {
+    background: #FFFFFF;
+    padding: 14px 16px;
+    border-radius: var(--radius-md, 12px);
+    border: 1px solid var(--color-border-light);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
   }
 }
 
@@ -1485,8 +1499,13 @@ body:not([data-current-view="home"]) .site-header {
 .occasion-card-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.92) 0%, rgba(0, 0, 0, 0.45) 30%, transparent 60%);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.65) 35%, rgba(0, 0, 0, 0.25) 65%, transparent 100%);
   pointer-events: none;
+}
+
+/* Catalog Active Filters Height Invariant */
+.active-filters-container {
+  min-height: 48px;
 }
 
 .occasion-card-content {
@@ -11610,7 +11629,9 @@ textarea:focus-visible {
   width: 100%;
   max-width: 680px;
   max-height: 90vh;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   box-shadow: 0 24px 64px rgba(0, 0, 0, 0.8);
 }
 
@@ -11620,6 +11641,7 @@ textarea:focus-visible {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-shrink: 0;
 }
 
 .admin-modal-title {
@@ -11634,6 +11656,9 @@ textarea:focus-visible {
   display: flex;
   flex-direction: column;
   gap: 18px;
+  overflow-y: auto;
+  flex: 1;
+  max-height: calc(90vh - 135px);
 }
 
 .admin-modal-footer {

@@ -44,9 +44,9 @@ export default function ListingApprovalModal({
   };
 
   const formatCurrency = (val: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'INR',
       maximumFractionDigits: 0
     }).format(val);
   };
@@ -107,12 +107,12 @@ export default function ListingApprovalModal({
                   {listing.brand} {listing.model}
                 </div>
                 <div style={{ color: 'var(--brand-bronze)', fontFamily: 'monospace' }}>
-                  Ref: {listing.referenceNumber} • Serial: {listing.serialNumber || 'VERIFIED-CH'}
+                  Ref: <span className="tabular-nums">{listing.referenceNumber}</span> • Serial: <span className="tabular-nums">{listing.serialNumber || 'VERIFIED-CH'}</span>
                 </div>
                 <div style={{ color: 'var(--color-text-secondary)', marginTop: '4px' }}>
-                  Condition: <strong style={{ color: 'var(--brand-ivory)' }}>{listing.condition}</strong> • Year: {listing.year || 2023}
+                  Condition: <strong style={{ color: 'var(--brand-ivory)' }}>{listing.condition}</strong> • Year: <span className="tabular-nums">{listing.year || 2023}</span>
                 </div>
-                <div style={{ color: 'var(--color-accent-champagne)', fontSize: '16px', fontWeight: 700, marginTop: '4px' }}>
+                <div className="tabular-nums" style={{ color: 'var(--color-accent-champagne)', fontSize: '16px', fontWeight: 700, marginTop: '4px' }}>
                   {formatCurrency(listing.price)}
                 </div>
               </div>

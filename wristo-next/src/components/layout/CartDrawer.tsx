@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
-import { Gift, Sparkles, Tag } from 'lucide-react';
+import { Gift, Sparkles, Tag, Watch } from 'lucide-react';
 
 export default function CartDrawer() {
   const {
@@ -143,7 +143,19 @@ export default function CartDrawer() {
         <div className="drawer-body">
           {cartProducts.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '60px 16px', color: 'var(--color-text-secondary)' }}>
-              <div style={{ fontSize: '36px', marginBottom: '16px' }}>⌚</div>
+              <div style={{
+                width: '64px',
+                height: '64px',
+                borderRadius: '50%',
+                background: 'rgba(176, 141, 107, 0.1)',
+                color: 'var(--brand-bronze, #B08D6B)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 16px auto'
+              }}>
+                <Watch size={32} strokeWidth={1.5} />
+              </div>
               <p style={{ fontSize: '16px', fontWeight: 600, marginBottom: '8px', color: 'var(--color-text-primary)' }}>
                 Your shopping bag is empty
               </p>
@@ -173,7 +185,7 @@ export default function CartDrawer() {
                 <div className="cart-item-info">
                   <div className="cart-item-brand">{brand}</div>
                   <div className="cart-item-title">{model}</div>
-                  <div className="cart-item-price">
+                  <div className="cart-item-price tabular-nums">
                     ₹{price.toLocaleString('en-IN')}
                   </div>
                 </div>
@@ -205,7 +217,7 @@ export default function CartDrawer() {
                     >
                       −
                     </button>
-                    <div className="stepper-val" style={{ width: '24px', fontSize: '12px' }}>
+                    <div className="stepper-val tabular-nums" style={{ width: '24px', fontSize: '12px' }}>
                       {quantity}
                     </div>
                     <button
@@ -303,13 +315,13 @@ export default function CartDrawer() {
           <div className="drawer-footer">
             <div className="cart-totals-row">
               <span style={{ color: 'var(--color-text-secondary)' }}>Subtotal</span>
-              <span style={{ fontWeight: 600 }}>₹{totals.subtotal.toLocaleString('en-IN')}</span>
+              <span className="tabular-nums" style={{ fontWeight: 600 }}>₹{totals.subtotal.toLocaleString('en-IN')}</span>
             </div>
 
             {totals.discount > 0 && (
               <div className="cart-totals-row" style={{ color: 'var(--color-gold-hover)' }}>
                 <span>Collector Discount ({appliedCoupon?.code})</span>
-                <span style={{ fontWeight: 600 }}>−₹{totals.discount.toLocaleString('en-IN')}</span>
+                <span className="tabular-nums" style={{ fontWeight: 600 }}>−₹{totals.discount.toLocaleString('en-IN')}</span>
               </div>
             )}
 
@@ -327,7 +339,7 @@ export default function CartDrawer() {
 
             <div className="cart-totals-row total-bold">
               <span>Estimated Total</span>
-              <span style={{ color: 'var(--color-text-primary)' }}>
+              <span className="tabular-nums" style={{ color: 'var(--color-text-primary)' }}>
                 ₹{totals.total.toLocaleString('en-IN')}
               </span>
             </div>

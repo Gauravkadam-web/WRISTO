@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { Watch } from 'lucide-react';
 import { Product } from '@/types/product';
 import ProductCard from './ProductCard';
 
@@ -23,7 +24,19 @@ export default function ProductGrid({ products, onResetFilters }: ProductGridPro
           marginTop: 'var(--space-4)',
         }}
       >
-        <div style={{ fontSize: '40px', marginBottom: '16px' }}>⌚</div>
+        <div style={{
+          width: '64px',
+          height: '64px',
+          borderRadius: '50%',
+          background: 'rgba(176, 141, 107, 0.1)',
+          color: 'var(--brand-bronze, #B08D6B)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          margin: '0 auto 16px auto'
+        }}>
+          <Watch size={32} strokeWidth={1.5} />
+        </div>
         <h3 className="catalog-empty-title">
           No Matching Timepieces Found
         </h3>

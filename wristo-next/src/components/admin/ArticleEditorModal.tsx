@@ -106,8 +106,8 @@ export default function ArticleEditorModal({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit}>
-          <div className="admin-modal-body">
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflow: 'hidden' }}>
+          <div className="admin-modal-body" style={{ overflowY: 'auto', flex: 1, maxHeight: '72vh' }}>
             <div className="admin-form-group">
               <label className="admin-form-label">Essay Title</label>
               <input
@@ -246,7 +246,7 @@ export default function ArticleEditorModal({
             </div>
           </div>
 
-          <div className="admin-modal-footer">
+          <div className="admin-modal-footer" style={{ flexShrink: 0 }}>
             <button type="button" onClick={onClose} className="admin-btn-secondary">
               Cancel
             </button>

@@ -116,7 +116,7 @@ export default function CouponModal({
                   className="admin-form-select"
                 >
                   <option value="PERCENTAGE">Percentage (%)</option>
-                  <option value="FIXED_AMOUNT">Fixed Value ($ USD)</option>
+                  <option value="FIXED_AMOUNT">Fixed Value (₹ INR)</option>
                 </select>
               </div>
             </div>
@@ -124,7 +124,7 @@ export default function CouponModal({
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px' }}>
               <div className="admin-form-group">
                 <label className="admin-form-label">
-                  {formData.discountType === 'PERCENTAGE' ? 'Discount Rate (%)' : 'Discount ($)'}
+                  {formData.discountType === 'PERCENTAGE' ? 'Discount Rate (%)' : 'Discount (₹)'}
                 </label>
                 <input
                   type="number"
@@ -137,7 +137,7 @@ export default function CouponModal({
               </div>
 
               <div className="admin-form-group">
-                <label className="admin-form-label">Min Spend ($)</label>
+                <label className="admin-form-label">Min Spend (₹)</label>
                 <input
                   type="number"
                   min={0}
@@ -148,7 +148,7 @@ export default function CouponModal({
               </div>
 
               <div className="admin-form-group">
-                <label className="admin-form-label">Max Concession ($)</label>
+                <label className="admin-form-label">Max Concession (₹)</label>
                 <input
                   type="number"
                   min={0}

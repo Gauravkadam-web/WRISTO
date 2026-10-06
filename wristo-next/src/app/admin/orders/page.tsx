@@ -77,9 +77,9 @@ export default function AdminOrdersPage() {
   };
 
   const formatCurrency = (val: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'INR',
       maximumFractionDigits: 0
     }).format(val);
   };
@@ -181,7 +181,7 @@ export default function AdminOrdersPage() {
                 <th>Order Ref</th>
                 <th>Client</th>
                 <th>Timepieces Acquired</th>
-                <th>Total Gross</th>
+                <th style={{ textAlign: 'right' }}>Total Gross</th>
                 <th>Payment</th>
                 <th>Fulfillment Pipeline</th>
                 <th style={{ textAlign: 'right' }}>Actions</th>
@@ -205,7 +205,7 @@ export default function AdminOrdersPage() {
                   <tr key={order.id}>
                     <td>
                       <div>
-                        <span style={{
+                        <span className="tabular-nums" style={{
                           fontFamily: 'monospace',
                           fontSize: '13px',
                           fontWeight: 700,
@@ -213,8 +213,8 @@ export default function AdminOrdersPage() {
                         }}>
                           {order.orderNumber}
                         </span>
-                        <div style={{ fontSize: '11px', color: 'var(--color-text-muted)', marginTop: '2px' }}>
-                          {new Date(order.createdAt).toLocaleDateString()}
+                        <div className="tabular-nums" style={{ fontSize: '11px', color: 'var(--color-text-muted)', marginTop: '2px' }}>
+                          {new Date(order.createdAt).toLocaleDateString('en-IN')}
                         </div>
                       </div>
                     </td>
@@ -234,8 +234,8 @@ export default function AdminOrdersPage() {
                         ))}
                       </div>
                     </td>
-                    <td>
-                      <span style={{ fontWeight: 700, color: 'var(--color-accent-champagne)', fontSize: '14px' }}>
+                    <td style={{ textAlign: 'right' }}>
+                      <span className="tabular-nums" style={{ fontWeight: 700, color: 'var(--color-accent-champagne)', fontSize: '14px' }}>
                         {formatCurrency(order.totalAmount)}
                       </span>
                     </td>

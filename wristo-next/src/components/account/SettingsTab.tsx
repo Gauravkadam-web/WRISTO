@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Check } from 'lucide-react';
+import { Check, Watch } from 'lucide-react';
 import { CollectorProfile } from '@/types/account';
 import { updateCollectorProfile } from '@/services/accountService';
 
@@ -137,8 +137,11 @@ export default function SettingsTab({ profile, onUpdateProfile }: SettingsTabPro
             </div>
           </div>
 
-          <div className="account-sizing-note">
-            ⏱️ <strong>Horological Custom Fitting:</strong> Links removed during bracelet calibration are packaged securely in your presentation case for future adjustment.
+          <div className="account-sizing-note" style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+            <Watch size={15} strokeWidth={1.5} style={{ color: 'var(--brand-bronze)', flexShrink: 0, marginTop: '2px' }} />
+            <span>
+              <strong>Horological Custom Fitting:</strong> Links removed during bracelet calibration are packaged securely in your presentation case for future adjustment.
+            </span>
           </div>
         </div>
 

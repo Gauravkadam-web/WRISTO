@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Check, FileText, Printer, ArrowRight } from 'lucide-react';
+import { Check, FileText, Printer, ArrowRight, Clock } from 'lucide-react';
 import { OrderRecord } from '@/types/order';
 import { getLatestOrder, getOrderById } from '@/services/orderService';
 import CheckoutHeader from '@/components/checkout/CheckoutHeader';
@@ -97,7 +97,19 @@ export default function SuccessClient() {
       <div className="checkout-page-wrapper">
         <CheckoutHeader />
         <div style={{ textAlign: 'center', padding: '100px 20px', color: 'var(--color-text-secondary)' }}>
-          <div style={{ fontSize: '32px', marginBottom: '16px' }}>⏳</div>
+          <div style={{
+            width: '56px',
+            height: '56px',
+            borderRadius: '50%',
+            background: 'rgba(176, 141, 107, 0.1)',
+            color: 'var(--brand-bronze, #B08D6B)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto 16px auto'
+          }}>
+            <Clock size={28} strokeWidth={1.5} />
+          </div>
           <p>Retrieving Horological Provenance Ledger...</p>
         </div>
       </div>
@@ -157,7 +169,7 @@ export default function SuccessClient() {
                 <FileText size={16} strokeWidth={1.5} color="var(--brand-bronze)" />
                 <span>Certificate of Provenance &amp; Order Register</span>
               </div>
-              <div className="provenance-cert-id">
+              <div className="provenance-cert-id tabular-nums">
                 {order.certificateId}
               </div>
             </div>
@@ -165,7 +177,7 @@ export default function SuccessClient() {
             <div className="provenance-grid">
               <div>
                 <div className="provenance-item-label">Order Reference</div>
-                <div className="provenance-item-val" style={{ fontFamily: 'monospace', fontSize: '15px' }}>
+                <div className="provenance-item-val tabular-nums" style={{ fontFamily: 'monospace', fontSize: '15px' }}>
                   {order.orderId}
                 </div>
               </div>
@@ -243,11 +255,11 @@ export default function SuccessClient() {
                     <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-text-primary)' }}>
                       {item.model}
                     </div>
-                    <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
+                    <div className="tabular-nums" style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
                       Qty: {item.quantity} &times; ₹{item.price.toLocaleString('en-IN')}
                     </div>
                   </div>
-                  <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-text-primary)' }}>
+                  <div className="tabular-nums" style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-text-primary)' }}>
                     ₹{(item.price * item.quantity).toLocaleString('en-IN')}
                   </div>
                 </div>
@@ -263,7 +275,7 @@ export default function SuccessClient() {
               alignItems: 'baseline'
             }}>
               <span style={{ fontSize: '14px', fontWeight: 600 }}>Total Settlement</span>
-              <span style={{ fontSize: '20px', fontWeight: 700, color: 'var(--color-text-primary)' }}>
+              <span className="tabular-nums" style={{ fontSize: '20px', fontWeight: 700, color: 'var(--color-text-primary)' }}>
                 ₹{order.total.toLocaleString('en-IN')}
               </span>
             </div>

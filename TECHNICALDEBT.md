@@ -37,6 +37,12 @@ With Desktop Parity Milestones 1–5 fully completed and verified, all frontend 
 | **TD-15** | Backend Editorial CMS | Curators, 6 Canonical Essays, Slug Index, Admin CMS & Lead Story Election | High | Backend Phase 8 | ✅ **RESOLVED** (103/103 Tests Green) |
 | **TD-16** | DevOps & Packaging | Multi-Stage Dockerfiles, `docker-compose.yml` & Standalone Next.js Bundle | High | Phase 9 (DevOps) | ✅ **RESOLVED** (`8b7c4b3`) |
 | **TD-17** | Cloud DB Compatibility | PostgreSQL strict foreign key type compatibility on cloud poolers (V9/V10) | High | Phase 9 (Cloud) | ✅ **RESOLVED** (`ce3d1d3`) |
+| **TD-18** | Admin Currency & Icons | Inconsistent USD ($) formatting in Admin vs Storefront INR (₹) | Medium | Phase 1 (Frontend Refine) | Open (Ready for S11) |
+| **TD-19** | Typography & Numerics | Numeric jitter in price, spec and serial columns (missing tabular-nums) | Low | Phase 1 (Frontend Refine) | Open (Ready for S11) |
+| **TD-20** | Storefront Contrast | Mobile TrustStrip flex wrapping & Occasion card bottom scrim contrast | Low | Phase 1 (Frontend Refine) | Open (Ready for S11) |
+| **TD-21** | Hero Animation | Hero watch visual is static image; lacks GSAP 240-frame scroll canvas | High | Phase 2 (Hero Canvas) | Open (Planned S11) |
+| **TD-22** | 3D Horology Stage | PDP lacks interactive 360° turntable and exploded caliber view | Medium | Phase 3 (3D & SVG) | Open (Planned S11) |
+| **TD-23** | Certificate Animation | Provenance Certificate lacks animated SVG guilloché drawing & wax stamp | Medium | Phase 3 (3D & SVG) | Open (Planned S11) |
 
 ---
 
@@ -206,4 +212,47 @@ With Desktop Parity Milestones 1–5 fully completed and verified, all frontend 
   * Fixed `V10__init_provenance_ledger_and_certificates_schema.sql` by setting `user_id UUID`, `current_user_id UUID`, and `watch_id VARCHAR(32)`.
   * Verified 103/103 tests green in `mvn clean test`.
 * **Status:** ✅ **RESOLVED** in commit `ce3d1d3`.
+
+---
+
+### TD-18: Admin CRM Currency Inconsistency (USD vs INR)
+* **Initial Problem:** In `admin/page.tsx`, `admin/orders/page.tsx`, `admin/coupons/page.tsx`, and modals, `formatCurrency` uses `currency: 'USD'` and `DollarSign` icons, while the entire storefront is priced in Indian Rupees (`₹`).
+* **Resolution Plan:** Standardize all admin currency formatters to `en-IN` / `currency: 'INR'` (`₹`), replace `DollarSign` with `IndianRupee` from `lucide-react`, and update fixed-value coupon labels.
+* **Status:** Open (Scheduled for Phase 1).
+
+---
+
+### TD-19: Tabular Numerics & Text Jitter in Specs/Prices
+* **Initial Problem:** In `/compare`, `/cart`, `/account`, and admin tables, numbers without `font-variant-numeric: tabular-nums` cause micro-jitters and uneven vertical alignment across columns.
+* **Resolution Plan:** Introduce global `.tabular-nums` CSS utility class and apply to all monetary amounts, case diameters, water resistance specs, and order/certificate serials.
+* **Status:** Open (Scheduled for Phase 1).
+
+---
+
+### TD-20: Storefront Mobile Contrast & Alignment
+* **Initial Problem:** On mobile screens, TrustStrip items wrap in an uneven layout, and Curated Occasions card titles suffer from low contrast on bright displays.
+* **Resolution Plan:** Refactor TrustStrip mobile CSS into elevated flex cards, deepen bottom card scrim gradient in `OccasionSection.tsx`, normalize brand logo heights in `PopularBrands.tsx`, and stabilize `ActiveFilterBar.tsx` height.
+* **Status:** Open (Scheduled for Phase 1).
+
+---
+
+### TD-21: GSAP Hero Scroll 240-Frame Interactive Canvas Animation
+* **Initial Problem:** The Hero section uses a static background image, missing the dynamic scroll-driven horology interaction available from the 240 pre-rendered frames.
+* **Resolution Plan:** Deploy `docs/wristo_scroll_frames_30fps/` to `wristo-next/public/assets/hero-frames/` and build `ScrollCanvasHero.tsx` using GSAP 3.15 `ScrollTrigger` (`scrub: 0.6`).
+* **Status:** Open (Scheduled for Phase 2).
+
+---
+
+### TD-22: PDP 360° Interactive Watch Turntable & Exploded Caliber Layers
+* **Initial Problem:** Product detail page has cursor tilt but lacks true 360-degree horizontal rotation and layered caliber breakdown for mechanical timepieces.
+* **Resolution Plan:** Implement drag-to-rotate interaction in `ProductGallery.tsx` and an `ExplodedCaliberModal.tsx` for skeleton models (`WRT-004`, `WRT-008`, `WRT-016`) using GSAP 3D transforms with Lucide icons (no emojis).
+* **Status:** Open (Scheduled for Phase 3).
+
+---
+
+### TD-23: Provenance Certificate SVG Guilloché Drawing & Wax Stamp Animation
+* **Initial Problem:** Certificate modal renders static SVG without the prestigious, high-craft drawing sequence expected of Swiss authenticity documentation.
+* **Resolution Plan:** Add GSAP timeline to `CertificateModal.tsx` animating `strokeDashoffset` across rosette security curves and stamping down the gold holographic seal.
+* **Status:** Open (Scheduled for Phase 3).
+
 

@@ -24,6 +24,8 @@ WRISTO is designed as an ultra-luxury editorial watch boutique — pairing the a
 7. **User Greeting Protocol:** Always greet the user as **"Gaurav Bhau"** at the start of every response/conversation.
 8. **Strict .env Privacy Invariant:** NEVER access, view, read, print, or expose the user's private `.env` file under any circumstance. Always inspect `.env.example` instead.
 9. **Zero Hardcoded Secrets:** All API keys, database credentials, JWT secrets, payment gateway keys (Razorpay, Stripe) must be 100% environment-driven via `application.yml` and `process.env`.
+10. **Strict Zero-Emoji Invariant:** Strictly NEVER use Unicode emojis anywhere in the storefront or admin UI (buttons, badges, labels, modals, tables, headings). All iconography must be 100% vector-based via Lucide Icons (`lucide-react`) or clean inline SVGs with `strokeWidth={1.5}`.
+11. **Sequential Verification Protocol:** All major upgrades follow a strict 3-phase execution order where each phase must be presented and verified by Gaurav Bhau before starting the next.
 
 ---
 
@@ -463,3 +465,27 @@ WRISTO/
   - `prompts/04_backend_architecture_and_spring_boot_spec.md`: Spring Boot 3.3+ & PostgreSQL architecture spec prompt.
   - `prompts/05_gsap_scroll_scrubbed_watch_animation.md`: GSAP scroll canvas exploration brief & restoration notes.
   - `prompts/README.md`: Index and navigation guide.
+
+---
+
+## 18. Frontend Visual Polish, GSAP Animations & 3D Interactive Horology Roadmap
+
+- **Master Plan Document:** Registered in conversation artifacts as `frontend_enhancement_and_animation_plan.md` containing all 17 audit items and strict zero-emoji policy.
+- **Phase Breakdown & Sequence:**
+  1. **Phase 1: Visual Alignment, Admin CRM Refinement & Currency Standardization**
+     - Standardize currency formatting to `en-IN` / `INR` (`₹`) across `/admin`, `/admin/orders`, `/admin/coupons`, `/admin/listings`, `OrderStatusModal`, and `ListingApprovalModal`.
+     - Standardize icons to Lucide vector icons (`<IndianRupee />`, `<ZoomIn />`, etc.), completely eliminating emojis.
+     - Add `.tabular-nums` CSS utility across all prices, case diameters, water resistance specs, and serial numbers.
+     - Fix KYC document aspect ratio in `SellerReviewModal.tsx` and add 60vh scroll container in `ArticleEditorModal.tsx`.
+     - Deepen Occasion card scrim gradient and refactor mobile TrustStrip flex layout.
+  2. **Phase 2: GSAP Hero Scroll-Controlled 240-Frame Interactive Canvas Animation**
+     - Deploy 240 pre-rendered frames (`docs/wristo_scroll_frames_30fps/`) to `wristo-next/public/assets/hero-frames/`.
+     - Build `ScrollCanvasHero.tsx` using GSAP 3.15 `ScrollTrigger` (`scrub: 0.6`).
+     - Zero-flash initial render on frame 0001 with background image buffer.
+  3. **Phase 3: Interactive 3D Watch Stage, Provenance Guilloché Draw & Admin Telemetry**
+     - PDP 360° interactive turntable and exploded caliber view for skeleton timepieces (`WRT-004`, `WRT-008`, `WRT-016`).
+     - SVG guilloché rosette security line drawing animation (0.8s) + gold wax stamp impact on `CertificateModal.tsx`.
+     - 3D dual-perspective floating watch stage on `/compare`.
+     - Admin dashboard KPI numeric counter roll-up animation via GSAP `roundProps`.
+- **Status:** Formulation complete, approved by Gaurav Bhau, ready for Phase 1 execution.
+

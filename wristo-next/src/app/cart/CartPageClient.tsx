@@ -114,7 +114,7 @@ export default function CartPageClient() {
                           <span className="cart-spec-divider">&bull;</span>
                           <span>Movement: {item.product.movement}</span>
                         </div>
-                        <div className="cart-item-unit-price">
+                        <div className="cart-item-unit-price tabular-nums">
                           ₹{item.product.price.toLocaleString('en-IN')} each
                         </div>
                       </div>
@@ -131,7 +131,7 @@ export default function CartPageClient() {
                           >
                             &minus;
                           </button>
-                          <span className="cart-stepper-qty">{item.quantity}</span>
+                          <span className="cart-stepper-qty tabular-nums">{item.quantity}</span>
                           <button
                             type="button"
                             className="cart-stepper-btn"
@@ -145,7 +145,7 @@ export default function CartPageClient() {
 
                       {/* Line Total & Remove */}
                       <div className="cart-item-total-cell">
-                        <span className="cart-item-line-total">
+                        <span className="cart-item-line-total tabular-nums">
                           ₹{lineTotal.toLocaleString('en-IN')}
                         </span>
                         <button
@@ -192,7 +192,7 @@ export default function CartPageClient() {
               <div className="cart-summary-rows">
                 <div className="cart-summary-row">
                   <span className="cart-summary-label">Subtotal</span>
-                  <span className="cart-summary-val">₹{totals.subtotal.toLocaleString('en-IN')}</span>
+                  <span className="cart-summary-val tabular-nums">₹{totals.subtotal.toLocaleString('en-IN')}</span>
                 </div>
 
                 {totals.discount > 0 && (
@@ -200,13 +200,13 @@ export default function CartPageClient() {
                     <span className="cart-summary-label">
                       Promo Discount {appliedCoupon && `(${appliedCoupon.code})`}
                     </span>
-                    <span className="cart-summary-val">&minus;₹{totals.discount.toLocaleString('en-IN')}</span>
+                    <span className="cart-summary-val tabular-nums">&minus;₹{totals.discount.toLocaleString('en-IN')}</span>
                   </div>
                 )}
 
                 <div className="cart-summary-row">
                   <span className="cart-summary-label">Shipping</span>
-                  <span className="cart-summary-val free-tag">
+                  <span className="cart-summary-val free-tag tabular-nums">
                     {totals.shippingFee === 0 ? 'Free (Insured Courier)' : `₹${totals.shippingFee.toLocaleString('en-IN')}`}
                   </span>
                 </div>
@@ -220,7 +220,7 @@ export default function CartPageClient() {
 
                 <div className="cart-summary-row total-row">
                   <span className="cart-total-label">Total Amount</span>
-                  <span className="cart-total-val">₹{totals.total.toLocaleString('en-IN')}</span>
+                  <span className="cart-total-val tabular-nums">₹{totals.total.toLocaleString('en-IN')}</span>
                 </div>
               </div>
 

@@ -430,4 +430,32 @@
     - Aligned strict PostgreSQL foreign key constraints across Flyway migrations: `V9` (`order_items.seller_listing_id` -> `UUID`) and `V10` (`collector_profiles.user_id`, `authenticity_certificates.user_id`, `provenance_records.current_user_id` -> `UUID`, `watch_id` -> `VARCHAR(32)`).
     - Verified **103/103 automated tests passing (100% green)** in `mvn clean test` and pushed to `main` as `ce3d1d3`.
 
+---
+
+## 5. Master Frontend Enhancement, Alignment & GSAP 3D Animation Roadmap
+
+- [x] **Phase 1: Visual Alignment, Admin CRM Refinement & Currency Standardization** ✅ (Implemented & 100% Build Verified)
+  - **Admin Currency Standardization (USD $ ➔ INR ₹):** Standardize `formatCurrency()` to `en-IN` / `currency: 'INR'` (`₹`) across `/admin`, `/admin/orders`, `/admin/coupons`, `/admin/listings`, `OrderStatusModal`, and `ListingApprovalModal`.
+  - **Strict Zero-Emoji Icon Standardization:** Replace `DollarSign` with `IndianRupee` in `admin/page.tsx` and `coupons/page.tsx`. Ensure strictly 100% vector Lucide Icons (`lucide-react`) across all components (zero unicode emojis).
+  - **Table Alignments & Tabular Numerics:** Apply `.tabular-nums` (`font-variant-numeric: tabular-nums`) to all prices, dimensions, order serials (`WRT-2026-XXXXX`), and certificate IDs (`CERT-CHRONO-XXXXX`). Right-align monetary amount columns in admin tables.
+  - **Admin Modal Ergonomics:** Fix GST/PAN certificate aspect ratio in `SellerReviewModal.tsx` (`max-height: 480px; object-fit: contain;`) with zoom inspection, and add 60vh scroll container for long essays in `ArticleEditorModal.tsx`.
+  - **Storefront Alignment & Contrast:** Deepen bottom card scrim overlay in `OccasionSection.tsx` for 100% text legibility, refactor `TrustStrip.tsx` mobile layout to clean elevated flex cards, normalize `PopularBrands.tsx` logo dimensions (`max-height: 28px`), and stabilize `ActiveFilterBar.tsx` height to eliminate grid shifts.
+  - **Gate Checkpoint:** 100% build-verified (`npm run build`), presented to Gaurav Bhau for visual inspection before moving to Phase 2.
+
+- [ ] **Phase 2: GSAP Hero Scroll-Controlled 240-Frame Interactive Canvas Animation** (Planned)
+  - **Asset Pipeline:** Copy 240 high-DPI frames (`docs/wristo_scroll_frames_30fps/frame_0001.jpg` to `frame_0240.jpg`) to `wristo-next/public/assets/hero-frames/`.
+  - **Interactive Canvas Component (`ScrollCanvasHero.tsx`):** Single high-DPI HTML5 Canvas (1280x720 scaled by DPR capped at 2) scrubbed by GSAP 3.15 `ScrollTrigger` (`scrub: 0.6`, `ease: "none"`).
+  - **Zero-Flash & Buffer Strategy:** Instant frame 0001 render + asynchronous background image buffer with hairline gold loading progress bar.
+  - **Preserved Design:** Maintain existing serif typography, dark typographic left gradient, champagne buttons, and 4K video modal trigger intact.
+  - **Gate Checkpoint:** Smooth 60fps canvas scrubbing verified by Gaurav Bhau before Phase 3.
+
+- [ ] **Phase 3: Interactive 3D Watch Stage, Provenance Guilloché Draw & Admin Telemetry** (Planned)
+  - **PDP 360° Drag-to-Rotate Stage:** Interactive mouse-drag / touch-swipe 3D watch turntable with dynamic sapphire crystal glint in `ProductGallery.tsx`.
+  - **Exploded Caliber Micro-Animation:** Z-axis layer separation for skeleton calibers (`WRT-004`, `WRT-008`, `WRT-016`) via `ExplodedCaliberModal.tsx` (using Lucide `<Layers size={14} />`).
+  - **Provenance Certificate SVG Guilloché Draw:** Real-time SVG `strokeDashoffset` path drawing animation (0.8s) + gold holographic seal stamp impact (`scale: 1.8 -> 1.0`, `back.out(1.7)`) in `CertificateModal.tsx`.
+  - **Watch Comparison Matrix 3D Floating Showcase:** Synchronized gyro-tilt floating cards and physical dimension scaling highlights on `/compare`.
+  - **Admin CRM Telemetry Counter Roll-Up:** GSAP `roundProps` number roll-up for Gross Revenue, Orders, Listings, and Certificates on dashboard load.
+  - **Global ScrollTrigger Stagger Reveals:** Luxury card reveals on `/watches` and occasion collections.
+
+
 

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { X, Save, Users, ShieldCheck, Check, AlertTriangle } from 'lucide-react';
+import { X, Save, Users, ShieldCheck, Check, AlertTriangle, FileCheck, ZoomIn } from 'lucide-react';
 import { AdminSeller } from '@/types/admin';
 
 interface SellerReviewModalProps {
@@ -110,6 +110,78 @@ export default function SellerReviewModal({
                     {b}
                   </span>
                 ))}
+              </div>
+            </div>
+
+            {/* KYC Dossier & Commercial Registry Preview */}
+            <div className="admin-form-group">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                <span className="admin-form-label">KYC License &amp; Chamber Credentials</span>
+                <span style={{ fontSize: '11px', color: 'var(--color-accent-champagne)', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                  <ZoomIn size={12} strokeWidth={1.5} />
+                  <span>Verified Dossier (2048-Bit Signed)</span>
+                </span>
+              </div>
+              <div style={{
+                background: '#0B0B0B',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                borderRadius: '6px',
+                padding: '14px',
+                maxHeight: '220px',
+                overflowY: 'auto',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px'
+              }}>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '10px 12px',
+                  background: 'rgba(255, 255, 255, 0.03)',
+                  borderRadius: '4px',
+                  border: '1px solid rgba(255, 255, 255, 0.05)'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <FileCheck size={16} strokeWidth={1.5} style={{ color: 'var(--brand-bronze)' }} />
+                    <div>
+                      <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--brand-ivory)' }}>
+                        Commercial_Registry_Certificate.pdf
+                      </div>
+                      <div className="tabular-nums" style={{ fontSize: '10.5px', color: 'var(--color-text-muted)' }}>
+                        Reg No: {seller.businessRegistrationNumber} &bull; Geneva Chamber of Commerce
+                      </div>
+                    </div>
+                  </div>
+                  <span className="status-pill success" style={{ fontSize: '10px', padding: '2px 8px' }}>
+                    Validated
+                  </span>
+                </div>
+
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '10px 12px',
+                  background: 'rgba(255, 255, 255, 0.03)',
+                  borderRadius: '4px',
+                  border: '1px solid rgba(255, 255, 255, 0.05)'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <ShieldCheck size={16} strokeWidth={1.5} style={{ color: 'var(--color-accent-champagne)' }} />
+                    <div>
+                      <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--brand-ivory)' }}>
+                        Authorized_Dealer_Representation_Dossier.pdf
+                      </div>
+                      <div style={{ fontSize: '10.5px', color: 'var(--color-text-muted)' }}>
+                        Covers {seller.authorizedBrands.join(', ')} &bull; Tier 1 Status
+                      </div>
+                    </div>
+                  </div>
+                  <span className="status-pill success" style={{ fontSize: '10px', padding: '2px 8px' }}>
+                    Verified
+                  </span>
+                </div>
               </div>
             </div>
 

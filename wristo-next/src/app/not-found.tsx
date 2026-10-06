@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import { Clock } from 'lucide-react';
 import { PRODUCTS } from '@/data/products';
 import ProductCard from '@/components/catalog/ProductCard';
 
@@ -15,7 +16,7 @@ export default function NotFound() {
     <div className="not-found-wrapper">
       <div className="not-found-card">
         <div className="not-found-deviation-badge">
-          <span>⏱</span>
+          <Clock size={13} strokeWidth={1.5} />
           <span>Archive Deviation Notice</span>
         </div>
 
