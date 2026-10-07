@@ -9,7 +9,7 @@ import { MapPin, Phone, Mail, Clock } from 'lucide-react';
 export default function Footer() {
   const pathname = usePathname();
 
-  if (pathname?.startsWith('/checkout')) {
+  if (pathname?.startsWith('/checkout') || pathname?.startsWith('/admin')) {
     return null;
   }
 

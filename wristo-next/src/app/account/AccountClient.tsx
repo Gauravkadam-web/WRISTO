@@ -120,6 +120,12 @@ export default function AccountClient({ initialTab = 'overview', initialCert }: 
   const handleTabChange = (newTab: AccountTab) => {
     setActiveTab(newTab);
     router.replace(`/account?tab=${newTab}`, { scroll: false });
+    if (typeof window !== 'undefined') {
+      const navElement = document.querySelector('.account-nav-bar');
+      if (navElement && window.scrollY > 200) {
+        navElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
   };
 
   return (

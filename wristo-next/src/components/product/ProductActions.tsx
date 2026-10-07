@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Product } from '@/types/product';
 import { useCart } from '@/context/CartContext';
 import { useWishlist } from '@/context/WishlistContext';
@@ -17,6 +18,7 @@ export default function ProductActions({
   quantity,
   onQuantityChange
 }: ProductActionsProps) {
+  const router = useRouter();
   const { addToCart, openCartDrawer } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
   const { isInComparison, toggleComparison } = useComparison();
@@ -31,7 +33,7 @@ export default function ProductActions({
 
   const handleBuyNow = () => {
     addToCart(product.id, quantity);
-    openCartDrawer();
+    router.push('/checkout');
   };
 
   const handleShare = () => {

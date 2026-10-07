@@ -4,9 +4,9 @@
 **Project:** Luxury Watch E-Commerce Web Application  
 **Status:** All 8 Full-Stack Backend Modules + Desktop Parity Milestones 1–5 + Production DevOps + Cloud Storage Infrastructure 100% Complete & Verified.  
 **Backend Status:** Java 21 + Spring Boot 3.3+ (103/103 Tests Green) + PostgreSQL Flyway (V1–V11) + Docker + GitHub Actions CI.  
-**Total Production Routes:** 61 Statically Pre-rendered SSG & Dynamic Routes.  
+**Total Production Routes:** 69 Statically Pre-rendered SSG & Dynamic Routes.  
 **GitHub Remote:** `https://github.com/Gauravkadam-web/WRISTO.git` (Branch: `main`, Latest Push: `ce3d1d3`)  
-**Last Updated:** October 7, 2026  
+**Last Updated:** October 7, 2026 (Production Bug Fixes & Isolation Complete)  
 
 ---
 
@@ -491,9 +491,44 @@
 
 ---
 
-## 7. Pending Backlog
+## 8. Production Bug Fixes & Architecture Hardening (Session 8 — Oct 7, 2026)
+
+### Session 8A: Live Checkout Redirection & Mobile Sticky Bar Fix ✅
+- **Objective:** Fix "Buy Now" button on PDP and Mobile Sticky Purchase Bar getting stuck on the same page.
+- **Root Cause:** Handler called `openCartDrawer()` instead of navigating to `/checkout`.
+- **Files Fixed:**
+  - `wristo-next/src/components/product/ProductActions.tsx`: Added `useRouter` and updated `handleBuyNow()` to call `router.push('/checkout')`.
+  - `wristo-next/src/components/product/StickyMobilePurchaseBar.tsx`: Added `useRouter` and updated Buy Now button handler to call `router.push('/checkout')`.
+
+### Session 8B: Admin Panel Layout Isolation ✅
+- **Objective:** Prevent global consumer Header and Footer from rendering inside the `/admin/*` control plane.
+- **Root Cause:** Both layout components suppressed only `/checkout`, ignoring `/admin`.
+- **Files Fixed:**
+  - `wristo-next/src/components/layout/Header.tsx`: Added `pathname?.startsWith('/admin')` to null-return suppression condition.
+  - `wristo-next/src/components/layout/Footer.tsx`: Added `pathname?.startsWith('/admin')` to null-return suppression condition.
+
+### Session 8C: Dynamic Route First-Visit 404 & Cold-Start Fix ✅
+- **Objective:** Resolve first-visit 404 on dynamic routes (such as journal articles, PDP routes) before manual reload.
+- **Root Cause:** `output: "standalone"` was set in `next.config.ts`, which interfered with Vercel's native serverless/SSG route distribution.
+- **Files Fixed:**
+  - `wristo-next/next.config.ts`: Removed `output: "standalone"` for standard Vercel edge/serverless distribution.
+
+### Session 8D: Tab & Filter Viewport Positioning Polish ✅
+- **Objective:** Improve client-side tactile feel when switching tabs or categories.
+- **Files Fixed:**
+  - `wristo-next/src/app/account/AccountClient.tsx`: Added smooth scroll anchor positioning to `handleTabChange`.
+  - `wristo-next/src/app/journal/JournalClient.tsx`: Added smooth scroll positioning to `handleSelectCategory`.
+
+### Verification Status:
+- `npm run build` completed with exit code 0.
+- All **69/69 static and dynamic routes** generated cleanly with Turbopack.
+
+---
+
+## 9. Pending Backlog
 
 - [ ] **Watch Images 26–40:** Fresh AI generation required (quota resets ~3:00 PM IST Oct 7, 2026). Prompts pre-written in `wristo-next/scripts/watch_prompts.json` (entries 26–40).
 - [ ] **Re-upload to Supabase after generation:** Run `node scripts/upload_to_supabase.js` after new images are placed in `wristo-next/public/assets/products/`.
-- [ ] **Commit & Push Session 7 changes** to `main` (pending explicit Gaurav Bhau confirmation).
+- [ ] **Commit & Push changes** to `main` (pending explicit Gaurav Bhau confirmation).
 - [ ] **Set `NEXT_PUBLIC_STORAGE_BASE_URL`** in Vercel/Render deployment environment for production CDN routing.
+

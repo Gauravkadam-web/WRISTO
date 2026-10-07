@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Product } from '@/types/product';
 import { useCart } from '@/context/CartContext';
 
@@ -13,6 +14,7 @@ export default function StickyMobilePurchaseBar({
   product,
   quantity
 }: StickyMobilePurchaseBarProps) {
+  const router = useRouter();
   const [isVisible, setIsVisible] = useState(false);
   const { addToCart, openCartDrawer } = useCart();
 
@@ -61,7 +63,7 @@ export default function StickyMobilePurchaseBar({
             className="btn btn-champagne btn-sm pdp-sticky-btn"
             onClick={() => {
               addToCart(product.id, quantity);
-              openCartDrawer();
+              router.push('/checkout');
             }}
           >
             Buy Now

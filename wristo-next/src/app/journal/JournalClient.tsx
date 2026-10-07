@@ -40,6 +40,16 @@ export default function JournalClient({
     return counts;
   }, [initialArticles]);
 
+  const handleSelectCategory = (cat: string) => {
+    setSelectedCategory(cat);
+    if (typeof window !== 'undefined') {
+      const filterEl = document.querySelector('.journal-category-filter');
+      if (filterEl && window.scrollY > 300) {
+        filterEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+  };
+
   return (
     <div className="journal-page-wrapper">
       <div className="container">
@@ -56,7 +66,7 @@ export default function JournalClient({
         <CategoryFilter
           categories={categories}
           selectedCategory={selectedCategory}
-          onSelectCategory={setSelectedCategory}
+          onSelectCategory={handleSelectCategory}
           counts={categoryCounts}
         />
 
