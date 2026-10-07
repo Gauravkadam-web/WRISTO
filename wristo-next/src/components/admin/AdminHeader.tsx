@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { ChevronRight, Shield, Activity } from 'lucide-react';
 import { adminService } from '@/services/adminService';
+import { API_BASE_URL } from '@/services/apiClient';
 import { AdminUser } from '@/types/admin';
 
 export default function AdminHeader() {
@@ -17,9 +18,9 @@ export default function AdminHeader() {
     // Check backend health
     const checkHealth = async () => {
       try {
-        const res = await fetch('http://localhost:8080/api/v1/health', {
+        const res = await fetch(`${API_BASE_URL}/health`, {
           method: 'GET',
-          signal: AbortSignal.timeout(2000)
+          signal: AbortSignal.timeout(3000)
         });
         setIsLiveConnected(res.ok);
       } catch {

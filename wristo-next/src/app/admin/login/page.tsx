@@ -18,14 +18,14 @@ export default function AdminLoginPage() {
     setIsLoading(true);
 
     try {
-      const response = await adminService.login(email, password);
-      if (response.token) {
+      const response = await adminService.login(email.trim(), password);
+      if (response && (response.token || response.role)) {
         router.push('/admin');
       } else {
         setError('Invalid executive credentials. Please check your email and password.');
       }
-    } catch {
-      setError('An error occurred during authentication. Please retry.');
+    } catch (err: any) {
+      setError(err?.message || 'An error occurred during authentication. Please retry.');
     } finally {
       setIsLoading(false);
     }

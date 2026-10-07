@@ -21,7 +21,16 @@ export default function AdminAuthGuard({ children }: AdminAuthGuardProps) {
     }
 
     const admin = adminService.getCurrentAdmin();
-    if (!admin || (admin.role !== 'ADMIN' && admin.role !== 'SUPER_ADMIN')) {
+    if (!admin) {
+      setIsAuthorized(false);
+      router.push('/admin/login');
+      return;
+    }
+
+    const role = (admin.role || '').toUpperCase();
+    const isAllowed = role.includes('ADMIN') || role.includes('SUPER') || role === 'OWNER';
+
+    if (!isAllowed) {
       setIsAuthorized(false);
       router.push('/admin/login');
     } else {
