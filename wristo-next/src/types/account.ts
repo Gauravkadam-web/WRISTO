@@ -28,4 +28,4 @@ export interface SavedAddress {
   isDefault: boolean;
 }
 
-export type AccountTab = 'overview' | 'orders' | 'addresses' | 'wishlist' | 'settings';
+export type AccountTab = 'overview' | 'orders' | 'addresses' | 'wishlist' | 'settings' | 'provenance';

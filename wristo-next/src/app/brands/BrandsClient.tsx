@@ -1,10 +1,31 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { BRANDS } from '@/data/brands';
+import { Brand } from '@/types/product';
+import { brandService } from '@/services/brandService';
 
 export default function BrandsClient() {
+  const [brands, setBrands] = useState<Brand[]>(BRANDS);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadBrands() {
+      try {
+        const liveBrands = await brandService.getAllBrands();
+        if (liveBrands && liveBrands.length > 0) {
+          setBrands(liveBrands);
+        }
+      } catch {
+        // Fallback already set
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadBrands();
+  }, []);
+
   return (
     <div className="container brands-page-container">
       {/* Breadcrumb */}
@@ -25,7 +46,7 @@ export default function BrandsClient() {
 
       {/* Brand Houses Showcase Grid */}
       <div className="brand-houses-grid">
-        {BRANDS.map((brand) => (
+        {brands.map((brand) => (
           <div key={brand.name} className="brand-house-card">
             <div className="brand-house-top">
               <div className="brand-house-monogram" aria-hidden="true">

@@ -1,4 +1,6 @@
 import { CollectorProfile, SavedAddress } from '@/types/account';
+import { apiClient } from './apiClient';
+import { authService } from './authService';
 
 export const DEFAULT_PROFILE: CollectorProfile = {
   id: 'USR-WRISTO-08492',
@@ -7,7 +9,7 @@ export const DEFAULT_PROFILE: CollectorProfile = {
   phone: '+91 98765 43210',
   salutation: 'Collector',
   vipTier: 'Grand Complication Patron',
-  joinedDate: 'October 2024',
+  joinedDate: 'October 2026',
   wristSizeMm: 175,
   currency: 'INR',
   notifications: {
@@ -46,23 +48,49 @@ export const DEFAULT_ADDRESSES: SavedAddress[] = [
 
 export async function getCollectorProfile(): Promise<CollectorProfile> {
   if (typeof window === 'undefined') return DEFAULT_PROFILE;
+
+  // Try fetching live authenticated profile from backend
+  if (authService.isAuthenticated()) {
+    try {
+      const res = await apiClient.get<CollectorProfile>('/account/profile');
+      if (res.data && res.data.email) {
+        localStorage.setItem('wristo_profile', JSON.stringify(res.data));
+        return res.data;
+      }
+    } catch {
+      // Fall through to local session
+    }
+  }
+
+  // Fallback to active logged in user metadata
+  const user = authService.getCurrentUser();
+  if (user) {
+    const sessionProfile: CollectorProfile = {
+      ...DEFAULT_PROFILE,
+      id: user.id || DEFAULT_PROFILE.id,
+      fullName: user.fullName || DEFAULT_PROFILE.fullName,
+      email: user.email || DEFAULT_PROFILE.email,
+      phone: user.phone || DEFAULT_PROFILE.phone
+    };
+    return sessionProfile;
+  }
+
   try {
     const saved = localStorage.getItem('wristo_profile');
-    if (!saved) {
-      localStorage.setItem('wristo_profile', JSON.stringify(DEFAULT_PROFILE));
-      return DEFAULT_PROFILE;
-    }
-    return JSON.parse(saved);
+    if (saved) return JSON.parse(saved);
   } catch {
-    return DEFAULT_PROFILE;
+    // Ignore
   }
+
+  return DEFAULT_PROFILE;
 }
 
 export async function updateCollectorProfile(
   updated: Partial<CollectorProfile>
 ): Promise<CollectorProfile> {
   const current = await getCollectorProfile();
-  const next = { ...current, ...updated };
+  const next: CollectorProfile = { ...current, ...updated };
+
   if (typeof window !== 'undefined') {
     try {
       localStorage.setItem('wristo_profile', JSON.stringify(next));
@@ -70,6 +98,26 @@ export async function updateCollectorProfile(
       // Ignore
     }
   }
+
+  if (authService.isAuthenticated()) {
+    try {
+      const payload = {
+        fullName: next.fullName,
+        phone: next.phone,
+        salutation: next.salutation,
+        wristSizeMm: next.wristSizeMm,
+        currency: next.currency,
+        orderTelemetry: next.notifications?.orderTelemetry ?? true,
+        rareAllocations: next.notifications?.rareAllocations ?? true,
+        conciergeBriefings: next.notifications?.conciergeBriefings ?? false
+      };
+      const res = await apiClient.put<CollectorProfile>('/account/profile', payload);
+      if (res.data) return res.data;
+    } catch {
+      // Fall back to updated local representation
+    }
+  }
+
   return next;
 }
 

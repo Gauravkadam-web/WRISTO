@@ -6,6 +6,7 @@ import { AccountTab, CollectorProfile, SavedAddress } from '@/types/account';
 import { OrderRecord } from '@/types/order';
 import { getCollectorProfile, getSavedAddresses, DEFAULT_PROFILE, DEFAULT_ADDRESSES } from '@/services/accountService';
 import { getOrders } from '@/services/orderService';
+import { authService, AuthUser } from '@/services/authService';
 import { useWishlist } from '@/context/WishlistContext';
 
 import AccountHeader from '@/components/account/AccountHeader';
@@ -16,6 +17,7 @@ import AddressesTab from '@/components/account/AddressesTab';
 import WishlistTab from '@/components/account/WishlistTab';
 import SettingsTab from '@/components/account/SettingsTab';
 import CertificateModal from '@/components/account/CertificateModal';
+import VaultAuthView from '@/components/account/VaultAuthView';
 
 const SEED_SAMPLE_ORDERS: OrderRecord[] = [
   {
@@ -54,15 +56,15 @@ const SEED_SAMPLE_ORDERS: OrderRecord[] = [
       calculatedDiscount: 2000
     },
     address: {
-      fullName: 'Aditya Vikram Singhania',
-      email: 'aditya.singhania@horology.com',
-      phone: '9820198201',
-      pincode: '400001',
-      addressLine1: 'Penthouse 12, Altamount Towers, Altamount Road',
-      addressLine2: '',
-      city: 'Mumbai',
+      fullName: 'Gaurav Kadam',
+      email: 'gauravkadam@gmail.com',
+      phone: '+91 98765 43210',
+      pincode: '411048',
+      addressLine1: 'Row House 04, Clover Highlands, NIBM Road, Kondhwa',
+      addressLine2: 'Near Corinthian Club',
+      city: 'Pune',
       state: 'Maharashtra',
-      landmark: 'Near Royal Opera House',
+      landmark: 'Near Corinthian Club',
       deliveryNotes: 'Please ring private security reception.'
     },
     deliveryTier: 'white_glove',
@@ -82,23 +84,40 @@ export default function AccountClient({ initialTab = 'overview', initialCert }: 
   const tabParam = (searchParams.get('tab') as AccountTab | null) || initialTab;
   const certParam = searchParams.get('cert') || initialCert;
 
-  const validTabs: AccountTab[] = ['overview', 'orders', 'addresses', 'wishlist', 'settings'];
+  const validTabs: AccountTab[] = ['overview', 'orders', 'addresses', 'wishlist', 'settings', 'provenance'];
   const [activeTab, setActiveTab] = useState<AccountTab>(
-    tabParam && validTabs.includes(tabParam) ? tabParam : initialTab
+    tabParam && validTabs.includes(tabParam)
+      ? (tabParam === 'provenance' ? 'orders' : tabParam)
+      : initialTab
   );
+
+  const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isAuthChecking, setIsAuthChecking] = useState<boolean>(true);
 
   const [profile, setProfile] = useState<CollectorProfile>(DEFAULT_PROFILE);
   const [addresses, setAddresses] = useState<SavedAddress[]>(DEFAULT_ADDRESSES);
-  const [orders, setOrders] = useState<OrderRecord[]>(SEED_SAMPLE_ORDERS);
+  const [orders, setOrders] = useState<OrderRecord[]>([]);
 
-  const [selectedCertOrder, setSelectedCertOrder] = useState<OrderRecord | null>(
-    certParam === 'open' || certParam === 'sample' ? SEED_SAMPLE_ORDERS[0] : null
-  );
+  const [selectedCertOrder, setSelectedCertOrder] = useState<OrderRecord | null>(null);
 
   const { wishlistCount } = useWishlist();
 
+  // Initialize and verify authentication state
   useEffect(() => {
-    async function loadData() {
+    const authed = authService.isAuthenticated();
+    const user = authService.getCurrentUser();
+    setIsAuthenticated(authed);
+    setCurrentUser(user);
+    setIsAuthChecking(false);
+
+    if (authed) {
+      loadAccountData();
+    }
+  }, [searchParams, certParam]);
+
+  const loadAccountData = async () => {
+    try {
       const [userProfile, savedAddrs, savedOrders] = await Promise.all([
         getCollectorProfile(),
         getSavedAddresses(),
@@ -107,36 +126,84 @@ export default function AccountClient({ initialTab = 'overview', initialCert }: 
 
       setProfile(userProfile);
       setAddresses(savedAddrs);
-      const resolvedOrders = savedOrders.length > 0 ? savedOrders : SEED_SAMPLE_ORDERS;
+      const resolvedOrders = savedOrders && savedOrders.length > 0 ? savedOrders : SEED_SAMPLE_ORDERS;
       setOrders(resolvedOrders);
 
-      if (certParam === 'open' || certParam === 'sample') {
+      if (certParam === 'open' || certParam === 'sample' || tabParam === 'provenance') {
         setSelectedCertOrder(resolvedOrders[0]);
       }
+    } catch {
+      // Fallback
     }
-    loadData();
-  }, [searchParams, certParam]);
+  };
+
+  const handleAuthSuccess = (user: AuthUser) => {
+    setCurrentUser(user);
+    setIsAuthenticated(true);
+    loadAccountData();
+
+    // If role is ADMIN, smoothly allow user to explore or navigate to admin
+    const role = (user.role || '').toUpperCase();
+    if (role.includes('ADMIN') || role.includes('SUPER')) {
+      // Auto prompt or redirect
+    }
+  };
+
+  const handleLogout = async () => {
+    await authService.logout();
+    setIsAuthenticated(false);
+    setCurrentUser(null);
+    router.replace('/account', { scroll: false });
+  };
 
   const handleTabChange = (newTab: AccountTab) => {
     setActiveTab(newTab);
     router.replace(`/account?tab=${newTab}`, { scroll: false });
     if (typeof window !== 'undefined') {
-      const navElement = document.querySelector('.account-nav-bar');
+      const navElement = document.querySelector('.account-tabs-nav');
       if (navElement && window.scrollY > 200) {
         navElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
     }
   };
 
+  if (isAuthChecking) {
+    return (
+      <div className="account-loading-skeleton">
+        <div className="container" style={{ padding: '80px 24px', textAlign: 'center' }}>
+          <div className="section-label">HOROLOGICAL VAULT</div>
+          <p style={{ color: 'var(--color-text-secondary)', marginTop: '8px' }}>
+            Verifying 256-bit client identity...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // If not authenticated, display luxury Role-Based Persona Vault Login / Register
+  if (!isAuthenticated) {
+    return (
+      <div className="account-page-wrapper">
+        <div className="container">
+          <VaultAuthView onAuthSuccess={handleAuthSuccess} />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="account-page-wrapper">
       <div className="container">
-        {/* Collector Profile Header Banner */}
-        <AccountHeader profile={profile} />
+        {/* Collector Profile Header Banner with Role Badge & Logout */}
+        <AccountHeader
+          profile={profile}
+          currentUser={currentUser}
+          onLogout={handleLogout}
+        />
 
         {/* Tab Navigation */}
         <AccountNav
-          activeTab={activeTab}
+          activeTab={activeTab === 'provenance' ? 'orders' : activeTab}
           onSelectTab={handleTabChange}
           orderCount={orders.length}
           wishlistCount={wishlistCount}
@@ -155,7 +222,7 @@ export default function AccountClient({ initialTab = 'overview', initialCert }: 
             />
           )}
 
-          {activeTab === 'orders' && (
+          {(activeTab === 'orders' || activeTab === 'provenance') && (
             <OrdersTab
               orders={orders}
               onViewCertificate={setSelectedCertOrder}

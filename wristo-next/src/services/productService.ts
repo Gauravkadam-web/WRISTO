@@ -387,3 +387,15 @@ export async function getSearchSuggestions(query: string): Promise<SearchSuggest
     popularSearches
   };
 }
+
+export const productService = {
+  getProductById,
+  getProductsByIds,
+  getAllProductIds,
+  getCatalogProducts,
+  getCategories,
+  getSimilarProducts,
+  getSearchSuggestions
+};
+
+

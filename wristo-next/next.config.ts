@@ -13,6 +13,18 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: "/watches/:id((?!^$|gender|brand|category|sort|price|movement).+)",
+        destination: "/product/:id",
+      },
+      {
+        source: "/catalog/:id",
+        destination: "/product/:id",
+      },
+    ];
+  },
 };
 
 export default nextConfig;

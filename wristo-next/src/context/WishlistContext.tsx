@@ -1,6 +1,8 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { apiClient } from '@/services/apiClient';
+import { authService } from '@/services/authService';
 
 interface WishlistContextType {
   wishlist: string[];
@@ -17,17 +19,41 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem('wristo_wishlist');
-      if (saved) {
-        setWishlist(JSON.parse(saved));
-      } else {
-        setWishlist(['WRT-001', 'WRT-005', 'WRT-031']); // Default curated sample items
+    async function initWishlist() {
+      // If authenticated, try fetching user's live wishlist from backend
+      if (authService.isAuthenticated()) {
+        try {
+          const res = await apiClient.get<any>('/wishlist', 3000);
+          if (res.data) {
+            const serverList = Array.isArray(res.data)
+              ? res.data.map((item: any) => (typeof item === 'string' ? item : item.productId || item.id))
+              : (res.data.items || []).map((item: any) => item.productId || item.id);
+            if (serverList.length > 0) {
+              setWishlist(serverList);
+              localStorage.setItem('wristo_wishlist', JSON.stringify(serverList));
+              setIsLoaded(true);
+              return;
+            }
+          }
+        } catch {
+          // Fall back to local storage
+        }
       }
-    } catch {
-      // Ignore
+
+      try {
+        const saved = localStorage.getItem('wristo_wishlist');
+        if (saved) {
+          setWishlist(JSON.parse(saved));
+        } else {
+          setWishlist(['WRT-001', 'WRT-005', 'WRT-031']); // Default curated sample items
+        }
+      } catch {
+        // Ignore
+      }
+      setIsLoaded(true);
     }
-    setIsLoaded(true);
+
+    initWishlist();
   }, []);
 
   useEffect(() => {
@@ -42,15 +68,21 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
 
   const toggleWishlist = (productId: string): boolean => {
     let added = false;
-    setWishlist(prev => {
-      if (prev.includes(productId)) {
-        added = false;
-        return prev.filter(id => id !== productId);
-      } else {
-        added = true;
-        return [...prev, productId];
+    const exists = wishlist.includes(productId);
+
+    if (exists) {
+      added = false;
+      setWishlist(prev => prev.filter(id => id !== productId));
+      if (authService.isAuthenticated()) {
+        apiClient.delete(`/wishlist/${encodeURIComponent(productId)}`).catch(() => {});
       }
-    });
+    } else {
+      added = true;
+      setWishlist(prev => [...prev, productId]);
+      if (authService.isAuthenticated()) {
+        apiClient.post(`/wishlist/${encodeURIComponent(productId)}`).catch(() => {});
+      }
+    }
     return added;
   };
 
@@ -58,7 +90,12 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     return wishlist.includes(productId);
   };
 
-  const clearWishlist = () => setWishlist([]);
+  const clearWishlist = () => {
+    setWishlist([]);
+    if (authService.isAuthenticated()) {
+      apiClient.delete('/wishlist').catch(() => {});
+    }
+  };
 
   return (
     <WishlistContext.Provider

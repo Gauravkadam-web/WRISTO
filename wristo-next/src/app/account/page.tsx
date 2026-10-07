@@ -18,7 +18,7 @@ interface PageProps {
 
 export default async function AccountPage({ searchParams }: PageProps) {
   const params = await searchParams;
-  const validTabs: AccountTab[] = ['overview', 'orders', 'addresses', 'wishlist', 'settings'];
+  const validTabs: AccountTab[] = ['overview', 'orders', 'addresses', 'wishlist', 'settings', 'provenance'];
   const tabCandidate = typeof params?.tab === 'string' ? params.tab : 'overview';
   const initialTab = validTabs.includes(tabCandidate as AccountTab) ? (tabCandidate as AccountTab) : 'overview';
   const initialCert = typeof params?.cert === 'string' ? params.cert : undefined;

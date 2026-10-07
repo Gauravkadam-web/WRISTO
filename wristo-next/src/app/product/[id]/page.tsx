@@ -9,6 +9,8 @@ interface ProductPageProps {
   params: Promise<{ id: string }>;
 }
 
+export const dynamicParams = true;
+
 export async function generateStaticParams() {
   const ids = await getAllProductIds();
   return ids.map((id) => ({ id }));

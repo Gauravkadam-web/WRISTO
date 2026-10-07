@@ -1,5 +1,6 @@
 import { PRODUCTS } from '@/data/products';
 import { Product } from '@/types/product';
+import { apiClient } from './apiClient';
 import {
   ConciergePreferences,
   ConciergeRecommendation,
@@ -229,8 +230,37 @@ export function computeRecommendationsSync(
 export async function generateRecommendations(
   preferences: ConciergePreferences
 ): Promise<ConciergeRecommendation[]> {
+  try {
+    const res = await apiClient.post<any>('/concierge/recommendations', preferences, 4000);
+    if (res.data && Array.isArray(res.data.recommendations) && res.data.recommendations.length > 0) {
+      return res.data.recommendations;
+    }
+  } catch {
+    // Fall back to client-side heuristic engine
+  }
   // Simulate intelligent neural processing latency for luxury consultative feel
-  await new Promise(res => setTimeout(res, 800));
+  await new Promise(res => setTimeout(res, 600));
   return computeRecommendationsSync(preferences);
 }
+
+export async function sendConciergeChatMessage(
+  message: string,
+  history: Array<{ role: 'user' | 'model'; content: string }> = []
+): Promise<{ reply: string; recommendedWatchIds?: string[] }> {
+  try {
+    const res = await apiClient.post<any>('/concierge/chat', { message, history }, 6000);
+    if (res.data && res.data.reply) {
+      return {
+        reply: res.data.reply,
+        recommendedWatchIds: res.data.recommendedWatchIds
+      };
+    }
+  } catch {
+    // Fallback response
+  }
+  return {
+    reply: "As your private Horological Advisor, I recommend exploring our curated automatic and mechanical calibers tailored to your wrist ergonomics and occasion."
+  };
+}
+
 
