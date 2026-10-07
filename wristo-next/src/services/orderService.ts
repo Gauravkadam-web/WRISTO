@@ -8,6 +8,7 @@ import {
   OrderTotals,
   PaymentOption
 } from '@/types/order';
+import { apiClient } from './apiClient';
 
 export const GIFT_POUCH_THRESHOLD = 15000;
 
@@ -228,14 +229,31 @@ export async function createOrder(payload: CreateOrderPayload): Promise<OrderRec
     status: 'confirmed'
   };
 
-  // Persist locally for prototype and simulated order tracking
+  // Attempt backend persistence
+  try {
+    await apiClient.post('/orders', {
+      orderId: newOrder.orderId,
+      certificateId: newOrder.certificateId,
+      items: newOrder.items,
+      subtotal: newOrder.subtotal,
+      discount: newOrder.discount,
+      shippingFee: newOrder.shippingFee,
+      total: newOrder.total,
+      address: newOrder.address,
+      paymentMethod: newOrder.paymentMethod,
+      deliveryTier: newOrder.deliveryTier
+    });
+  } catch {
+    // Graceful fallback to client storage
+  }
+
+  // Persist locally for instant checkout confirmation & offline order tracking
   if (typeof window !== 'undefined') {
     try {
       const existing = localStorage.getItem('wristo_orders');
       const orders: OrderRecord[] = existing ? JSON.parse(existing) : [];
       orders.unshift(newOrder);
       localStorage.setItem('wristo_orders', JSON.stringify(orders));
-      // Also cache latest order for confirmation page
       localStorage.setItem('wristo_latest_order', JSON.stringify(newOrder));
     } catch {
       // Ignore storage errors

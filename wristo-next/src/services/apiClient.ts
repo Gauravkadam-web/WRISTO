@@ -14,9 +14,9 @@ export interface ApiResponse<T> {
 }
 
 export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
+  process.env.NEXT_PUBLIC_API_URL || 'https://wristo.onrender.com/api/v1';
 
-const DEFAULT_TIMEOUT_MS = 3500;
+const DEFAULT_TIMEOUT_MS = 6000;
 
 function getAuthToken(): string | null {
   if (typeof window === 'undefined') return null;

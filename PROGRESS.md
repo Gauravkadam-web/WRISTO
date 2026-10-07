@@ -525,10 +525,41 @@
 
 ---
 
-## 9. Pending Backlog
+## 9. Live Render Spring Boot & PostgreSQL Database Integration (Session 9 — Oct 7, 2026)
+
+### Session 9A: Centralized API Client Binding ✅
+- **Objective:** Configure Next.js frontend to communicate with live Spring Boot 3.3.4 REST API on Render (`https://wristo.onrender.com/api/v1`).
+- **Files Modified:**
+  - `wristo-next/src/services/apiClient.ts`: Set default fallback `API_BASE_URL` to `https://wristo.onrender.com/api/v1` with 6000ms timeout.
+  - `wristo-next/.env.example`: Updated `NEXT_PUBLIC_API_URL` template variable.
+
+### Session 9B: Live Catalog & Product Service Binding ✅
+- **Objective:** Fetch luxury watch inventory, categories, brands, dynamic multi-axis facets, and price boundaries from live PostgreSQL database.
+- **Files Modified:**
+  - `wristo-next/src/services/productService.ts`: Connected `getCatalogProducts()`, `getProductById()`, `getCategories()`, `getFeaturedProducts()`, and `getSearchSuggestions()` to live Render endpoints (`GET /watches`, `GET /categories`, `GET /brands`) with zero-downtime resilient in-memory fallback.
+
+### Session 9C: Live Editorial Journal & Essays Binding ✅
+- **Objective:** Fetch published horological essays and curator profiles directly from backend Flyway V11 seeded tables.
+- **Files Modified:**
+  - `wristo-next/src/services/editorialService.ts`: Connected `getArticles()` and `getArticleBySlug()` to live `GET /journal/articles` with graceful fallback.
+
+### Session 9D: Order Submission & Backend Sync ✅
+- **Objective:** Submit checkout orders to backend API for database record keeping and stock management.
+- **Files Modified:**
+  - `wristo-next/src/services/orderService.ts`: Updated `createOrder()` to dispatch order payloads to live `POST /orders` while caching locally.
+
+### Verification Status:
+- Verified live connectivity: `GET /api/v1/health` -> 200 OK (`Java 21 LTS + Spring Boot 3.3.4`).
+- Verified live catalog: `GET /api/v1/watches` -> 200 OK (40 watches + dynamic facets).
+- `npm run build` completed with exit code 0 across all **69/69 routes**.
+
+---
+
+## 10. Pending Backlog
 
 - [ ] **Watch Images 26–40:** Fresh AI generation required (quota resets ~3:00 PM IST Oct 7, 2026). Prompts pre-written in `wristo-next/scripts/watch_prompts.json` (entries 26–40).
 - [ ] **Re-upload to Supabase after generation:** Run `node scripts/upload_to_supabase.js` after new images are placed in `wristo-next/public/assets/products/`.
-- [ ] **Commit & Push changes** to `main` (pending explicit Gaurav Bhau confirmation).
+- [ ] **Commit & Push Session 9 changes** to `main` (pending explicit Gaurav Bhau confirmation).
 - [ ] **Set `NEXT_PUBLIC_STORAGE_BASE_URL`** in Vercel/Render deployment environment for production CDN routing.
+
 

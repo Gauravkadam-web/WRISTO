@@ -1,5 +1,6 @@
 import { EditorialArticle, ArticleWithProducts } from '@/types/editorial';
 import { PRODUCTS } from '@/data/products';
+import { apiClient } from './apiClient';
 
 const MASTER_ARTICLES: EditorialArticle[] = [
   {
@@ -324,6 +325,21 @@ function getMergedArticles(): EditorialArticle[] {
 }
 
 export async function getArticles(category?: string): Promise<EditorialArticle[]> {
+  try {
+    const params = new URLSearchParams();
+    if (category && category !== 'All Stories') {
+      params.set('category', category);
+    }
+    const endpoint = `/journal/articles${params.toString() ? `?${params.toString()}` : ''}`;
+    const res = await apiClient.get<any>(endpoint);
+    if (res && res.data && (Array.isArray(res.data.content) || Array.isArray(res.data))) {
+      const liveArticles = Array.isArray(res.data.content) ? res.data.content : res.data;
+      if (liveArticles.length > 0) return liveArticles;
+    }
+  } catch {
+    // Fallback to local merged articles
+  }
+
   const articles = getMergedArticles();
   if (!category || category === 'All Stories') {
     return articles;
@@ -332,11 +348,27 @@ export async function getArticles(category?: string): Promise<EditorialArticle[]
 }
 
 export async function getFeaturedLeadArticle(): Promise<EditorialArticle> {
-  const articles = getMergedArticles();
+  const articles = await getArticles();
   return articles[0] || MASTER_ARTICLES[0];
 }
 
 export async function getArticleBySlug(slug: string): Promise<ArticleWithProducts | null> {
+  try {
+    const res = await apiClient.get<any>(`/journal/articles/${encodeURIComponent(slug)}`);
+    if (res && res.data && res.data.slug) {
+      const article = res.data;
+      const featuredProducts = PRODUCTS.filter(p => (article.featuredProductIds || []).includes(p.id));
+      return {
+        ...article,
+        featuredProducts,
+        prevArticle: article.prevArticle,
+        nextArticle: article.nextArticle
+      };
+    }
+  } catch {
+    // Fallback
+  }
+
   const articles = getMergedArticles();
   const index = articles.findIndex(a => a.slug === slug);
   if (index === -1) return null;
@@ -361,7 +393,7 @@ export async function getArticleBySlug(slug: string): Promise<ArticleWithProduct
 }
 
 export async function getAllArticleSlugs(): Promise<string[]> {
-  const articles = getMergedArticles();
+  const articles = await getArticles();
   return articles.map(a => a.slug);
 }
 
