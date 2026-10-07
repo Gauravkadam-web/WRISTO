@@ -4,7 +4,7 @@ import React, { createContext, useContext, useEffect, useMemo, useState } from '
 import { PRODUCTS } from '@/data/products';
 import { Product } from '@/types/product';
 import { AppliedCoupon, OrderCartItem, OrderTotals } from '@/types/order';
-import { calculateOrderTotals, validateCoupon } from '@/services/orderService';
+import { calculateOrderTotals, validateCoupon, validateCouponAsync } from '@/services/orderService';
 
 export interface CartItem {
   id: string;
@@ -28,7 +28,7 @@ interface CartContextType {
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, delta: number) => void;
   clearCart: () => void;
-  applyCoupon: (code: string) => { success: boolean; message: string };
+  applyCoupon: (code: string) => Promise<{ success: boolean; message: string }>;
   removeCoupon: () => void;
   setIsGiftWrapped: (val: boolean) => void;
   setGiftMessage: (msg: string) => void;
@@ -196,8 +196,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const applyCoupon = (code: string) => {
-    const res = validateCoupon(code, rawSubtotal);
+  const applyCoupon = async (code: string) => {
+    const res = await validateCouponAsync(code, rawSubtotal);
     if (res.valid && res.coupon) {
       setAppliedCoupon(res.coupon);
       return { success: true, message: `Coupon "${res.coupon.code}" applied successfully!` };

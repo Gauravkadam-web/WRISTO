@@ -94,6 +94,18 @@ export default function CouponModal({
 
         <form onSubmit={handleSubmit}>
           <div className="admin-modal-body">
+            <div className="admin-form-group" style={{ marginBottom: '16px' }}>
+              <label className="admin-form-label">Privilege Description / Campaign Title</label>
+              <input
+                type="text"
+                required
+                value={formData.description || ''}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                placeholder="e.g. VIP Collector Concession 10% Off"
+                className="admin-form-input"
+              />
+            </div>
+
             <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '16px' }}>
               <div className="admin-form-group">
                 <label className="admin-form-label">Privilege Code</label>

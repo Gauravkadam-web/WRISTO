@@ -63,10 +63,10 @@ export default function AdminDashboardOverviewPage() {
       articles: 0
     };
 
-    const targetRevenue = stats.totalRevenue || 4328500;
-    const targetOrders = stats.totalOrders || 84;
-    const targetListings = stats.activeListings || 40;
-    const targetArticles = stats.publishedArticles || 6;
+    const targetRevenue = Number(stats.totalRevenue ?? 0);
+    const targetOrders = Number(stats.totalOrders ?? 0);
+    const targetListings = Number(stats.activeListings ?? 0);
+    const targetArticles = Number(stats.publishedArticles ?? 0);
 
     gsap.to(playhead, {
       revenue: targetRevenue,

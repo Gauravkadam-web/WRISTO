@@ -20,11 +20,33 @@ const DEFAULT_TIMEOUT_MS = 6000;
 
 function getAuthToken(): string | null {
   if (typeof window === 'undefined') return null;
-  return (
-    localStorage.getItem('wristo_admin_token') ||
-    localStorage.getItem('wristo_auth_token') ||
-    null
-  );
+  const adminToken = localStorage.getItem('wristo_admin_token');
+  if (adminToken) return adminToken;
+
+  const authToken = localStorage.getItem('wristo_auth_token');
+  if (authToken) return authToken;
+
+  try {
+    const adminUser = localStorage.getItem('wristo_admin_user');
+    if (adminUser) {
+      const parsed = JSON.parse(adminUser);
+      if (parsed?.token) return parsed.token;
+    }
+  } catch {
+    // ignore
+  }
+
+  try {
+    const authUser = localStorage.getItem('wristo_auth_user');
+    if (authUser) {
+      const parsed = JSON.parse(authUser);
+      if (parsed?.token || parsed?.accessToken) return parsed.token || parsed.accessToken;
+    }
+  } catch {
+    // ignore
+  }
+
+  return null;
 }
 
 async function fetchWithTimeout(

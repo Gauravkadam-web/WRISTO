@@ -39,11 +39,11 @@ export default function OrderSummarySidebar({
   const deliveryFee = selectedDelivery ? selectedDelivery.price : 0;
   const finalTotal = Math.max(0, totals.subtotal - totals.discount + deliveryFee);
 
-  const handleApply = (e: React.FormEvent) => {
+  const handleApply = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!promoInput.trim()) return;
 
-    const res = applyCoupon(promoInput);
+    const res = await applyCoupon(promoInput);
     if (res.success) {
       setPromoMsg({ success: res.message });
       setPromoInput('');

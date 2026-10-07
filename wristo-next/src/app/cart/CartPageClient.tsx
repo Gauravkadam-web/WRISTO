@@ -22,10 +22,10 @@ export default function CartPageClient() {
   const [promoInput, setPromoInput] = useState('');
   const [promoError, setPromoError] = useState('');
 
-  const handleApplyPromo = (e: React.FormEvent) => {
+  const handleApplyPromo = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!promoInput.trim()) return;
-    const res = applyCoupon(promoInput.trim());
+    const res = await applyCoupon(promoInput.trim());
     if (!res.success) {
       setPromoError(res.message || 'Invalid coupon code. Try WRISTO10 or HOROLOGY20.');
     } else {

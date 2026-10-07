@@ -36,7 +36,7 @@ export default function OrderStatusModal({
     e.preventDefault();
     setIsUpdating(true);
     try {
-      await onUpdate(order.id, status, trackingNumber, courierName);
+      await onUpdate(order.orderNumber || order.id, status, trackingNumber, courierName);
       onClose();
     } catch (err) {
       console.error('Failed to update order status:', err);

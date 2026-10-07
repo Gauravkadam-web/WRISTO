@@ -216,22 +216,22 @@ export default function AdminCouponsPage() {
                     </td>
                     <td>
                       <span className="tabular-nums" style={{ fontSize: '12.5px', color: 'var(--color-text-secondary)' }}>
-                        Min {formatCurrency(coupon.minOrderAmount)}
+                        Min {formatCurrency(coupon.minOrderAmount ?? coupon.minSubtotal ?? 0)}
                       </span>
                     </td>
                     <td>
                       <div className="tabular-nums" style={{ fontSize: '11.5px', color: 'var(--color-text-muted)' }}>
-                        {coupon.validFrom} → {coupon.validUntil}
+                        {coupon.validFrom || (coupon.startsAt ? coupon.startsAt.split('T')[0] : '2026-01-01')} → {coupon.validUntil || (coupon.expiresAt ? coupon.expiresAt.split('T')[0] : '2026-12-31')}
                       </div>
                     </td>
                     <td>
                       <span className="tabular-nums" style={{ fontSize: '12px', fontWeight: 500 }}>
-                        {coupon.usedCount || 0} / {coupon.usageLimit || '∞'}
+                        {coupon.usedCount ?? coupon.timesUsed ?? 0} / {coupon.usageLimit || '∞'}
                       </span>
                     </td>
                     <td>
-                      <span className={`status-pill ${coupon.active ? 'success' : 'neutral'}`}>
-                        {coupon.active ? 'Active' : 'Inactive'}
+                      <span className={`status-pill ${coupon.active !== false && coupon.isActive !== false ? 'success' : 'neutral'}`}>
+                        {coupon.active !== false && coupon.isActive !== false ? 'Active' : 'Inactive'}
                       </span>
                     </td>
                     <td style={{ textAlign: 'right' }}>
@@ -239,9 +239,9 @@ export default function AdminCouponsPage() {
                         <button
                           onClick={() => handleToggleActive(coupon)}
                           className="admin-action-btn"
-                          title={coupon.active ? 'Deactivate Code' : 'Activate Code'}
+                          title={coupon.active !== false && coupon.isActive !== false ? 'Deactivate Code' : 'Activate Code'}
                         >
-                          {coupon.active ? <XCircle size={13} strokeWidth={1.5} /> : <CheckCircle size={13} strokeWidth={1.5} />}
+                          {coupon.active !== false && coupon.isActive !== false ? <XCircle size={13} strokeWidth={1.5} /> : <CheckCircle size={13} strokeWidth={1.5} />}
                         </button>
                         <button
                           onClick={() => handleOpenEdit(coupon)}

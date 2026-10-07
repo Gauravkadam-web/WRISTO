@@ -46,11 +46,11 @@ export default function CartDrawer() {
     Math.round((totals.subtotal / totals.giftPouchThreshold) * 100)
   );
 
-  const handleApplyPromo = (e: React.FormEvent) => {
+  const handleApplyPromo = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!promoCodeInput.trim()) return;
 
-    const result = applyCoupon(promoCodeInput);
+    const result = await applyCoupon(promoCodeInput);
     if (result.success) {
       setPromoFeedback({ success: result.message });
       setPromoCodeInput('');

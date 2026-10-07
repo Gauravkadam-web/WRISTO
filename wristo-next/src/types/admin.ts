@@ -61,30 +61,43 @@ export interface CreateArticlePayload {
 export interface AdminCoupon {
   id: string;
   code: string;
+  description?: string;
   discountType: 'PERCENTAGE' | 'FIXED_AMOUNT';
   discountValue: number;
-  minOrderAmount: number;
+  minOrderAmount?: number;
+  minSubtotal?: number;
   maxDiscountAmount?: number;
-  validFrom: string;
-  validUntil: string;
+  maxDiscount?: number;
+  validFrom?: string;
+  validUntil?: string;
+  startsAt?: string;
+  expiresAt?: string;
   usageLimit?: number;
-  usedCount: number;
-  active: boolean;
-  createdAt: string;
+  usedCount?: number;
+  timesUsed?: number;
+  active?: boolean;
+  isActive?: boolean;
+  createdAt?: string;
 }
 
 export type AdminCouponItem = AdminCoupon;
 
 export interface CreateCouponPayload {
   code: string;
+  description?: string;
   discountType: 'PERCENTAGE' | 'FIXED_AMOUNT';
   discountValue: number;
-  minOrderAmount: number;
+  minOrderAmount?: number;
+  minSubtotal?: number;
   maxDiscountAmount?: number;
-  validFrom: string;
-  validUntil: string;
+  maxDiscount?: number;
+  validFrom?: string;
+  validUntil?: string;
+  startsAt?: string;
+  expiresAt?: string;
   usageLimit?: number;
-  active: boolean;
+  active?: boolean;
+  isActive?: boolean;
 }
 
 export interface AdminOrderItemDetail {

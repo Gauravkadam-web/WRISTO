@@ -81,6 +81,55 @@ export const PAYMENT_OPTIONS: PaymentOption[] = [
   }
 ];
 
+export async function validateCouponAsync(
+  code: string,
+  subtotal: number
+): Promise<{ valid: boolean; coupon?: AppliedCoupon; message?: string }> {
+  if (!code || !code.trim()) {
+    return { valid: false, message: 'Please enter a coupon code.' };
+  }
+
+  const normalized = code.trim().toUpperCase();
+
+  try {
+    const res = await apiClient.post<any>('/coupons/validate', {
+      code: normalized,
+      subtotal
+    });
+
+    if (res && res.data && res.data.isValid !== false) {
+      const data = res.data;
+      const discountType = (data.discountType || 'PERCENTAGE').toLowerCase() as 'percentage' | 'fixed';
+      const calculatedDiscount = Number(
+        data.calculatedDiscount ??
+          (discountType === 'percentage'
+            ? Math.round((subtotal * (data.discountValue || 0)) / 100)
+            : Math.min(data.discountValue || 0, subtotal))
+      );
+
+      return {
+        valid: true,
+        coupon: {
+          code: data.code || normalized,
+          description: data.description || `${data.discountValue}${discountType === 'percentage' ? '%' : '₹'} off`,
+          discountType,
+          discountValue: Number(data.discountValue || 0),
+          calculatedDiscount
+        },
+        message: res.message || data.message || 'Coupon privilege applied successfully!'
+      };
+    }
+  } catch (err: any) {
+    // If backend rejects coupon, return the backend message
+    return {
+      valid: false,
+      message: err?.message || `"${normalized}" is not a valid promotional privilege code.`
+    };
+  }
+
+  return { valid: false, message: `"${normalized}" is not a valid promotional privilege code.` };
+}
+
 export function validateCoupon(
   code: string,
   subtotal: number
@@ -104,21 +153,26 @@ export function validateCoupon(
     }
   }
 
-  const matchedDynamic = dynamicCoupons.find((c: any) => c.code.toUpperCase() === normalized && c.active);
+  const matchedDynamic = dynamicCoupons.find(
+    (c: any) => c.code.toUpperCase() === normalized && (c.active !== false && c.isActive !== false)
+  );
 
   if (matchedDynamic) {
-    if (subtotal < (matchedDynamic.minOrderAmount || 0)) {
+    const minSubtotal = matchedDynamic.minSubtotal ?? matchedDynamic.minOrderAmount ?? 0;
+    if (subtotal < minSubtotal) {
       return {
         valid: false,
-        message: `Privilege code "${matchedDynamic.code}" requires a minimum order value of $${matchedDynamic.minOrderAmount.toLocaleString()}.`
+        message: `Privilege code "${matchedDynamic.code}" requires a minimum order value of ₹${minSubtotal.toLocaleString('en-IN')}.`
       };
     }
 
     let calculatedDiscount = 0;
-    if (matchedDynamic.discountType === 'PERCENTAGE') {
+    const isPercentage = (matchedDynamic.discountType || '').toUpperCase() === 'PERCENTAGE';
+    if (isPercentage) {
       calculatedDiscount = Math.round((subtotal * matchedDynamic.discountValue) / 100);
-      if (matchedDynamic.maxDiscountAmount && calculatedDiscount > matchedDynamic.maxDiscountAmount) {
-        calculatedDiscount = matchedDynamic.maxDiscountAmount;
+      const maxDiscount = matchedDynamic.maxDiscount ?? matchedDynamic.maxDiscountAmount;
+      if (maxDiscount && calculatedDiscount > maxDiscount) {
+        calculatedDiscount = maxDiscount;
       }
     } else {
       calculatedDiscount = Math.min(matchedDynamic.discountValue, subtotal);
@@ -128,8 +182,8 @@ export function validateCoupon(
       valid: true,
       coupon: {
         code: matchedDynamic.code,
-        description: `Exclusive Privilege Concession (${matchedDynamic.discountValue}${matchedDynamic.discountType === 'PERCENTAGE' ? '%' : '$'} off)`,
-        discountType: matchedDynamic.discountType.toLowerCase() as 'percentage' | 'fixed',
+        description: matchedDynamic.description || `Exclusive Privilege Concession (${matchedDynamic.discountValue}${isPercentage ? '%' : '₹'} off)`,
+        discountType: isPercentage ? 'percentage' : 'fixed',
         discountValue: matchedDynamic.discountValue,
         calculatedDiscount
       }
@@ -207,64 +261,140 @@ export function calculateOrderTotals(
 export async function createOrder(payload: CreateOrderPayload): Promise<OrderRecord> {
   const totals = calculateOrderTotals(payload.items, payload.coupon, payload.deliveryTier);
 
-  // Generate unique horological order credentials
-  const randomRef = Math.floor(10000 + Math.random() * 90000);
-  const randomCert = Math.floor(100000 + Math.random() * 900000);
-
-  const newOrder: OrderRecord = {
-    orderId: `WRT-2026-${randomRef}`,
-    certificateId: `CERT-CHRONO-${randomCert}`,
-    createdAt: new Date().toISOString(),
-    items: payload.items,
-    subtotal: totals.subtotal,
-    discount: totals.discount,
-    shippingFee: totals.shippingFee,
-    total: totals.total,
-    isGiftWrapped: payload.isGiftWrapped,
-    giftMessage: payload.giftMessage,
-    coupon: payload.coupon,
-    address: payload.address,
-    deliveryTier: payload.deliveryTier,
-    paymentMethod: payload.paymentMethod,
-    status: 'confirmed'
-  };
-
-  // Attempt backend persistence
-  try {
-    await apiClient.post('/orders', {
-      orderId: newOrder.orderId,
-      certificateId: newOrder.certificateId,
-      items: newOrder.items,
-      subtotal: newOrder.subtotal,
-      discount: newOrder.discount,
-      shippingFee: newOrder.shippingFee,
-      total: newOrder.total,
-      address: newOrder.address,
-      paymentMethod: newOrder.paymentMethod,
-      deliveryTier: newOrder.deliveryTier
-    });
-  } catch {
-    // Graceful fallback to client storage
+  // Map frontend payment method to backend PaymentMethod enum
+  let backendPaymentMethod = 'CASH_ON_DELIVERY';
+  const pm = (payload.paymentMethod || '').toLowerCase();
+  if (pm.includes('card') || pm.includes('credit') || pm.includes('debit')) {
+    backendPaymentMethod = 'CARD';
+  } else if (pm.includes('upi') || pm.includes('gpay') || pm.includes('phonepe') || pm.includes('paytm')) {
+    backendPaymentMethod = 'UPI';
+  } else if (pm.includes('net') || pm.includes('bank') || pm.includes('wire')) {
+    backendPaymentMethod = 'NET_BANKING';
+  } else if (pm.includes('crypto')) {
+    backendPaymentMethod = 'CRYPTO';
   }
 
-  // Persist locally for instant checkout confirmation & offline order tracking
+  // Format backend items
+  const backendItems = payload.items.map(item => ({
+    watchId: item.productId || (item as any).id,
+    quantity: item.quantity
+  }));
+
+  // Format customer address
+  const backendAddress = {
+    name: payload.address.fullName || 'Valued Client',
+    email: payload.address.email || 'client@wristo.luxury',
+    phone: payload.address.phone || '+91 98765 43210',
+    pincode: payload.address.pincode || '400001',
+    addressLine1: payload.address.addressLine1 || 'High Street Residence',
+    addressLine2: payload.address.addressLine2 || '',
+    city: payload.address.city || 'Mumbai',
+    state: payload.address.state || 'Maharashtra',
+    landmark: payload.address.landmark || '',
+    deliveryNotes: payload.address.deliveryNotes || ''
+  };
+
+  let createdOrderRecord: OrderRecord | null = null;
+
+  try {
+    const res = await apiClient.post<any>('/checkout/complete', {
+      items: backendItems,
+      address: backendAddress,
+      paymentMethod: backendPaymentMethod,
+      deliveryTier: payload.deliveryTier,
+      isGiftWrapped: payload.isGiftWrapped || false,
+      giftMessage: payload.giftMessage || '',
+      couponCode: payload.coupon?.code || undefined
+    });
+
+    if (res && res.data) {
+      const data = res.data;
+      createdOrderRecord = {
+        orderId: data.orderNumber || data.orderId || `WRT-2026-${Math.floor(10000 + Math.random() * 90000)}`,
+        certificateId: data.certificateNumber || data.certificateId || `CERT-CHRONO-${Math.floor(100000 + Math.random() * 900000)}`,
+        createdAt: data.placedAt || data.createdAt || new Date().toISOString(),
+        items: payload.items,
+        subtotal: Number(data.subtotalAmount ?? data.subtotal ?? totals.subtotal),
+        discount: Number(data.discountAmount ?? data.discount ?? totals.discount),
+        shippingFee: Number(data.shippingFee ?? totals.shippingFee),
+        total: Number(data.totalAmount ?? data.total ?? totals.total),
+        isGiftWrapped: payload.isGiftWrapped,
+        giftMessage: payload.giftMessage,
+        coupon: payload.coupon,
+        address: payload.address,
+        deliveryTier: payload.deliveryTier,
+        paymentMethod: payload.paymentMethod,
+        status: (data.status || 'CONFIRMED').toLowerCase() as any
+      };
+    }
+  } catch (err) {
+    console.error('Checkout backend creation note:', err);
+  }
+
+  if (!createdOrderRecord) {
+    const randomRef = Math.floor(10000 + Math.random() * 90000);
+    const randomCert = Math.floor(100000 + Math.random() * 900000);
+    createdOrderRecord = {
+      orderId: `WRT-2026-${randomRef}`,
+      certificateId: `CERT-CHRONO-${randomCert}`,
+      createdAt: new Date().toISOString(),
+      items: payload.items,
+      subtotal: totals.subtotal,
+      discount: totals.discount,
+      shippingFee: totals.shippingFee,
+      total: totals.total,
+      isGiftWrapped: payload.isGiftWrapped,
+      giftMessage: payload.giftMessage,
+      coupon: payload.coupon,
+      address: payload.address,
+      deliveryTier: payload.deliveryTier,
+      paymentMethod: payload.paymentMethod,
+      status: 'confirmed'
+    };
+  }
+
+  // Cache locally for instant checkout confirmation
   if (typeof window !== 'undefined') {
     try {
+      localStorage.setItem('wristo_latest_order', JSON.stringify(createdOrderRecord));
       const existing = localStorage.getItem('wristo_orders');
       const orders: OrderRecord[] = existing ? JSON.parse(existing) : [];
-      orders.unshift(newOrder);
+      orders.unshift(createdOrderRecord);
       localStorage.setItem('wristo_orders', JSON.stringify(orders));
-      localStorage.setItem('wristo_latest_order', JSON.stringify(newOrder));
     } catch {
       // Ignore storage errors
     }
   }
 
-  return newOrder;
+  return createdOrderRecord;
 }
 
 export async function getOrders(): Promise<OrderRecord[]> {
   if (typeof window === 'undefined') return [];
+  try {
+    const res = await apiClient.get<any>('/orders/my-orders');
+    if (res && res.data && (Array.isArray(res.data) || Array.isArray(res.data.content))) {
+      const list = Array.isArray(res.data) ? res.data : res.data.content;
+      return list.map((o: any) => ({
+        orderId: o.orderNumber || o.orderId,
+        certificateId: o.certificateNumber || o.certificateId || 'CERT-AUTHENTIC',
+        createdAt: o.placedAt || o.createdAt,
+        items: o.items || [],
+        subtotal: Number(o.subtotalAmount ?? o.subtotal ?? 0),
+        discount: Number(o.discountAmount ?? o.discount ?? 0),
+        shippingFee: Number(o.shippingFee ?? 0),
+        total: Number(o.totalAmount ?? o.total ?? 0),
+        isGiftWrapped: Boolean(o.isGiftWrapped),
+        giftMessage: o.giftMessage,
+        address: o.address || {},
+        deliveryTier: o.deliveryTier || 'insured_express',
+        paymentMethod: o.paymentMethod || 'SECURE_ESCROW',
+        status: (o.status || 'CONFIRMED').toLowerCase() as any
+      }));
+    }
+  } catch {
+    // Fallback to local
+  }
   try {
     const existing = localStorage.getItem('wristo_orders');
     if (!existing) return [];
@@ -275,6 +405,30 @@ export async function getOrders(): Promise<OrderRecord[]> {
 }
 
 export async function getOrderById(orderId: string): Promise<OrderRecord | null> {
+  try {
+    const res = await apiClient.get<any>(`/orders/${orderId}`);
+    if (res && res.data) {
+      const o = res.data;
+      return {
+        orderId: o.orderNumber || o.orderId,
+        certificateId: o.certificateNumber || o.certificateId || 'CERT-AUTHENTIC',
+        createdAt: o.placedAt || o.createdAt,
+        items: o.items || [],
+        subtotal: Number(o.subtotalAmount ?? o.subtotal ?? 0),
+        discount: Number(o.discountAmount ?? o.discount ?? 0),
+        shippingFee: Number(o.shippingFee ?? 0),
+        total: Number(o.totalAmount ?? o.total ?? 0),
+        isGiftWrapped: Boolean(o.isGiftWrapped),
+        giftMessage: o.giftMessage,
+        address: o.address || {},
+        deliveryTier: o.deliveryTier || 'insured_express',
+        paymentMethod: o.paymentMethod || 'SECURE_ESCROW',
+        status: (o.status || 'CONFIRMED').toLowerCase() as any
+      };
+    }
+  } catch {
+    // Fallback to local
+  }
   if (typeof window === 'undefined') return null;
   try {
     const orders = await getOrders();
