@@ -16,14 +16,10 @@ export interface ComparisonMatrixData {
 export const comparisonService = {
   async getComparisonMatrix(ids: string[]): Promise<ComparisonMatrixData | null> {
     if (!ids || ids.length === 0) return null;
-    try {
-      const query = ids.map(encodeURIComponent).join(',');
-      const res = await apiClient.get<ComparisonMatrixData>(`/compare?ids=${query}`, 4000);
-      if (res.data && res.data.specs) {
-        return res.data;
-      }
-    } catch {
-      // Graceful fallback
+    const query = ids.map(encodeURIComponent).join(',');
+    const res = await apiClient.get<ComparisonMatrixData>(`/compare?ids=${query}`);
+    if (res && res.data && res.data.specs) {
+      return res.data;
     }
     return null;
   },
@@ -35,7 +31,7 @@ export const comparisonService = {
         const p = await productService.getProductById(id);
         if (p) products.push(p);
       } catch {
-        // Skip
+        // Skip missing
       }
     }
     return products;

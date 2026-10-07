@@ -8,12 +8,12 @@ import EditorialBanner from '@/components/home/EditorialBanner';
 import AppPromoSection from '@/components/home/AppPromoSection';
 import BlogPreviewSection from '@/components/home/BlogPreviewSection';
 import ProductCard from '@/components/catalog/ProductCard';
-import { getFeaturedProducts } from '@/services/productService';
-import { PRODUCTS } from '@/data/products';
+import { getFeaturedProducts, getCatalogProducts } from '@/services/productService';
 
 export default async function HomePage() {
   const featuredWatches = await getFeaturedProducts(8);
-  const automaticWatches = PRODUCTS.filter((p) => p.movement === 'Automatic').slice(0, 4);
+  const automaticResult = await getCatalogProducts({ category: 'automatic' }, 'popularity', 1, 4);
+  const automaticWatches = automaticResult.items;
 
   return (
     <>

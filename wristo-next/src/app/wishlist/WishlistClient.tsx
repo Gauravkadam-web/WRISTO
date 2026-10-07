@@ -1,18 +1,34 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ShoppingBag } from 'lucide-react';
 import { useWishlist } from '@/context/WishlistContext';
 import { useCart } from '@/context/CartContext';
-import { PRODUCTS } from '@/data/products';
+import { getProductsByIds } from '@/services/productService';
+import { Product } from '@/types/product';
 
 export default function WishlistClient() {
   const { wishlist, toggleWishlist, clearWishlist } = useWishlist();
   const { addToCart } = useCart();
+  const [wishlistProducts, setWishlistProducts] = useState<Product[]>([]);
 
-  const wishlistProducts = PRODUCTS.filter((p) => wishlist.includes(p.id));
+  useEffect(() => {
+    async function loadWishlistProducts() {
+      if (wishlist.length === 0) {
+        setWishlistProducts([]);
+        return;
+      }
+      try {
+        const fetched = await getProductsByIds(wishlist);
+        setWishlistProducts(fetched || []);
+      } catch {
+        setWishlistProducts([]);
+      }
+    }
+    loadWishlistProducts();
+  }, [wishlist]);
 
   return (
     <div className="container wishlist-page-container">

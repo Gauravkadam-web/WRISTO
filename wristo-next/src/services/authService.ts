@@ -57,21 +57,6 @@ export const authService = {
       this.saveSession(user, token);
       return user;
     } catch (err: any) {
-      // Fallback for seed admin user if offline or network timeout
-      if (
-        cleanEmail.toLowerCase() === 'admin@wristo.com' &&
-        password === 'Password@123'
-      ) {
-        const fallbackAdmin: AuthUser = {
-          id: 'USR-ADMIN-001',
-          email: 'admin@wristo.com',
-          fullName: 'Chief Horological Director',
-          role: 'SUPER_ADMIN',
-          token: 'seed_jwt_super_admin_vault_token_2026'
-        };
-        this.saveSession(fallbackAdmin, fallbackAdmin.token!);
-        return fallbackAdmin;
-      }
       throw err;
     }
   },

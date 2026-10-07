@@ -1,138 +1,44 @@
 import { CollectorProfile, SavedAddress } from '@/types/account';
 import { apiClient } from './apiClient';
-import { authService } from './authService';
-
-export const DEFAULT_PROFILE: CollectorProfile = {
-  id: 'USR-WRISTO-08492',
-  fullName: 'Gaurav Kadam',
-  email: 'gauravkadam@gmail.com',
-  phone: '+91 98765 43210',
-  salutation: 'Collector',
-  vipTier: 'Grand Complication Patron',
-  joinedDate: 'October 2026',
-  wristSizeMm: 175,
-  currency: 'INR',
-  notifications: {
-    orderTelemetry: true,
-    rareAllocations: true,
-    conciergeBriefings: false
-  }
-};
-
-export const DEFAULT_ADDRESSES: SavedAddress[] = [
-  {
-    id: 'ADDR-01',
-    label: 'Primary Residence',
-    fullName: 'Gaurav Kadam',
-    phone: '+91 98765 43210',
-    addressLine1: 'Row House 04, Clover Highlands, NIBM Road, Kondhwa',
-    addressLine2: 'Near Corinthian Club',
-    city: 'Pune',
-    state: 'Maharashtra',
-    pincode: '411048',
-    isDefault: true
-  },
-  {
-    id: 'ADDR-02',
-    label: 'Corporate Office',
-    fullName: 'Gaurav Kadam',
-    phone: '+91 98765 43210',
-    addressLine1: 'Level 12, World Trade Center, Tower 2, Kharadi',
-    addressLine2: '',
-    city: 'Pune',
-    state: 'Maharashtra',
-    pincode: '411014',
-    isDefault: false
-  }
-];
 
 export async function getCollectorProfile(): Promise<CollectorProfile> {
-  if (typeof window === 'undefined') return DEFAULT_PROFILE;
-
-  // Try fetching live authenticated profile from backend
-  if (authService.isAuthenticated()) {
-    try {
-      const res = await apiClient.get<CollectorProfile>('/account/profile');
-      if (res.data && res.data.email) {
-        localStorage.setItem('wristo_profile', JSON.stringify(res.data));
-        return res.data;
-      }
-    } catch {
-      // Fall through to local session
-    }
+  const res = await apiClient.get<CollectorProfile>('/account/profile');
+  if (res && res.data) {
+    return res.data;
   }
-
-  // Fallback to active logged in user metadata
-  const user = authService.getCurrentUser();
-  if (user) {
-    const sessionProfile: CollectorProfile = {
-      ...DEFAULT_PROFILE,
-      id: user.id || DEFAULT_PROFILE.id,
-      fullName: user.fullName || DEFAULT_PROFILE.fullName,
-      email: user.email || DEFAULT_PROFILE.email,
-      phone: user.phone || DEFAULT_PROFILE.phone
-    };
-    return sessionProfile;
-  }
-
-  try {
-    const saved = localStorage.getItem('wristo_profile');
-    if (saved) return JSON.parse(saved);
-  } catch {
-    // Ignore
-  }
-
-  return DEFAULT_PROFILE;
+  throw new Error('Failed to retrieve collector profile from primary ledger.');
 }
 
 export async function updateCollectorProfile(
   updated: Partial<CollectorProfile>
 ): Promise<CollectorProfile> {
-  const current = await getCollectorProfile();
-  const next: CollectorProfile = { ...current, ...updated };
+  const payload = {
+    fullName: updated.fullName,
+    phone: updated.phone,
+    salutation: updated.salutation,
+    wristSizeMm: updated.wristSizeMm,
+    currency: updated.currency,
+    orderTelemetry: updated.notifications?.orderTelemetry ?? true,
+    rareAllocations: updated.notifications?.rareAllocations ?? true,
+    conciergeBriefings: updated.notifications?.conciergeBriefings ?? false
+  };
 
-  if (typeof window !== 'undefined') {
-    try {
-      localStorage.setItem('wristo_profile', JSON.stringify(next));
-    } catch {
-      // Ignore
-    }
+  const res = await apiClient.put<CollectorProfile>('/account/profile', payload);
+  if (res && res.data) {
+    return res.data;
   }
-
-  if (authService.isAuthenticated()) {
-    try {
-      const payload = {
-        fullName: next.fullName,
-        phone: next.phone,
-        salutation: next.salutation,
-        wristSizeMm: next.wristSizeMm,
-        currency: next.currency,
-        orderTelemetry: next.notifications?.orderTelemetry ?? true,
-        rareAllocations: next.notifications?.rareAllocations ?? true,
-        conciergeBriefings: next.notifications?.conciergeBriefings ?? false
-      };
-      const res = await apiClient.put<CollectorProfile>('/account/profile', payload);
-      if (res.data) return res.data;
-    } catch {
-      // Fall back to updated local representation
-    }
-  }
-
-  return next;
+  throw new Error('Failed to update collector profile in primary ledger.');
 }
 
 export async function getSavedAddresses(): Promise<SavedAddress[]> {
-  if (typeof window === 'undefined') return DEFAULT_ADDRESSES;
+  if (typeof window === 'undefined') return [];
   try {
     const saved = localStorage.getItem('wristo_addresses');
-    if (!saved) {
-      localStorage.setItem('wristo_addresses', JSON.stringify(DEFAULT_ADDRESSES));
-      return DEFAULT_ADDRESSES;
-    }
-    return JSON.parse(saved);
+    if (saved) return JSON.parse(saved);
   } catch {
-    return DEFAULT_ADDRESSES;
+    // Ignore
   }
+  return [];
 }
 
 export async function saveAddress(
@@ -142,7 +48,6 @@ export async function saveAddress(
   let updatedItem: SavedAddress;
 
   if (payload.id) {
-    // Update existing
     updatedItem = payload as SavedAddress;
     const nextList = list.map(item => (item.id === payload.id ? updatedItem : item));
     if (payload.isDefault) {
@@ -154,7 +59,6 @@ export async function saveAddress(
       localStorage.setItem('wristo_addresses', JSON.stringify(nextList));
     }
   } else {
-    // Create new
     const newId = `ADDR-${Date.now().toString().slice(-4)}`;
     updatedItem = { ...payload, id: newId };
     let nextList = [updatedItem, ...list];

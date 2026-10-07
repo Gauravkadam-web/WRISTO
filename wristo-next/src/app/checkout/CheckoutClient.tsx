@@ -7,7 +7,6 @@ import { ShoppingBag, ArrowRight } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { CustomerAddress, DeliveryTier, PaymentMethodType } from '@/types/order';
 import { createOrder, DELIVERY_OPTIONS } from '@/services/orderService';
-import { PRODUCTS } from '@/data/products';
 import CheckoutHeader from '@/components/checkout/CheckoutHeader';
 import CheckoutStepper from '@/components/checkout/CheckoutStepper';
 import AddressStep from '@/components/checkout/AddressStep';
@@ -23,50 +22,13 @@ export default function CheckoutClient() {
   const initialStep = stepParam ? Math.min(4, Math.max(1, parseInt(stepParam, 10))) : 1;
 
   const {
-    cartProducts: realCartProducts,
-    totals: realTotals,
+    cartProducts,
+    totals,
     appliedCoupon,
     isGiftWrapped,
     giftMessage,
     clearCart
   } = useCart();
-
-  // If testing with ?step=X and cart is empty, provide demo fallback items so that steps 1-4 can be previewed
-  const isDemoPreview = initialStep > 1 && realCartProducts.length === 0;
-  const cartProducts = isDemoPreview
-    ? [
-        {
-          productId: 'WRT-001',
-          model: 'Atlas Black',
-          brand: 'AUREN',
-          price: 4999,
-          quantity: 1,
-          image: '/assets/products/watch-01.png',
-          product: PRODUCTS[0]
-        },
-        {
-          productId: 'WRT-005',
-          model: 'Regent Green',
-          brand: 'AUREN',
-          price: 14999,
-          quantity: 1,
-          image: '/assets/products/watch-05.png',
-          product: PRODUCTS[4]
-        }
-      ]
-    : realCartProducts;
-
-  const totals = isDemoPreview
-    ? {
-        subtotal: 19998,
-        discount: 2000,
-        shippingFee: 0,
-        total: 17998,
-        giftPouchThreshold: 15000,
-        amountNeededForGiftPouch: 0,
-        giftPouchUnlocked: true
-      }
-    : realTotals;
 
   const [currentStep, setCurrentStep] = useState(initialStep);
   const [isPlacing, setIsPlacing] = useState(false);
@@ -114,13 +76,7 @@ export default function CheckoutClient() {
         address,
         deliveryTier,
         paymentMethod,
-        coupon: appliedCoupon || (isDemoPreview ? {
-          code: 'WRISTO10',
-          description: '10% Horological Privilege Discount',
-          discountType: 'percentage',
-          discountValue: 10,
-          calculatedDiscount: 2000
-        } : undefined),
+        coupon: appliedCoupon || undefined,
         isGiftWrapped,
         giftMessage: isGiftWrapped ? giftMessage : undefined
       });

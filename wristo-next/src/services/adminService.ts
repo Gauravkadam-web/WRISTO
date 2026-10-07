@@ -17,7 +17,6 @@ import {
   AdminListing,
   AdminServiceRecord
 } from '@/types/admin';
-import { PRODUCTS } from '@/data/products';
 
 class AdminService {
   private currentAdmin: AdminUser | null = null;
@@ -64,28 +63,10 @@ class AdminService {
         }
         return adminUser;
       }
-    } catch {
-      // Fallback check
+      throw new Error('Authentication response empty from primary database');
+    } catch (err: any) {
+      throw err;
     }
-
-    if (email === 'admin@wristo.com' && password === 'Password@123') {
-      const mockAdmin: AdminUser = {
-        id: 'adm-01',
-        email: 'admin@wristo.com',
-        fullName: 'Chief Horological Director',
-        role: 'SUPER_ADMIN',
-        token: 'mock-jwt-admin-token-2026'
-      };
-      this.currentAdmin = mockAdmin;
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('wristo_admin_user', JSON.stringify(mockAdmin));
-        localStorage.setItem('wristo_admin_token', mockAdmin.token || '');
-        localStorage.setItem('wristo_auth_token', mockAdmin.token || '');
-      }
-      return mockAdmin;
-    }
-
-    throw new Error('Invalid horological administrator credentials');
   }
 
   getCurrentAdmin(): AdminUser | null {
@@ -748,23 +729,10 @@ class AdminService {
         }
       }
     } catch {
-      // Fallback
+      // Backend error
     }
 
-    return PRODUCTS.slice(0, 10).map((p) => ({
-      id: p.id,
-      brand: p.brand,
-      model: p.model,
-      title: `${p.brand} ${p.model} (${p.movement})`,
-      referenceNumber: `REF-${p.id.toUpperCase()}`,
-      serialNumber: `SN-${p.id}-2026-CH`,
-      year: 2024,
-      condition: 'UNWORN',
-      price: p.price,
-      status: 'APPROVED',
-      images: [p.image],
-      createdAt: '2026-01-01T00:00:00Z'
-    }));
+    return [];
   }
 
   async getAllListings(): Promise<AdminListing[]> {

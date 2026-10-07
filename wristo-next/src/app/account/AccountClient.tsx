@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AccountTab, CollectorProfile, SavedAddress } from '@/types/account';
 import { OrderRecord } from '@/types/order';
-import { getCollectorProfile, getSavedAddresses, DEFAULT_PROFILE, DEFAULT_ADDRESSES } from '@/services/accountService';
+import { getCollectorProfile, getSavedAddresses } from '@/services/accountService';
 import { getOrders } from '@/services/orderService';
 import { authService, AuthUser } from '@/services/authService';
 import { useWishlist } from '@/context/WishlistContext';
@@ -19,59 +19,22 @@ import SettingsTab from '@/components/account/SettingsTab';
 import CertificateModal from '@/components/account/CertificateModal';
 import VaultAuthView from '@/components/account/VaultAuthView';
 
-const SEED_SAMPLE_ORDERS: OrderRecord[] = [
-  {
-    orderId: 'WRT-2026-39226',
-    certificateId: 'CERT-CHRONO-484138',
-    createdAt: '2026-10-01T10:30:00Z',
-    items: [
-      {
-        productId: 'WRT-001',
-        model: 'Atlas Black',
-        brand: 'AUREN',
-        price: 4999,
-        quantity: 1,
-        image: '/assets/products/watch-01.png'
-      },
-      {
-        productId: 'WRT-005',
-        model: 'Regent Green',
-        brand: 'AUREN',
-        price: 14999,
-        quantity: 1,
-        image: '/assets/products/watch-05.png'
-      }
-    ],
-    subtotal: 19998,
-    discount: 2000,
-    shippingFee: 999,
-    total: 18997,
-    isGiftWrapped: true,
-    giftMessage: 'To an extraordinary horological milestone. May time honor your legacy.',
-    coupon: {
-      code: 'WRISTO10',
-      description: '10% privilege discount applied',
-      discountType: 'percentage',
-      discountValue: 10,
-      calculatedDiscount: 2000
-    },
-    address: {
-      fullName: 'Gaurav Kadam',
-      email: 'gauravkadam@gmail.com',
-      phone: '+91 98765 43210',
-      pincode: '411048',
-      addressLine1: 'Row House 04, Clover Highlands, NIBM Road, Kondhwa',
-      addressLine2: 'Near Corinthian Club',
-      city: 'Pune',
-      state: 'Maharashtra',
-      landmark: 'Near Corinthian Club',
-      deliveryNotes: 'Please ring private security reception.'
-    },
-    deliveryTier: 'white_glove',
-    paymentMethod: 'cod',
-    status: 'confirmed'
+const INITIAL_PROFILE: CollectorProfile = {
+  id: '',
+  fullName: 'Valued Collector',
+  email: '',
+  phone: '',
+  salutation: 'Collector',
+  vipTier: 'Grand Complication Patron',
+  joinedDate: '',
+  wristSizeMm: 175,
+  currency: 'INR',
+  notifications: {
+    orderTelemetry: true,
+    rareAllocations: true,
+    conciergeBriefings: false
   }
-];
+};
 
 interface AccountClientProps {
   initialTab?: AccountTab;
@@ -95,15 +58,14 @@ export default function AccountClient({ initialTab = 'overview', initialCert }: 
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isAuthChecking, setIsAuthChecking] = useState<boolean>(true);
 
-  const [profile, setProfile] = useState<CollectorProfile>(DEFAULT_PROFILE);
-  const [addresses, setAddresses] = useState<SavedAddress[]>(DEFAULT_ADDRESSES);
+  const [profile, setProfile] = useState<CollectorProfile>(INITIAL_PROFILE);
+  const [addresses, setAddresses] = useState<SavedAddress[]>([]);
   const [orders, setOrders] = useState<OrderRecord[]>([]);
 
   const [selectedCertOrder, setSelectedCertOrder] = useState<OrderRecord | null>(null);
 
   const { wishlistCount } = useWishlist();
 
-  // Initialize and verify authentication state
   useEffect(() => {
     const authed = authService.isAuthenticated();
     const user = authService.getCurrentUser();
@@ -119,21 +81,20 @@ export default function AccountClient({ initialTab = 'overview', initialCert }: 
   const loadAccountData = async () => {
     try {
       const [userProfile, savedAddrs, savedOrders] = await Promise.all([
-        getCollectorProfile(),
-        getSavedAddresses(),
-        getOrders()
+        getCollectorProfile().catch(() => null),
+        getSavedAddresses().catch(() => []),
+        getOrders().catch(() => [])
       ]);
 
-      setProfile(userProfile);
-      setAddresses(savedAddrs);
-      const resolvedOrders = savedOrders && savedOrders.length > 0 ? savedOrders : SEED_SAMPLE_ORDERS;
-      setOrders(resolvedOrders);
+      if (userProfile) setProfile(userProfile);
+      if (savedAddrs) setAddresses(savedAddrs);
+      if (savedOrders) setOrders(savedOrders);
 
-      if (certParam === 'open' || certParam === 'sample' || tabParam === 'provenance') {
-        setSelectedCertOrder(resolvedOrders[0]);
+      if ((certParam === 'open' || certParam === 'sample' || tabParam === 'provenance') && savedOrders && savedOrders.length > 0) {
+        setSelectedCertOrder(savedOrders[0]);
       }
     } catch {
-      // Fallback
+      // Ignore
     }
   };
 
@@ -141,18 +102,15 @@ export default function AccountClient({ initialTab = 'overview', initialCert }: 
     setCurrentUser(user);
     setIsAuthenticated(true);
     loadAccountData();
-
-    // If role is ADMIN, smoothly allow user to explore or navigate to admin
-    const role = (user.role || '').toUpperCase();
-    if (role.includes('ADMIN') || role.includes('SUPER')) {
-      // Auto prompt or redirect
-    }
   };
 
   const handleLogout = async () => {
     await authService.logout();
     setIsAuthenticated(false);
     setCurrentUser(null);
+    setProfile(INITIAL_PROFILE);
+    setOrders([]);
+    setAddresses([]);
     router.replace('/account', { scroll: false });
   };
 
@@ -180,7 +138,6 @@ export default function AccountClient({ initialTab = 'overview', initialCert }: 
     );
   }
 
-  // If not authenticated, display luxury Role-Based Persona Vault Login / Register
   if (!isAuthenticated) {
     return (
       <div className="account-page-wrapper">

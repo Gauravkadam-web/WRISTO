@@ -1,8 +1,11 @@
 import React from 'react';
 import Link from 'next/link';
-import { BRANDS } from '@/data/brands';
+import { brandService } from '@/services/brandService';
 
-export default function PopularBrands() {
+export default async function PopularBrands() {
+  const brands = await brandService.getAllBrands();
+  const displayBrands = brands.slice(0, 6);
+
   return (
     <section className="section popular-brands-section" aria-label="Popular Brands">
       <div className="container">
@@ -22,7 +25,7 @@ export default function PopularBrands() {
 
         {/* 6 Brand Cards Grid */}
         <div className="popular-brands-grid">
-          {BRANDS.slice(0, 6).map((brand) => (
+          {displayBrands.map((brand) => (
             <Link
               key={brand.name}
               href={`/watches?brand=${encodeURIComponent(brand.name)}`}

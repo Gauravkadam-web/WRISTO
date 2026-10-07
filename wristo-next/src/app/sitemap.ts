@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next';
-import { PRODUCTS } from '@/data/products';
+import { getAllProductIds } from '@/services/productService';
 import { getAllArticleSlugs } from '@/services/editorialService';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -44,8 +44,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  const productRoutes: MetadataRoute.Sitemap = PRODUCTS.map((product) => ({
-    url: `${baseUrl}/product/${product.id}`,
+  const productIds = await getAllProductIds();
+  const productRoutes: MetadataRoute.Sitemap = productIds.map((id) => ({
+    url: `${baseUrl}/product/${id}`,
     lastModified: new Date(),
     changeFrequency: 'weekly',
     priority: 0.85,

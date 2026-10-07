@@ -2,23 +2,20 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { BRANDS } from '@/data/brands';
 import { Brand } from '@/types/product';
 import { brandService } from '@/services/brandService';
 
 export default function BrandsClient() {
-  const [brands, setBrands] = useState<Brand[]>(BRANDS);
+  const [brands, setBrands] = useState<Brand[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function loadBrands() {
       try {
         const liveBrands = await brandService.getAllBrands();
-        if (liveBrands && liveBrands.length > 0) {
-          setBrands(liveBrands);
-        }
+        setBrands(liveBrands || []);
       } catch {
-        // Fallback already set
+        setBrands([]);
       } finally {
         setIsLoading(false);
       }

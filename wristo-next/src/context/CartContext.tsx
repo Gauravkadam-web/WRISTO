@@ -1,10 +1,10 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { PRODUCTS } from '@/data/products';
 import { Product } from '@/types/product';
 import { AppliedCoupon, OrderCartItem, OrderTotals } from '@/types/order';
 import { calculateOrderTotals, validateCoupon, validateCouponAsync } from '@/services/orderService';
+import { getProductsByIds } from '@/services/productService';
 
 export interface CartItem {
   id: string;
@@ -40,6 +40,7 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [productMap, setProductMap] = useState<Record<string, Product>>({});
   const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
   const [isGiftWrapped, setIsGiftWrapped] = useState(false);
   const [giftMessage, setGiftMessage] = useState('');
@@ -68,6 +69,35 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
     setIsLoaded(true);
   }, []);
+
+  // Fetch product data dynamically from database for cart items
+  useEffect(() => {
+    async function loadCartProducts() {
+      const missingIds = cart
+        .map(i => i.id)
+        .filter(id => !productMap[id] && !productMap[id.toLowerCase()]);
+      if (missingIds.length > 0) {
+        try {
+          const fetched = await getProductsByIds(missingIds);
+          if (fetched && fetched.length > 0) {
+            setProductMap(prev => {
+              const updated = { ...prev };
+              fetched.forEach(p => {
+                updated[p.id] = p;
+                updated[p.id.toLowerCase()] = p;
+              });
+              return updated;
+            });
+          }
+        } catch {
+          // Ignore
+        }
+      }
+    }
+    if (cart.length > 0) {
+      loadCartProducts();
+    }
+  }, [cart, productMap]);
 
   // Save cart changes
   useEffect(() => {
@@ -109,11 +139,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   }, [isGiftWrapped, giftMessage, isLoaded]);
 
-  // Join cart with full product data
+  // Join cart with full dynamically fetched product data
   const cartProducts = useMemo<CartProductItem[]>(() => {
     return cart
       .map(item => {
-        const product = PRODUCTS.find(p => p.id === item.id);
+        const product = productMap[item.id] || productMap[item.id.toLowerCase()];
         if (!product) return null;
         return {
           productId: product.id,
@@ -126,7 +156,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         };
       })
       .filter((item): item is CartProductItem => item !== null);
-  }, [cart]);
+  }, [cart, productMap]);
 
   // Re-evaluate applied coupon validity against current subtotal
   const rawSubtotal = useMemo(() => {
@@ -134,16 +164,23 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, [cartProducts]);
 
   useEffect(() => {
-    if (appliedCoupon && rawSubtotal > 0) {
-      const revalidated = validateCoupon(appliedCoupon.code, rawSubtotal);
-      if (revalidated.valid && revalidated.coupon) {
-        setAppliedCoupon(revalidated.coupon);
-      } else {
+    async function checkCoupon() {
+      if (appliedCoupon && rawSubtotal > 0) {
+        try {
+          const revalidated = await validateCoupon(appliedCoupon.code, rawSubtotal);
+          if (revalidated.valid && revalidated.coupon) {
+            setAppliedCoupon(revalidated.coupon);
+          } else {
+            setAppliedCoupon(null);
+          }
+        } catch {
+          setAppliedCoupon(null);
+        }
+      } else if (rawSubtotal === 0 && appliedCoupon) {
         setAppliedCoupon(null);
       }
-    } else if (rawSubtotal === 0 && appliedCoupon) {
-      setAppliedCoupon(null);
     }
+    checkCoupon();
   }, [rawSubtotal, appliedCoupon]);
 
   // Memoized order totals

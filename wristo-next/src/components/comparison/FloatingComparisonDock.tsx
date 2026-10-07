@@ -4,7 +4,8 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useComparison } from '@/context/ComparisonContext';
-import { PRODUCTS } from '@/data/products';
+import { comparisonService } from '@/services/comparisonService';
+import { Product } from '@/types/product';
 import { Sparkles } from 'lucide-react';
 
 export default function FloatingComparisonDock() {
@@ -20,6 +21,24 @@ export default function FloatingComparisonDock() {
     isDockOpen,
     setIsDockOpen,
   } = useComparison();
+
+  const [selectedProducts, setSelectedProducts] = React.useState<Product[]>([]);
+
+  React.useEffect(() => {
+    async function loadWatches() {
+      if (comparison.length === 0) {
+        setSelectedProducts([]);
+        return;
+      }
+      try {
+        const resolved = await comparisonService.resolveWatches(comparison);
+        setSelectedProducts(resolved || []);
+      } catch {
+        setSelectedProducts([]);
+      }
+    }
+    loadWatches();
+  }, [comparison]);
 
   // Hide dock if on /checkout or on /compare itself (since the user is already on the comparison page)
   if (pathname?.startsWith('/checkout') || pathname === '/compare') {
@@ -45,11 +64,6 @@ export default function FloatingComparisonDock() {
       </>
     );
   }
-
-  // Find products currently in comparison
-  const selectedProducts = comparison
-    .map(id => PRODUCTS.find(p => p.id.toLowerCase() === id.toLowerCase()))
-    .filter(Boolean);
 
   return (
     <>

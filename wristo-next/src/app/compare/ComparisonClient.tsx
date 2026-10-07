@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Scale, ArrowRight, Sparkles, Maximize2, RotateCcw } from 'lucide-react';
 import { useComparison } from '@/context/ComparisonContext';
 import { useCart } from '@/context/CartContext';
-import { PRODUCTS } from '@/data/products';
+import { Product } from '@/types/product';
 import { comparisonService } from '@/services/comparisonService';
 
 export default function ComparisonClient() {
@@ -17,11 +17,7 @@ export default function ComparisonClient() {
   const [tiltOffset, setTiltOffset] = useState({ x: 0, y: 0 });
   const stageRef = useRef<HTMLDivElement>(null);
 
-  const [selectedProducts, setSelectedProducts] = useState<(typeof PRODUCTS[0])[]>(() =>
-    comparison
-      .map(id => PRODUCTS.find(p => p.id.toLowerCase() === id.toLowerCase()))
-      .filter(Boolean) as (typeof PRODUCTS[0])[]
-  );
+  const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
 
   React.useEffect(() => {
     async function loadWatches() {
@@ -31,17 +27,10 @@ export default function ComparisonClient() {
       }
       try {
         const resolved = await comparisonService.resolveWatches(comparison);
-        if (resolved.length > 0) {
-          setSelectedProducts(resolved as (typeof PRODUCTS[0])[]);
-          return;
-        }
+        setSelectedProducts(resolved || []);
       } catch {
-        // Fallback
+        setSelectedProducts([]);
       }
-      const fallback = comparison
-        .map(id => PRODUCTS.find(p => p.id.toLowerCase() === id.toLowerCase()))
-        .filter(Boolean) as (typeof PRODUCTS[0])[];
-      setSelectedProducts(fallback);
     }
     loadWatches();
   }, [comparison]);

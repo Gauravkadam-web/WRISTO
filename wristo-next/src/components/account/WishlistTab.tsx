@@ -1,18 +1,34 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Sparkles, ArrowRight } from 'lucide-react';
 import { useWishlist } from '@/context/WishlistContext';
 import { useCart } from '@/context/CartContext';
-import { PRODUCTS } from '@/data/products';
+import { getProductsByIds } from '@/services/productService';
+import { Product } from '@/types/product';
 
 export default function WishlistTab() {
   const { wishlist, toggleWishlist } = useWishlist();
   const { addToCart, openCartDrawer } = useCart();
+  const [savedWatches, setSavedWatches] = useState<Product[]>([]);
 
-  const savedWatches = PRODUCTS.filter(p => wishlist.includes(p.id));
+  useEffect(() => {
+    async function loadSavedWatches() {
+      if (wishlist.length === 0) {
+        setSavedWatches([]);
+        return;
+      }
+      try {
+        const fetched = await getProductsByIds(wishlist);
+        setSavedWatches(fetched || []);
+      } catch {
+        setSavedWatches([]);
+      }
+    }
+    loadSavedWatches();
+  }, [wishlist]);
 
   const handleMoveToBag = (productId: string) => {
     addToCart(productId, 1);

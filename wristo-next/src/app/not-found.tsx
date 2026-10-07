@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Clock } from 'lucide-react';
-import { PRODUCTS } from '@/data/products';
+import { getFeaturedProducts } from '@/services/productService';
 import ProductCard from '@/components/catalog/ProductCard';
 
 export const metadata = {
@@ -9,8 +9,8 @@ export const metadata = {
   description: 'The requested time caliber or editorial reference could not be located in our salon archives.',
 };
 
-export default function NotFound() {
-  const showcaseProducts = PRODUCTS.slice(0, 3);
+export default async function NotFound() {
+  const showcaseProducts = await getFeaturedProducts(3);
 
   return (
     <div className="not-found-wrapper">
