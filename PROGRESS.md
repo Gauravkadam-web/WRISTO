@@ -2,11 +2,11 @@
 
 **Brand:** WRISTO  
 **Project:** Luxury Watch E-Commerce Web Application  
-**Status:** All 8 Full-Stack Backend Modules + Desktop Parity Milestones 1–5 + Production DevOps 100% Complete & Verified.  
+**Status:** All 8 Full-Stack Backend Modules + Desktop Parity Milestones 1–5 + Production DevOps + Cloud Storage Infrastructure 100% Complete & Verified.  
 **Backend Status:** Java 21 + Spring Boot 3.3+ (103/103 Tests Green) + PostgreSQL Flyway (V1–V11) + Docker + GitHub Actions CI.  
 **Total Production Routes:** 61 Statically Pre-rendered SSG & Dynamic Routes.  
 **GitHub Remote:** `https://github.com/Gauravkadam-web/WRISTO.git` (Branch: `main`, Latest Push: `ce3d1d3`)  
-**Last Updated:** October 2026  
+**Last Updated:** October 7, 2026  
 
 ---
 
@@ -458,6 +458,42 @@
   - **Admin CRM Telemetry Counter Roll-Up:** GSAP numeric counter roll-up (`roundProps`, 1.4s, `power2.out`) for Gross Revenue (`₹0` -> `₹43,28,500`), Orders, Inventory, and Articles, plus breathing live STOMP pulse badge (`LIVE TELEMETRY • SPRING STOMP`) in `admin/page.tsx`.
   - **Global ScrollTrigger Stagger Reveals:** Smooth GSAP stagger reveals on `/watches` (`ProductGrid.tsx`, `stagger: 0.035s`) and curated occasion cards (`OccasionSection.tsx`, `stagger: 0.1s`).
 
+---
 
+## 6. Cloud Asset Storage & Dynamic Image Infrastructure (Session 7 — Oct 7, 2026)
 
+### Session 7A: Product Catalog Image Sanitization ✅
+- **Objective:** Replace all inconsistent/placeholder catalog images (coffee cups, cosmetics, generic items) with 40 strictly vertical, front-facing luxury watch product images for the PLP and PDP.
+- **Achievements:**
+  - Generated 25 bespoke AI watch images (watch-01 through watch-25) — properly styled luxury timepieces in 2:3 vertical portrait orientation on clean studio backgrounds.
+  - Sanitized watches 1–13 (first-generation generation run) and watches 14–25 (second-generation run with dedicated per-watch prompts from `wristo-next/scripts/watch_prompts.json`).
+  - **Pending:** Watches 26–40 (VANTA Racer Black through PULSE Pulse Lite) currently have placeholder images copied from earlier entries. Require fresh AI generation once image quota resets (est. ~3:00 PM IST Oct 7, 2026). All 15 prompts are pre-written in `watch_prompts.json` (entries 26–40).
 
+### Session 7B: Supabase Cloud Storage Infrastructure ✅
+- **Objective:** Move static watch images out of the Git binary blob into a proper CDN-backed cloud storage bucket for production scalability.
+- **Achievements:**
+  - Created `wristo-products` storage bucket in Supabase project `wfdiidyruqflbdkaysjo`.
+  - Built zero-dependency batch upload script `wristo-next/scripts/upload_to_supabase.js` with:
+    - Inline `.env` file parsing (no `dotenv` package dependency)
+    - Masked terminal prompt fallback for `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` if not in env
+    - `x-upsert: true` for idempotent re-uploads via Supabase Storage REST API
+  - Successfully uploaded all 40 watch images to `wristo-products` bucket.
+  - User configured `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` in local `.env` (never read by AI — only `.env.example` referenced).
+
+### Session 7C: Dynamic Frontend Image URL Resolution ✅
+- **Objective:** Replace all hardcoded local `/assets/products/watch-XX.png` paths with a dynamic, environment-configurable URL resolver that transparently falls back to local files when the CDN variable is absent.
+- **Files Modified:**
+  - **`wristo-next/src/lib/storage.ts`** *(NEW)*: `getProductImageUrl(filename)` helper — if `NEXT_PUBLIC_STORAGE_BASE_URL` env var is set, resolves to `${baseUrl}/${filename}`; otherwise falls back to `/assets/products/${filename}`.
+  - **`wristo-next/next.config.ts`**: Added `remotePatterns` for `**.supabase.co` (Supabase CDN) and `images.unsplash.com` to allow `next/image` optimization of remote assets.
+  - **`wristo-next/src/components/catalog/ProductCard.tsx`**: Replaced `product.image` with `getProductImageUrl(product.image)` for dynamic URL resolution.
+  - **`wristo-next/.env.example`** & **`E:/WRISTO/.env.example`**: Added `NEXT_PUBLIC_STORAGE_BASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` template variables.
+- **Build Verification:** `npm run build` succeeded cleanly — **69/69 routes compiled** with Turbopack.
+
+---
+
+## 7. Pending Backlog
+
+- [ ] **Watch Images 26–40:** Fresh AI generation required (quota resets ~3:00 PM IST Oct 7, 2026). Prompts pre-written in `wristo-next/scripts/watch_prompts.json` (entries 26–40).
+- [ ] **Re-upload to Supabase after generation:** Run `node scripts/upload_to_supabase.js` after new images are placed in `wristo-next/public/assets/products/`.
+- [ ] **Commit & Push Session 7 changes** to `main` (pending explicit Gaurav Bhau confirmation).
+- [ ] **Set `NEXT_PUBLIC_STORAGE_BASE_URL`** in Vercel/Render deployment environment for production CDN routing.

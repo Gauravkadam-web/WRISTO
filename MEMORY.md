@@ -4,9 +4,9 @@
 **Tagline:** Your Time. Your Style.  
 **Platform:** Ultra-Luxury Multi-Brand Watch E-Commerce Experience  
 **Core Technologies:** Next.js 16+ (App Router, Turbopack, React 19, TypeScript), Vanilla CSS Custom Tokens, Decoupled Service Architecture (Spring Boot-Ready)  
-**Total Production Routes:** 61 Statically Pre-rendered SSG Routes (40 Watches + 6 Journal Articles + Standalone Wishlist, Cart, Brands & Core Pages)  
+**Total Production Routes:** 69 Statically Pre-rendered SSG Routes (40 Watches + 6 Journal Articles + Standalone Wishlist, Cart, Brands & Core Pages)  
 **GitHub Remote:** `https://github.com/Gauravkadam-web/WRISTO.git` (Branch: `main`, Latest Push: `ce3d1d3`)  
-**Last Updated:** October 2026  
+**Last Updated:** October 7, 2026  
 
 ---
 
@@ -488,4 +488,63 @@ WRISTO/
      - 3D dual-perspective floating watch stage on `/compare`.
      - Admin dashboard KPI numeric counter roll-up animation via GSAP `roundProps`.
 - **Status:** Formulation complete, approved by Gaurav Bhau, ready for Phase 1 execution.
+
+---
+
+## 19. Cloud Asset Storage & Dynamic Image Infrastructure (Session 7)
+
+### Supabase Storage Bucket
+- **Provider:** Supabase Storage (project ref: `wfdiidyruqflbdkaysjo`)
+- **Bucket Name:** `wristo-products`
+- **Access Policy:** Public read (images served as CDN via Supabase public storage URL)
+- **Upload Script:** `wristo-next/scripts/upload_to_supabase.js`
+  - Zero external dependencies (Node.js native `fs`, `path`, `https`, `readline`)
+  - Parses `.env` in-process; falls back to masked terminal prompt if env vars not found
+  - Uses `x-upsert: true` for idempotent re-uploads (safe to run multiple times)
+  - Auth: Bearer `SUPABASE_SERVICE_ROLE_KEY` in `Authorization` header
+
+### Environment Variables
+- `SUPABASE_URL` — Supabase project URL (server-side only, used for uploads)
+- `SUPABASE_SERVICE_ROLE_KEY` — Service role secret key (NEVER expose client-side)
+- `NEXT_PUBLIC_STORAGE_BASE_URL` — CDN base URL for product images (client-safe). Format: `https://<project-ref>.supabase.co/storage/v1/object/public/wristo-products`. Set in Vercel/Render for production CDN routing.
+
+### Dynamic URL Resolver (`src/lib/storage.ts`)
+```ts
+export function getProductImageUrl(filename: string): string {
+  const base = process.env.NEXT_PUBLIC_STORAGE_BASE_URL;
+  return base ? `${base}/${filename}` : `/assets/products/${filename}`;
+}
+```
+- CDN URL if `NEXT_PUBLIC_STORAGE_BASE_URL` is set; local `/public/assets/products/` fallback if not
+- Used in `ProductCard.tsx` for all catalog image rendering
+
+### next.config.ts Remote Patterns Added
+```ts
+remotePatterns: [
+  { protocol: 'https', hostname: '**.supabase.co' },
+  { protocol: 'https', hostname: 'images.unsplash.com' },
+]
+```
+
+### Image Status (as of Oct 7, 2026)
+| Range | Status | Location |
+|-------|--------|---------|
+| watch-01 to watch-25 | Unique AI-generated images | Local + Supabase |
+| watch-26 to watch-40 | Placeholder duplicates (copied from 12/13) | Local + Supabase (pending replacement) |
+
+- **Completion Trigger:** Image quota resets ~3:00 PM IST Oct 7, 2026
+- **Prompts for 26-40:** Pre-written in `wristo-next/scripts/watch_prompts.json` (entries 26-40)
+- **After generation:** Copy to `wristo-next/public/assets/products/` then re-run upload script
+
+### Git Commit Strategy for Session 7
+Pending commit to `main` (awaiting explicit Gaurav Bhau confirmation):
+- `wristo-next/next.config.ts` — remotePatterns addition
+- `wristo-next/src/lib/storage.ts` — NEW dynamic URL resolver
+- `wristo-next/src/components/catalog/ProductCard.tsx` — dynamic URL usage
+- `wristo-next/scripts/upload_to_supabase.js` — NEW Supabase batch upload script
+- `wristo-next/scripts/watch_prompts.json` — NEW per-watch AI prompt registry
+- `.env.example` (root + `wristo-next/`) — storage env var templates updated
+- `wristo-next/public/assets/products/watch-03.png` through `watch-25.png` — sanitized AI images
+- Deleted: `assets/test/`, `wristo-next/public/assets/test/` — calibration test image cleanup
+- Deleted: `ref_images/40_images_*.png` — planning reference image cleanup
 

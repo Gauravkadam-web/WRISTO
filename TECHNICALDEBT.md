@@ -1,10 +1,10 @@
 # WRISTO — Technical Debt & Architecture Roadmap Tracker
 
 **Project:** WRISTO Ultra-Luxury Watch Marketplace  
-**Current Status:** All Core Commerce Phases 1–10 + Desktop Parity Milestones 1–5 100% Complete & Build-Verified (61 Routes)  
-**Active Milestone:** Java 21 + Spring Boot 3.3+ + PostgreSQL Backend Integration  
+**Current Status:** All Core Commerce Phases 1–10 + Desktop Parity Milestones 1–5 + Supabase Cloud Storage Infrastructure 100% Complete & Build-Verified (69 Routes)  
+**Active Milestone:** Watch Image Completion (26–40) + Vercel/Render Production Env Setup  
 **Architecture Spec:** `docs/backend_architecture_specification.md`  
-**Last Updated:** October 2026  
+**Last Updated:** October 7, 2026  
 
 ---
 
@@ -22,7 +22,7 @@ With Desktop Parity Milestones 1–5 fully completed and verified, all frontend 
 |---|---|---|:---:|:---:|:---:|
 | **TD-01** | Data & API | In-memory client filtering in `productService.ts` | Medium | Phase 3: Catalog & Inventory | ✅ **RESOLVED** (Backend APIs Active) |
 | **TD-02** | State | Cart, Wishlist, Comparison & Account stored in browser `localStorage` | Medium | Phase 4/5/6: Services | ✅ **RESOLVED** (Backend Sync Ready) |
-| **TD-03** | Media | High-resolution assets served locally from `/public/assets` (~10.7 MB) | Low | Cloud Deployment Phase | Open (Target: S3 / CDN) |
+| **TD-03** | Media | High-resolution assets served locally from `/public/assets` (~10.7 MB) | Low | Cloud Deployment Phase | ✅ **RESOLVED** (Supabase `wristo-products` bucket + `getProductImageUrl()` fallback) |
 | **TD-04** | Architecture | Root directory contains legacy vanilla prototype alongside `wristo-next/` | Low | Post-Parity Cleanup | Open (Target: Archive to `legacy/`) |
 | **TD-05** | Testing | Visual regression performed via headless Chrome script without automated CI runner | Low | CI/CD Phase | ✅ **RESOLVED** (`.github/workflows/ci.yml`) |
 | **TD-06** | Performance | Facet count computation is $O(N)$ per filter change | Low | Phase 3: Catalog & Inventory | ✅ **RESOLVED** (SQL Aggregations in CatalogService) |
@@ -43,6 +43,7 @@ With Desktop Parity Milestones 1–5 fully completed and verified, all frontend 
 | **TD-21** | Hero Animation | Hero watch visual is static image; lacks GSAP 240-frame scroll canvas | High | Phase 2 (Hero Canvas) | ✅ **RESOLVED** (Phase 2 Implemented) |
 | **TD-22** | 3D Horology Stage | PDP lacks interactive 360° turntable and exploded caliber view | Medium | Phase 3 (3D & SVG) | ✅ **RESOLVED** (Phase 3 Implemented) |
 | **TD-23** | Certificate Animation | Provenance Certificate lacks animated SVG guilloché drawing & wax stamp | Medium | Phase 3 (3D & SVG) | ✅ **RESOLVED** (Phase 3 Implemented) |
+| **TD-24** | Product Images | Watch images 26–40 are placeholder duplicates (copied from 12/13) pending AI generation | Medium | Session 7 (Image Completion) | 🟡 **In Progress** (Quota resets ~3 PM IST Oct 7) |
 
 ---
 
@@ -259,4 +260,27 @@ With Desktop Parity Milestones 1–5 fully completed and verified, all frontend 
   * Added holographic gold seal stamp impact animation (`scale: 2.4 -> 1.0`, `back.out(1.8)`) with staggered credential typewriter reveals.
 * **Status:** ✅ **RESOLVED** in Phase 3.
 
+---
 
+### TD-24: Watch Product Images 26–40 (Placeholder Duplicates)
+* **Issue:** Watches 26–40 (`watch-26.png` through `watch-40.png`) in `wristo-next/public/assets/products/` are placeholder files copied from earlier watch images (watch-12 and watch-13), identifiable by matching file sizes. They are NOT unique AI-generated images.
+* **Root Cause:** AI image generation quota was exhausted mid-session after completing watch-01 through watch-25. Placeholder files were used to fill the directory for build/catalog continuity.
+* **Impact:** PLP and PDP pages for products WRT-026 through WRT-040 display incorrect/recycled watch images. Supabase `wristo-products` bucket also holds these duplicates.
+* **Resolution Plan:**
+  1. Wait for image generation quota reset (~3:00 PM IST Oct 7, 2026).
+  2. Generate 15 fresh AI images using prompts pre-written in `wristo-next/scripts/watch_prompts.json` (entries 26–40).
+  3. Copy generated images to `wristo-next/public/assets/products/` as `watch-26.png` through `watch-40.png`.
+  4. Re-run `node wristo-next/scripts/upload_to_supabase.js` to upsert the 15 new images to Supabase (`x-upsert: true` handles idempotent overwrite).
+* **Status:** 🟡 **In Progress** (Awaiting quota reset).
+
+---
+
+### TD-03: Media Delivery & Remote Image Optimization (RESOLVED via Supabase CDN)
+* **Initial State:** All 40 watch product images, hero banners, and brand logos were bundled locally inside `wristo-next/public/assets/` (~10.7 MB), inflating the Git binary blob.
+* **Resolution Applied (Session 7):**
+  * Created `wristo-products` Supabase Storage bucket (project `wfdiidyruqflbdkaysjo`).
+  * Built zero-dependency batch upload script `wristo-next/scripts/upload_to_supabase.js` using Node.js native `fs`, `path`, and `readline` — no `dotenv` or `node-fetch` dependency.
+  * Created `wristo-next/src/lib/storage.ts` with `getProductImageUrl(filename)` helper implementing transparent local fallback: if `NEXT_PUBLIC_STORAGE_BASE_URL` is set → CDN URL, otherwise → `/assets/products/${filename}`.
+  * Updated `wristo-next/next.config.ts` with `remotePatterns` for `**.supabase.co` CDN domains.
+  * Updated `ProductCard.tsx` to use `getProductImageUrl(product.image)` for all catalog image rendering.
+* **Status:** ✅ **RESOLVED** in Session 7. Build verified (69/69 routes). Note: TD-24 still open for completing image content.

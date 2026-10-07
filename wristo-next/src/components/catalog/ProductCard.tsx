@@ -7,6 +7,7 @@ import { useWishlist } from '@/context/WishlistContext';
 import { useCart } from '@/context/CartContext';
 import { useComparison } from '@/context/ComparisonContext';
 import { Star } from 'lucide-react';
+import { getProductImageUrl } from '@/lib/storage';
 
 interface ProductCardProps {
   product: Product;
@@ -99,7 +100,7 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
         {/* Direct Watch Image matching CSS specifications */}
         <Link href={`/product/${product.id}`} className="card-media-link" tabIndex={-1} aria-hidden="true">
           <img
-            src={product.image}
+            src={getProductImageUrl(product.image)}
             alt={`${product.brand} ${product.model} - ${product.caseSize} ${product.movement} Watch`}
             className="card-watch-img"
             loading={priority ? 'eager' : 'lazy'}
