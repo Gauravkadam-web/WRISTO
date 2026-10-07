@@ -120,7 +120,7 @@ export default function FilterDrawer({
             <div className="filter-title">Watch House</div>
             <div className="filter-options-list">
               {ALL_BRANDS.map(brand => {
-                const count = facetCounts.brands[brand] || 0;
+                const count = facetCounts?.brands?.[brand] || 0;
                 const isChecked = currentBrands.includes(brand);
                 return (
                   <label key={brand} className="filter-checkbox-label">
@@ -141,7 +141,7 @@ export default function FilterDrawer({
             <div className="filter-title">Movement Caliber</div>
             <div className="filter-options-list">
               {ALL_MOVEMENTS.map(mov => {
-                const count = facetCounts.movements[mov] || 0;
+                const count = facetCounts?.movements?.[mov] || 0;
                 const isChecked = currentMovements.includes(mov);
                 return (
                   <label key={mov} className="filter-checkbox-label">
@@ -162,7 +162,7 @@ export default function FilterDrawer({
             <div className="filter-title">Style</div>
             <div className="filter-options-list">
               {ALL_STYLES.map(style => {
-                const count = facetCounts.styles[style] || 0;
+                const count = facetCounts?.styles?.[style] || 0;
                 const isChecked = currentStyles.includes(style);
                 return (
                   <label key={style} className="filter-checkbox-label">

@@ -23,7 +23,13 @@ public class CorsConfig {
                 .map(String::trim)
                 .toList();
 
-        configuration.setAllowedOrigins(origins);
+        configuration.setAllowedOriginPatterns(List.of(
+                "http://localhost:3000",
+                "http://127.0.0.1:3000",
+                "https://*.vercel.app",
+                "https://wristo.vercel.app",
+                "*"
+        ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers"));
         configuration.setExposedHeaders(List.of("Authorization", "Content-Disposition"));

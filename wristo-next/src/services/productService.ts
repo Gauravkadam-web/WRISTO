@@ -273,7 +273,22 @@ export async function getCategories(): Promise<CategoryItem[]> {
   try {
     const res = await apiClient.get<CategoryItem[]>('/categories');
     if (res && res.data && Array.isArray(res.data) && res.data.length > 0) {
-      return res.data;
+      const hasAll = res.data.some(c => c.slug === 'all');
+      const allCategory: CategoryItem = {
+        id: 'all',
+        slug: 'all',
+        title: 'All Curated Timepieces',
+        shortTitle: 'All Watches',
+        description: 'Explore our full catalog of 40 luxury, classic, automatic, chronograph, and connected timepieces.',
+        count: 40
+      };
+
+      const enriched = res.data.map(cat => ({
+        ...cat,
+        count: cat.count || (cat.slug === 'men' ? 20 : cat.slug === 'women' ? 8 : cat.slug === 'automatic' ? 7 : cat.slug === 'chronograph' ? 2 : cat.slug === 'dress' ? 10 : cat.slug === 'smart' ? 4 : 40)
+      }));
+
+      return hasAll ? enriched : [allCategory, ...enriched];
     }
   } catch {
     // Fallback

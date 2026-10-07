@@ -42,7 +42,7 @@ export default function WatchesClient({ categories, initialResult }: WatchesClie
   const [isLoading, setIsLoading] = useState(false);
 
   // Active category item
-  const currentCategoryItem = categories.find(c => c.slug.toLowerCase() === activeCategory.toLowerCase()) || categories[0];
+  const currentCategoryItem = categories?.find(c => c.slug?.toLowerCase() === activeCategory.toLowerCase()) || categories?.[0];
 
   // Helper to build URL params
   const updateUrlParams = useCallback((newParams: Record<string, string | string[] | number | null>) => {
@@ -65,8 +65,8 @@ export default function WatchesClient({ categories, initialResult }: WatchesClie
   }, [searchParams, router, pathname]);
 
   // Dynamic Title & Subtitle based on active facets (Panel 2 Parity)
-  let pageTitle = currentCategoryItem.title;
-  let pageSubtitle = currentCategoryItem.description;
+  let pageTitle = currentCategoryItem?.title || "All Curated Timepieces";
+  let pageSubtitle = currentCategoryItem?.description || "Explore our full catalog of 40 luxury timepieces.";
 
   if (genderParam === 'Men' || activeCategory === 'men') {
     pageTitle = "Men's Watches";

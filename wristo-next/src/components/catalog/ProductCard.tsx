@@ -53,7 +53,9 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
     }
   };
 
-  const discountPercent = Math.round((1 - product.price / product.originalPrice) * 100);
+  const numPrice = Number(product.price) || 0;
+  const numOrigPrice = Number(product.originalPrice) || 0;
+  const discountPercent = numOrigPrice > numPrice ? Math.round((1 - numPrice / numOrigPrice) * 100) : 0;
 
   const getBadgeClass = (badge: string) => {
     const b = badge.toLowerCase();
@@ -171,8 +173,10 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
 
         {/* Price Row */}
         <div className="card-price-row">
-          <span className="card-price tabular-nums">₹{product.price.toLocaleString('en-IN')}</span>
-          <span className="card-original-price tabular-nums">₹{product.originalPrice.toLocaleString('en-IN')}</span>
+          <span className="card-price tabular-nums">₹{numPrice.toLocaleString('en-IN')}</span>
+          {numOrigPrice > numPrice && (
+            <span className="card-original-price tabular-nums">₹{numOrigPrice.toLocaleString('en-IN')}</span>
+          )}
           {discountPercent > 0 && (
             <span className="card-discount-badge tabular-nums">{discountPercent}% off</span>
           )}
