@@ -16,10 +16,14 @@ export interface ComparisonMatrixData {
 export const comparisonService = {
   async getComparisonMatrix(ids: string[]): Promise<ComparisonMatrixData | null> {
     if (!ids || ids.length === 0) return null;
-    const query = ids.map(encodeURIComponent).join(',');
-    const res = await apiClient.get<ComparisonMatrixData>(`/compare?ids=${query}`);
-    if (res && res.data && res.data.specs) {
-      return res.data;
+    try {
+      const query = ids.map(encodeURIComponent).join(',');
+      const res = await apiClient.get<ComparisonMatrixData>(`/compare?ids=${query}`).catch(() => null);
+      if (res && res.data && res.data.specs) {
+        return res.data;
+      }
+    } catch {
+      return null;
     }
     return null;
   },

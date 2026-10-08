@@ -3,8 +3,10 @@
  * 
  * Provides unified HTTP communication to Spring Boot 3.3.4 REST endpoints
  * with automatic JWT authorization injection, timeout protection,
- * and resilient error handling.
+ * cold-start retry capability, and structured telemetry logging for Vercel.
  */
+
+import { env } from '@/config/env';
 
 export interface ApiResponse<T> {
   success: boolean;
@@ -13,10 +15,10 @@ export interface ApiResponse<T> {
   timestamp?: string;
 }
 
-export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'https://wristo.onrender.com/api/v1';
+export const API_BASE_URL = env.apiUrl;
 
-const DEFAULT_TIMEOUT_MS = 6000;
+const DEFAULT_TIMEOUT_MS = 9000;
+const MAX_RETRIES = 1;
 
 function getAuthToken(): string | null {
   if (typeof window === 'undefined') return null;
@@ -73,7 +75,8 @@ async function fetchWithTimeout(
 export async function apiRequest<T>(
   endpoint: string,
   options: RequestInit = {},
-  timeoutMs: number = DEFAULT_TIMEOUT_MS
+  timeoutMs: number = DEFAULT_TIMEOUT_MS,
+  retryCount: number = 0
 ): Promise<ApiResponse<T>> {
   const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
   const fullUrl = `${API_BASE_URL}${cleanEndpoint}`;
@@ -89,27 +92,60 @@ export async function apiRequest<T>(
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const response = await fetchWithTimeout(
-    fullUrl,
-    {
-      ...options,
-      headers
-    },
-    timeoutMs
-  );
+  const startTime = Date.now();
 
-  if (!response.ok) {
-    let errorMessage = `HTTP Error ${response.status}: ${response.statusText}`;
-    try {
-      const errorJson = await response.json();
-      if (errorJson.message) errorMessage = errorJson.message;
-    } catch {
-      // Ignore parse failure
+  try {
+    const response = await fetchWithTimeout(
+      fullUrl,
+      {
+        ...options,
+        headers
+      },
+      timeoutMs
+    );
+
+    if (!response.ok) {
+      // If server returned 502/503/504 (e.g. Render spinning up), attempt one retry
+      if ((response.status >= 500 && response.status <= 504) && retryCount < MAX_RETRIES) {
+        console.warn(`[API] Retrying ${cleanEndpoint} after status ${response.status} (attempt ${retryCount + 1}/${MAX_RETRIES})...`);
+        await new Promise(r => setTimeout(r, 1200));
+        return apiRequest<T>(endpoint, options, timeoutMs, retryCount + 1);
+      }
+
+      let errorMessage = `HTTP Error ${response.status}: ${response.statusText}`;
+      try {
+        const errorJson = await response.json();
+        if (errorJson.message) errorMessage = errorJson.message;
+      } catch {
+        // Ignore parse failure
+      }
+      throw new Error(errorMessage);
     }
-    throw new Error(errorMessage);
-  }
 
-  return response.json();
+    const json = await response.json();
+    return json;
+  } catch (error: any) {
+    const duration = Date.now() - startTime;
+    const isAbort = error?.name === 'AbortError' || error?.code === 20;
+
+    // Retry once on timeout/network abort if within budget
+    if (isAbort && retryCount < MAX_RETRIES) {
+      console.warn(`[API Timeout] Retrying ${cleanEndpoint} (elapsed: ${duration}ms, attempt ${retryCount + 1}/${MAX_RETRIES})...`);
+      await new Promise(r => setTimeout(r, 1000));
+      return apiRequest<T>(endpoint, options, timeoutMs + 3000, retryCount + 1);
+    }
+
+    // Log diagnostic error details for Vercel Telemetry
+    console.error(`[API Exception] ${options.method || 'GET'} ${cleanEndpoint} failed (${duration}ms):`, {
+      message: error?.message || 'Unknown network deviation',
+      endpoint: cleanEndpoint,
+      fullUrl,
+      retryCount,
+      stack: error?.stack
+    });
+
+    throw error;
+  }
 }
 
 export const apiClient = {

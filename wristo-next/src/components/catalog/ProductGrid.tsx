@@ -11,8 +11,9 @@ interface ProductGridProps {
   onResetFilters?: () => void;
 }
 
-export default function ProductGrid({ products, onResetFilters }: ProductGridProps) {
+export default function ProductGrid({ products = [], onResetFilters }: ProductGridProps) {
   const gridRef = useRef<HTMLDivElement>(null);
+  const items = products || [];
 
   // Subtle luxury stagger reveal when products are loaded or filtered
   useEffect(() => {
@@ -33,9 +34,9 @@ export default function ProductGrid({ products, onResetFilters }: ProductGridPro
         }
       );
     }
-  }, [products]);
+  }, [items]);
 
-  if (products.length === 0) {
+  if (items.length === 0) {
     return (
       <div
         className="catalog-empty-state"
@@ -82,9 +83,9 @@ export default function ProductGrid({ products, onResetFilters }: ProductGridPro
 
   return (
     <div className="product-grid" ref={gridRef} style={{ minHeight: '400px' }}>
-      {products.map((product, index) => (
+      {items.map((product, index) => (
         <ProductCard
-          key={product.id}
+          key={product?.id || `watch-${index}`}
           product={product}
           priority={index < 4}
         />

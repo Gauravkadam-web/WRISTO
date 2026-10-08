@@ -1,12 +1,16 @@
 import { CollectorProfile, SavedAddress } from '@/types/account';
 import { apiClient } from './apiClient';
 
-export async function getCollectorProfile(): Promise<CollectorProfile> {
-  const res = await apiClient.get<CollectorProfile>('/account/profile');
-  if (res && res.data) {
-    return res.data;
+export async function getCollectorProfile(): Promise<CollectorProfile | null> {
+  try {
+    const res = await apiClient.get<CollectorProfile>('/account/profile').catch(() => null);
+    if (res && res.data) {
+      return res.data;
+    }
+  } catch {
+    return null;
   }
-  throw new Error('Failed to retrieve collector profile from primary ledger.');
+  return null;
 }
 
 export async function updateCollectorProfile(

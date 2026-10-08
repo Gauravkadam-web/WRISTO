@@ -56,9 +56,13 @@ export const PAYMENT_OPTIONS: PaymentOption[] = [
 ];
 
 export async function getAvailableCoupons(): Promise<any[]> {
-  const res = await apiClient.get<any[]>('/coupons');
-  if (res && res.data && Array.isArray(res.data)) {
-    return res.data;
+  try {
+    const res = await apiClient.get<any[]>('/coupons').catch(() => null);
+    if (res && res.data && Array.isArray(res.data)) {
+      return res.data;
+    }
+  } catch {
+    return [];
   }
   return [];
 }
@@ -223,49 +227,57 @@ export async function createOrder(payload: CreateOrderPayload): Promise<OrderRec
 }
 
 export async function getOrders(): Promise<OrderRecord[]> {
-  const res = await apiClient.get<any>('/orders/my-orders');
-  if (res && res.data && (Array.isArray(res.data) || Array.isArray(res.data.content))) {
-    const list = Array.isArray(res.data) ? res.data : res.data.content;
-    return list.map((o: any) => ({
-      orderId: o.orderNumber || o.orderId,
-      certificateId: o.certificateNumber || o.certificateId || 'CERT-AUTHENTIC',
-      createdAt: o.placedAt || o.createdAt,
-      items: o.items || [],
-      subtotal: Number(o.subtotalAmount ?? o.subtotal ?? 0),
-      discount: Number(o.discountAmount ?? o.discount ?? 0),
-      shippingFee: Number(o.shippingFee ?? 0),
-      total: Number(o.totalAmount ?? o.total ?? 0),
-      isGiftWrapped: Boolean(o.isGiftWrapped),
-      giftMessage: o.giftMessage,
-      address: o.address || {},
-      deliveryTier: o.deliveryTier || 'insured_express',
-      paymentMethod: o.paymentMethod || 'SECURE_ESCROW',
-      status: (o.status || 'CONFIRMED').toLowerCase() as any
-    }));
+  try {
+    const res = await apiClient.get<any>('/orders/my-orders').catch(() => null);
+    if (res && res.data && (Array.isArray(res.data) || Array.isArray(res.data.content))) {
+      const list = Array.isArray(res.data) ? res.data : res.data.content;
+      return list.map((o: any) => ({
+        orderId: o.orderNumber || o.orderId,
+        certificateId: o.certificateNumber || o.certificateId || 'CERT-AUTHENTIC',
+        createdAt: o.placedAt || o.createdAt,
+        items: o.items || [],
+        subtotal: Number(o.subtotalAmount ?? o.subtotal ?? 0),
+        discount: Number(o.discountAmount ?? o.discount ?? 0),
+        shippingFee: Number(o.shippingFee ?? 0),
+        total: Number(o.totalAmount ?? o.total ?? 0),
+        isGiftWrapped: Boolean(o.isGiftWrapped),
+        giftMessage: o.giftMessage,
+        address: o.address || {},
+        deliveryTier: o.deliveryTier || 'insured_express',
+        paymentMethod: o.paymentMethod || 'SECURE_ESCROW',
+        status: (o.status || 'CONFIRMED').toLowerCase() as any
+      }));
+    }
+  } catch {
+    return [];
   }
   return [];
 }
 
 export async function getOrderById(orderId: string): Promise<OrderRecord | null> {
-  const res = await apiClient.get<any>(`/orders/${orderId}`);
-  if (res && res.data) {
-    const o = res.data;
-    return {
-      orderId: o.orderNumber || o.orderId,
-      certificateId: o.certificateNumber || o.certificateId || 'CERT-AUTHENTIC',
-      createdAt: o.placedAt || o.createdAt,
-      items: o.items || [],
-      subtotal: Number(o.subtotalAmount ?? o.subtotal ?? 0),
-      discount: Number(o.discountAmount ?? o.discount ?? 0),
-      shippingFee: Number(o.shippingFee ?? 0),
-      total: Number(o.totalAmount ?? o.total ?? 0),
-      isGiftWrapped: Boolean(o.isGiftWrapped),
-      giftMessage: o.giftMessage,
-      address: o.address || {},
-      deliveryTier: o.deliveryTier || 'insured_express',
-      paymentMethod: o.paymentMethod || 'SECURE_ESCROW',
-      status: (o.status || 'CONFIRMED').toLowerCase() as any
-    };
+  try {
+    const res = await apiClient.get<any>(`/orders/${encodeURIComponent(orderId)}`).catch(() => null);
+    if (res && res.data) {
+      const o = res.data;
+      return {
+        orderId: o.orderNumber || o.orderId,
+        certificateId: o.certificateNumber || o.certificateId || 'CERT-AUTHENTIC',
+        createdAt: o.placedAt || o.createdAt,
+        items: o.items || [],
+        subtotal: Number(o.subtotalAmount ?? o.subtotal ?? 0),
+        discount: Number(o.discountAmount ?? o.discount ?? 0),
+        shippingFee: Number(o.shippingFee ?? 0),
+        total: Number(o.totalAmount ?? o.total ?? 0),
+        isGiftWrapped: Boolean(o.isGiftWrapped),
+        giftMessage: o.giftMessage,
+        address: o.address || {},
+        deliveryTier: o.deliveryTier || 'insured_express',
+        paymentMethod: o.paymentMethod || 'SECURE_ESCROW',
+        status: (o.status || 'CONFIRMED').toLowerCase() as any
+      };
+    }
+  } catch {
+    return null;
   }
   return null;
 }

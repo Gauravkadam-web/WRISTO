@@ -13,45 +13,52 @@ export const dynamicParams = true;
 
 export async function generateStaticParams() {
   const ids = await getAllProductIds();
-  return ids.map((id) => ({ id }));
+  return (ids || []).map((id) => ({ id }));
 }
 
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
-  const { id } = await params;
-  const product = await getProductById(id);
+  try {
+    const { id } = await params;
+    const product = await getProductById(id);
 
-  if (!product) {
+    if (!product) {
+      return {
+        title: 'Timepiece Not Found | WRISTO Luxury Watches',
+        description: 'The requested luxury watch could not be located in our horological archive.'
+      };
+    }
+
+    const title = `${product.brand || 'Luxury'} ${product.model || 'Timepiece'} — ${product.movement || 'Precision'} ${product.caseSize || ''} | WRISTO`;
+    const description = `${product.tagline || ''} ${(product.description || '').slice(0, 140)}... Free insured shipping & 2-year international warranty.`;
+
     return {
-      title: 'Timepiece Not Found | WRISTO Luxury Watches',
-      description: 'The requested luxury watch could not be located in our horological archive.'
+      title,
+      description,
+      openGraph: {
+        title,
+        description,
+        images: product.image ? [
+          {
+            url: product.image,
+            width: 800,
+            height: 800,
+            alt: `${product.brand} ${product.model}`
+          }
+        ] : []
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title,
+        description,
+        images: product.image ? [product.image] : []
+      }
+    };
+  } catch {
+    return {
+      title: 'Luxury Timepiece | WRISTO',
+      description: 'Haute Horlogerie timepiece in the WRISTO Master Archive.'
     };
   }
-
-  const title = `${product.brand} ${product.model} — ${product.movement} ${product.caseSize} | WRISTO`;
-  const description = `${product.tagline} ${product.description.slice(0, 140)}... Free insured shipping & 2-year international warranty.`;
-
-  return {
-    title,
-    description,
-    openGraph: {
-      title,
-      description,
-      images: [
-        {
-          url: product.image,
-          width: 800,
-          height: 800,
-          alt: `${product.brand} ${product.model}`
-        }
-      ]
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title,
-      description,
-      images: [product.image]
-    }
-  };
 }
 
 export default async function ProductDetailPage({ params }: ProductPageProps) {
@@ -62,7 +69,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     notFound();
   }
 
-  const similarProducts = await getSimilarProducts(product.id, 4);
+  const similarProducts = (await getSimilarProducts(product.id, 4).catch(() => [])) || [];
 
   return (
     <>

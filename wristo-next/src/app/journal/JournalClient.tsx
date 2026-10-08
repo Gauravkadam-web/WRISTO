@@ -13,32 +13,37 @@ interface JournalClientProps {
 }
 
 export default function JournalClient({
-  initialArticles,
-  categories
+  initialArticles = [],
+  categories = []
 }: JournalClientProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>('All Stories');
 
-  const leadArticle = initialArticles[0];
+  const safeArticles = initialArticles || [];
+  const safeCategories = categories || [];
+
+  const leadArticle = safeArticles[0];
 
   const filteredArticles = useMemo(() => {
     if (selectedCategory === 'All Stories') {
       // Exclude lead article from the general grid when viewing all stories so it's not duplicated
-      return initialArticles.slice(1);
+      return safeArticles.slice(1);
     }
-    return initialArticles.filter(
-      (a) => a.category.toLowerCase() === selectedCategory.toLowerCase()
+    return safeArticles.filter(
+      (a) => a.category?.toLowerCase() === selectedCategory.toLowerCase()
     );
-  }, [initialArticles, selectedCategory]);
+  }, [safeArticles, selectedCategory]);
 
   const categoryCounts = useMemo(() => {
     const counts: { [key: string]: number } = {
-      'All Stories': initialArticles.length
+      'All Stories': safeArticles.length
     };
-    for (const a of initialArticles) {
-      counts[a.category] = (counts[a.category] || 0) + 1;
+    for (const a of safeArticles) {
+      if (a?.category) {
+        counts[a.category] = (counts[a.category] || 0) + 1;
+      }
     }
     return counts;
-  }, [initialArticles]);
+  }, [safeArticles]);
 
   const handleSelectCategory = (cat: string) => {
     setSelectedCategory(cat);
@@ -64,7 +69,7 @@ export default function JournalClient({
 
         {/* Category Filters */}
         <CategoryFilter
-          categories={categories}
+          categories={safeCategories}
           selectedCategory={selectedCategory}
           onSelectCategory={handleSelectCategory}
           counts={categoryCounts}

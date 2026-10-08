@@ -80,10 +80,14 @@ export async function getPrebakedInquiries(): Promise<PrebakedInquiry[]> {
 export async function generateRecommendations(
   preferences: ConciergePreferences
 ): Promise<ConciergeRecommendation[]> {
-  const res = await apiClient.post<any>('/concierge/recommendations', preferences);
-  if (res && res.data) {
-    if (Array.isArray(res.data.recommendations)) return res.data.recommendations;
-    if (Array.isArray(res.data)) return res.data;
+  try {
+    const res = await apiClient.post<any>('/concierge/recommendations', preferences).catch(() => null);
+    if (res && res.data) {
+      if (Array.isArray(res.data.recommendations)) return res.data.recommendations;
+      if (Array.isArray(res.data)) return res.data;
+    }
+  } catch {
+    return [];
   }
   return [];
 }
@@ -92,15 +96,19 @@ export async function sendConciergeChatMessage(
   message: string,
   history: Array<{ role: 'user' | 'model'; content: string }> = []
 ): Promise<{ reply: string; recommendedWatchIds?: string[] }> {
-  const res = await apiClient.post<any>('/concierge/chat', { message, history });
-  if (res && res.data) {
-    return {
-      reply: res.data.reply || 'Your private horological inquiry has been processed by our master advisor.',
-      recommendedWatchIds: res.data.recommendedWatchIds || []
-    };
+  try {
+    const res = await apiClient.post<any>('/concierge/chat', { message, history }).catch(() => null);
+    if (res && res.data) {
+      return {
+        reply: res.data.reply || 'Your private horological inquiry has been processed by our master advisor.',
+        recommendedWatchIds: res.data.recommendedWatchIds || []
+      };
+    }
+  } catch {
+    // Fallback response
   }
   return {
-    reply: 'Our horological advisor is currently synchronizing with the master archive.'
+    reply: 'Our horological advisor is currently synchronizing with the master archive. Please ask again in a moment.'
   };
 }
 

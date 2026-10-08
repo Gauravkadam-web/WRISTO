@@ -44,7 +44,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  const productIds = await getAllProductIds();
+  const rawProductIds = await getAllProductIds();
+  const productIds = rawProductIds || [];
   const productRoutes: MetadataRoute.Sitemap = productIds.map((id) => ({
     url: `${baseUrl}/product/${id}`,
     lastModified: new Date(),
@@ -52,7 +53,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.85,
   }));
 
-  const articleSlugs = await getAllArticleSlugs();
+  const rawArticleSlugs = await getAllArticleSlugs();
+  const articleSlugs = rawArticleSlugs || [];
   const journalRoutes: MetadataRoute.Sitemap = articleSlugs.map((slug) => ({
     url: `${baseUrl}/journal/${slug}`,
     lastModified: new Date(),

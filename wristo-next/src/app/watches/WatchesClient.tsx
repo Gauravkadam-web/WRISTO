@@ -32,13 +32,23 @@ export default function WatchesClient({ categories, initialResult }: WatchesClie
   const brandParams = searchParams.getAll('brand');
   const movementParams = searchParams.getAll('movement');
   const styleParams = searchParams.getAll('style');
-  const maxPriceParam = searchParams.get('maxPrice') ? parseInt(searchParams.get('maxPrice')!, 10) : 25000;
+  const rawMaxPrice = searchParams.get('maxPrice');
+  const maxPriceParam = rawMaxPrice && !isNaN(parseInt(rawMaxPrice, 10)) ? parseInt(rawMaxPrice, 10) : 25000;
   const searchParam = searchParams.get('q') || '';
 
   // Local pagination state
   const [pageSize, setPageSize] = useState(12);
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
-  const [queryResult, setQueryResult] = useState<CatalogQueryResult>(initialResult);
+  
+  const safeInitialResult: CatalogQueryResult = initialResult || {
+    items: [],
+    total: 0,
+    page: 1,
+    pageSize: 12,
+    totalPages: 0,
+    facetCounts: { brands: {}, movements: {}, styles: {}, gender: {}, straps: {} }
+  };
+  const [queryResult, setQueryResult] = useState<CatalogQueryResult>(safeInitialResult);
   const [isLoading, setIsLoading] = useState(false);
 
   // Active category item
@@ -120,12 +130,33 @@ export default function WatchesClient({ categories, initialResult }: WatchesClie
       searchQuery: searchParam || undefined,
     };
 
-    getCatalogProducts(filters, sortParam, 1, pageSize).then(result => {
-      if (isMounted) {
-        setQueryResult(result);
-        setIsLoading(false);
-      }
-    });
+    getCatalogProducts(filters, sortParam, 1, pageSize)
+      .then(result => {
+        if (isMounted) {
+          setQueryResult(result || {
+            items: [],
+            total: 0,
+            page: 1,
+            pageSize,
+            totalPages: 0,
+            facetCounts: { brands: {}, movements: {}, styles: {}, gender: {}, straps: {} }
+          });
+          setIsLoading(false);
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setQueryResult({
+            items: [],
+            total: 0,
+            page: 1,
+            pageSize,
+            totalPages: 0,
+            facetCounts: { brands: {}, movements: {}, styles: {}, gender: {}, straps: {} }
+          });
+          setIsLoading(false);
+        }
+      });
 
     return () => {
       isMounted = false;

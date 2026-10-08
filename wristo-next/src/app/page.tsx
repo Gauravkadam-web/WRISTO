@@ -11,9 +11,20 @@ import ProductCard from '@/components/catalog/ProductCard';
 import { getFeaturedProducts, getCatalogProducts } from '@/services/productService';
 
 export default async function HomePage() {
-  const featuredWatches = await getFeaturedProducts(8);
-  const automaticResult = await getCatalogProducts({ category: 'automatic' }, 'popularity', 1, 4);
-  const automaticWatches = automaticResult.items;
+  const [featuredWatches, automaticResult] = await Promise.all([
+    getFeaturedProducts(8).catch(() => []),
+    getCatalogProducts({ category: 'automatic' }, 'popularity', 1, 4).catch(() => ({
+      items: [],
+      total: 0,
+      page: 1,
+      pageSize: 4,
+      totalPages: 0,
+      facetCounts: { brands: {}, movements: {}, styles: {}, gender: {}, straps: {} }
+    }))
+  ]);
+
+  const trendingWatches = featuredWatches || [];
+  const automaticWatches = automaticResult?.items || [];
 
   return (
     <>
@@ -43,8 +54,8 @@ export default async function HomePage() {
           </div>
 
           <div className="product-grid">
-            {featuredWatches.map((watch) => (
-              <ProductCard key={watch.id} product={watch} />
+            {trendingWatches.map((watch, index) => (
+              <ProductCard key={watch?.id || `trending-${index}`} product={watch} priority={index < 4} />
             ))}
           </div>
         </div>
@@ -85,8 +96,8 @@ export default async function HomePage() {
           </div>
 
           <div className="product-grid">
-            {automaticWatches.map((watch) => (
-              <ProductCard key={watch.id} product={watch} />
+            {automaticWatches.map((watch, index) => (
+              <ProductCard key={watch?.id || `auto-${index}`} product={watch} />
             ))}
           </div>
         </div>

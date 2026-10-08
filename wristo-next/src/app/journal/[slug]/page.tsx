@@ -12,7 +12,7 @@ export const dynamicParams = true;
 
 export async function generateStaticParams() {
   const slugs = await getAllArticleSlugs();
-  return slugs.map((slug) => ({ slug }));
+  return (slugs || []).map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -26,18 +26,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   return {
-    title: `${article.title} | WRISTO Journal`,
-    description: article.excerpt,
+    title: `${article.title || 'Horological Essay'} | WRISTO Journal`,
+    description: article.excerpt || '',
     openGraph: {
-      title: article.title,
-      description: article.excerpt,
+      title: article.title || 'Horological Essay',
+      description: article.excerpt || '',
       type: 'article',
       publishedTime: article.publishedAt,
-      authors: [article.author.name],
+      authors: [article.author?.name || 'WRISTO Editorial'],
       images: [
         {
-          url: article.coverImage,
-          alt: article.title
+          url: article.coverImage || '/assets/brand/app-icon.png',
+          alt: article.title || 'WRISTO Journal'
         }
       ]
     }

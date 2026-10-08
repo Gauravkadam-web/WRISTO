@@ -235,7 +235,7 @@ export default function ComparisonClient() {
                             <span className="spec-pill">{watch.movement}</span>
                           </div>
                           <div className="comparison-3d-price tabular-nums">
-                            ₹{watch.price.toLocaleString('en-IN')}
+                            ₹{(watch.price ?? 0).toLocaleString('en-IN')}
                           </div>
                         </div>
                       </div>
@@ -278,10 +278,10 @@ export default function ComparisonClient() {
                             </Link>
                           </h3>
                           <div className="comparison-price tabular-nums">
-                            ₹{watch.price.toLocaleString('en-IN')}
-                            {watch.originalPrice > watch.price && (
+                            ₹{(watch.price ?? 0).toLocaleString('en-IN')}
+                            {Boolean(watch.originalPrice && watch.price && watch.originalPrice > watch.price) && (
                               <span className="tabular-nums" style={{ fontSize: '13px', color: '#999', textDecoration: 'line-through', marginLeft: '6px', fontWeight: 400 }}>
-                                ₹{watch.originalPrice.toLocaleString('en-IN')}
+                                ₹{(watch.originalPrice ?? 0).toLocaleString('en-IN')}
                               </span>
                             )}
                           </div>
