@@ -86,8 +86,9 @@ export default function CheckoutClient() {
 
       // Navigate to order confirmation
       router.push(`/checkout/success?orderId=${order.orderId}`);
-    } catch {
-      alert('An unexpected error occurred while securing your timepiece. Please try again.');
+    } catch (err: any) {
+      const errorMsg = err?.message || err?.data?.message || 'Unable to complete order acquisition. Please review your address details and try again.';
+      alert(errorMsg);
       setIsPlacing(false);
     }
   };

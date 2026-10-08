@@ -113,12 +113,22 @@ public class CartService {
         return buildCartResponse(cart);
     }
 
+    public Watch findWatch(String id) {
+        if (id == null || id.isBlank()) {
+            throw new BusinessException(ErrorCode.WATCH_NOT_FOUND, "Timepiece not found in catalog");
+        }
+        String cleanId = id.trim();
+        return watchRepository.findById(cleanId)
+                .or(() -> watchRepository.findById(cleanId.toUpperCase()))
+                .or(() -> watchRepository.findById(cleanId.toLowerCase()))
+                .orElseThrow(() -> new BusinessException(ErrorCode.WATCH_NOT_FOUND, "Timepiece not found in catalog: " + id));
+    }
+
     @Transactional
     public CartResponse addItem(UUID userId, String sessionId, AddToCartRequest request) {
         Cart cart = getOrCreateCart(userId, sessionId);
 
-        Watch watch = watchRepository.findById(request.watchId())
-                .orElseThrow(() -> new BusinessException(ErrorCode.WATCH_NOT_FOUND, "Timepiece not found in catalog"));
+        Watch watch = findWatch(request.watchId());
 
         if (!Boolean.TRUE.equals(watch.getIsActive())) {
             throw new BusinessException(ErrorCode.WATCH_NOT_FOUND, "This timepiece is currently unavailable");
@@ -266,8 +276,7 @@ public class CartService {
         BigDecimal subtotal = BigDecimal.ZERO;
 
         for (CartItemInput input : request.items()) {
-            Watch watch = watchRepository.findById(input.watchId())
-                    .orElseThrow(() -> new BusinessException(ErrorCode.WATCH_NOT_FOUND, "Watch ID " + input.watchId() + " not found"));
+            Watch watch = findWatch(input.watchId());
             subtotal = subtotal.add(watch.getPrice().multiply(BigDecimal.valueOf(input.quantity())));
         }
 

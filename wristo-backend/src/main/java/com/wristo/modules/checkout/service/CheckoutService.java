@@ -292,8 +292,7 @@ public class CheckoutService {
         List<OrderItem> orderItems = new ArrayList<>();
         if (items != null) {
             for (CartItemInput itemInput : items) {
-                Watch watch = watchRepository.findById(itemInput.watchId())
-                        .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.WATCH_NOT_FOUND, "Watch not found: " + itemInput.watchId()));
+                Watch watch = cartService.findWatch(itemInput.watchId());
 
                 List<SellerListing> offers = sellerListingRepository.findActiveOffersForWatch(watch.getId(), ListingStatus.ACTIVE);
                 SellerListing listing = !offers.isEmpty() ? offers.get(0) : null;
