@@ -156,6 +156,105 @@ export function calculateOrderTotals(
   };
 }
 
+export function normalizeOrderRecord(o: any): OrderRecord {
+  if (!o) {
+    return {
+      orderId: `WRT-2026-${Math.floor(10000 + Math.random() * 90000)}`,
+      certificateId: `CERT-CHRONO-${Math.floor(100000 + Math.random() * 900000)}`,
+      createdAt: new Date().toISOString(),
+      items: [],
+      subtotal: 0,
+      discount: 0,
+      shippingFee: 0,
+      total: 0,
+      isGiftWrapped: false,
+      address: {
+        fullName: 'Valued Collector',
+        email: '',
+        phone: '',
+        pincode: '',
+        addressLine1: 'Private Residential Suite',
+        city: 'Mumbai',
+        state: 'Maharashtra'
+      },
+      deliveryTier: 'insured_express',
+      paymentMethod: 'upi',
+      status: 'confirmed'
+    };
+  }
+
+  const rawItems = Array.isArray(o.items) ? o.items : [];
+  const normalizedItems: OrderCartItem[] = rawItems.map((item: any, idx: number) => {
+    const rawPrice = item.price ?? item.unitPrice ?? item.totalPrice ?? 0;
+    const price = typeof rawPrice === 'number' ? rawPrice : Number(rawPrice) || 0;
+    const rawQty = item.quantity ?? 1;
+    const quantity = typeof rawQty === 'number' ? rawQty : Number(rawQty) || 1;
+
+    return {
+      productId: item.productId || item.watchId || item.id || `WRT-00${idx + 1}`,
+      model: item.model || item.watchModel || item.name || 'Luxury Chronometer',
+      brand: item.brand || item.watchBrand || 'WRISTO',
+      price,
+      quantity,
+      image: item.image || item.watchImageUrl || `/assets/products/watch-0${(idx % 6) + 1}.png`
+    };
+  });
+
+  const rawSubtotal = o.subtotalAmount ?? o.subtotal ?? 0;
+  const subtotal = typeof rawSubtotal === 'number' ? rawSubtotal : Number(rawSubtotal) || 0;
+
+  const rawDiscount = o.discountAmount ?? o.discount ?? 0;
+  const discount = typeof rawDiscount === 'number' ? rawDiscount : Number(rawDiscount) || 0;
+
+  const rawShipping = o.shippingFee ?? 0;
+  const shippingFee = typeof rawShipping === 'number' ? rawShipping : Number(rawShipping) || 0;
+
+  const rawTotal = o.totalAmount ?? o.total ?? Math.max(0, subtotal - discount + shippingFee);
+  const total = typeof rawTotal === 'number' ? rawTotal : Number(rawTotal) || 0;
+
+  const address = {
+    fullName: o.address?.fullName || o.customerName || 'Valued Collector',
+    email: o.address?.email || o.customerEmail || '',
+    phone: o.address?.phone || o.customerPhone || '',
+    pincode: o.address?.pincode || o.shippingPincode || '400001',
+    addressLine1: o.address?.addressLine1 || o.shippingAddressLine1 || 'High-Security Collector Address',
+    addressLine2: o.address?.addressLine2 || o.shippingAddressLine2 || '',
+    city: o.address?.city || o.shippingCity || 'Mumbai',
+    state: o.address?.state || o.shippingState || 'Maharashtra',
+    landmark: o.address?.landmark || o.shippingLandmark || '',
+    deliveryNotes: o.address?.deliveryNotes || o.deliveryNotes || ''
+  };
+
+  const rawMethod = (o.paymentMethod || 'upi').toLowerCase();
+  let paymentMethod: any = 'upi';
+  if (rawMethod.includes('card') || rawMethod.includes('stripe')) paymentMethod = 'card';
+  else if (rawMethod.includes('cod') || rawMethod.includes('cash')) paymentMethod = 'cod';
+  else if (rawMethod.includes('net') || rawMethod.includes('bank')) paymentMethod = 'netbanking';
+
+  const rawStatus = (o.status || 'confirmed').toLowerCase();
+  let status: any = 'confirmed';
+  if (rawStatus.includes('process')) status = 'processing';
+  else if (rawStatus.includes('dispatch') || rawStatus.includes('ship')) status = 'dispatched';
+
+  return {
+    orderId: o.orderId || o.orderNumber || `WRT-2026-${Math.floor(10000 + Math.random() * 90000)}`,
+    certificateId: o.certificateId || o.certificateNumber || `CERT-CHRONO-${Math.floor(100000 + Math.random() * 900000)}`,
+    createdAt: o.createdAt || o.placedAt || new Date().toISOString(),
+    items: normalizedItems,
+    subtotal,
+    discount,
+    shippingFee,
+    total,
+    isGiftWrapped: Boolean(o.isGiftWrapped),
+    giftMessage: o.giftMessage || '',
+    coupon: o.coupon,
+    address,
+    deliveryTier: (o.deliveryTier === 'white_glove' ? 'white_glove' : 'insured_express'),
+    paymentMethod,
+    status
+  };
+}
+
 export async function createOrder(payload: CreateOrderPayload): Promise<OrderRecord> {
   const totals = calculateOrderTotals(payload.items, payload.coupon, payload.deliveryTier);
 
@@ -217,23 +316,24 @@ export async function createOrder(payload: CreateOrderPayload): Promise<OrderRec
     };
   }
 
-  const createdOrderRecord: OrderRecord = {
-    orderId: data.orderNumber || data.orderId || `WRT-2026-${Math.floor(10000 + Math.random() * 90000)}`,
-    certificateId: data.certificateNumber || data.certificateId || `CERT-CHRONO-${Math.floor(100000 + Math.random() * 900000)}`,
-    createdAt: data.placedAt || data.createdAt || new Date().toISOString(),
+  const createdOrderRecord = normalizeOrderRecord({
+    ...data,
+    orderId: data.orderNumber || data.orderId,
+    certificateId: data.certificateNumber || data.certificateId,
+    createdAt: data.placedAt || data.createdAt,
     items: payload.items,
-    subtotal: Number(data.subtotalAmount ?? data.subtotal ?? totals.subtotal),
-    discount: Number(data.discountAmount ?? data.discount ?? totals.discount),
-    shippingFee: Number(data.shippingFee ?? totals.shippingFee),
-    total: Number(data.totalAmount ?? data.total ?? totals.total),
+    subtotal: totals.subtotal,
+    discount: totals.discount,
+    shippingFee: totals.shippingFee,
+    total: totals.total,
     isGiftWrapped: payload.isGiftWrapped,
     giftMessage: payload.giftMessage,
     coupon: payload.coupon,
     address: payload.address,
     deliveryTier: payload.deliveryTier,
     paymentMethod: payload.paymentMethod,
-    status: (data.status || 'CONFIRMED').toLowerCase() as any
-  };
+    status: data.status || 'CONFIRMED'
+  });
 
   if (typeof window !== 'undefined') {
     try {
@@ -251,22 +351,7 @@ export async function getOrders(): Promise<OrderRecord[]> {
     const res = await apiClient.get<any>('/orders/my-orders').catch(() => null);
     if (res && res.data && (Array.isArray(res.data) || Array.isArray(res.data.content))) {
       const list = Array.isArray(res.data) ? res.data : res.data.content;
-      return list.map((o: any) => ({
-        orderId: o.orderNumber || o.orderId,
-        certificateId: o.certificateNumber || o.certificateId || 'CERT-AUTHENTIC',
-        createdAt: o.placedAt || o.createdAt,
-        items: o.items || [],
-        subtotal: Number(o.subtotalAmount ?? o.subtotal ?? 0),
-        discount: Number(o.discountAmount ?? o.discount ?? 0),
-        shippingFee: Number(o.shippingFee ?? 0),
-        total: Number(o.totalAmount ?? o.total ?? 0),
-        isGiftWrapped: Boolean(o.isGiftWrapped),
-        giftMessage: o.giftMessage,
-        address: o.address || {},
-        deliveryTier: o.deliveryTier || 'insured_express',
-        paymentMethod: o.paymentMethod || 'SECURE_ESCROW',
-        status: (o.status || 'CONFIRMED').toLowerCase() as any
-      }));
+      return list.map((o: any) => normalizeOrderRecord(o));
     }
   } catch {
     return [];
@@ -278,23 +363,7 @@ export async function getOrderById(orderId: string): Promise<OrderRecord | null>
   try {
     const res = await apiClient.get<any>(`/orders/${encodeURIComponent(orderId)}`).catch(() => null);
     if (res && res.data) {
-      const o = res.data;
-      return {
-        orderId: o.orderNumber || o.orderId,
-        certificateId: o.certificateNumber || o.certificateId || 'CERT-AUTHENTIC',
-        createdAt: o.placedAt || o.createdAt,
-        items: o.items || [],
-        subtotal: Number(o.subtotalAmount ?? o.subtotal ?? 0),
-        discount: Number(o.discountAmount ?? o.discount ?? 0),
-        shippingFee: Number(o.shippingFee ?? 0),
-        total: Number(o.totalAmount ?? o.total ?? 0),
-        isGiftWrapped: Boolean(o.isGiftWrapped),
-        giftMessage: o.giftMessage,
-        address: o.address || {},
-        deliveryTier: o.deliveryTier || 'insured_express',
-        paymentMethod: o.paymentMethod || 'SECURE_ESCROW',
-        status: (o.status || 'CONFIRMED').toLowerCase() as any
-      };
+      return normalizeOrderRecord(res.data);
     }
   } catch {
     return null;
@@ -307,7 +376,7 @@ export async function getLatestOrder(): Promise<OrderRecord | null> {
   try {
     const latest = localStorage.getItem('wristo_latest_order');
     if (!latest) return null;
-    return JSON.parse(latest);
+    return normalizeOrderRecord(JSON.parse(latest));
   } catch {
     return null;
   }
