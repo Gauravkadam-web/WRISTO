@@ -4,7 +4,7 @@ import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { RotateCcw, ShieldAlert } from 'lucide-react';
 
-export default function AdminError({
+export default function AdminJournalError({
   error,
   reset,
 }: {
@@ -12,26 +12,28 @@ export default function AdminError({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error('Administrative Console Notice:', error);
+    console.error('Editorial CMS Access Variance:', error);
   }, [error]);
 
   return (
     <div className="admin-error-canvas">
       <div className="admin-error-card">
-        {/* Shield Icon in themed pill container */}
+        {/* Shield Icon inside Themed Amber Pill */}
         <div className="admin-error-icon-pill" aria-hidden="true">
           <ShieldAlert size={24} strokeWidth={2} />
         </div>
 
-        {/* Headline & Body Copy */}
+        {/* Editorial Access Restricted Headline */}
         <h1 className="admin-error-title">
-          CMS Controls Failed to Load
+          Editorial Access Restricted
         </h1>
+
+        {/* Telemetry Message */}
         <p className="admin-error-body">
           Unable to initialize administrative controls. Your session token may have expired or requires elevated credentials.
         </p>
 
-        {/* Standardized Action Buttons */}
+        {/* Standardized Buttons Row */}
         <div className="admin-error-actions">
           <button
             type="button"

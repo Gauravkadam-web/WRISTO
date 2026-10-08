@@ -133,152 +133,163 @@ export default function AdminDashboardOverviewPage() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
-      {/* Top Welcome Lockup */}
-      <div style={{
+      {/* Top Welcome Lockup & Action Hierarchy */}
+      <header style={{
         display: 'flex',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         justifyContent: 'space-between',
         flexWrap: 'wrap',
-        gap: '16px'
+        gap: '16px',
+        paddingBottom: '4px'
       }}>
         <div>
           <h1 style={{
             fontFamily: 'var(--font-serif)',
             fontSize: '28px',
-            fontWeight: 500,
+            fontWeight: 600,
             color: 'var(--brand-ivory, #F7F3EC)',
+            letterSpacing: '-0.01em',
             marginBottom: '4px'
           }}>
             Executive Overview
           </h1>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-            <p style={{ fontSize: '13px', color: 'var(--color-text-muted, #8A8A8A)', margin: 0 }}>
-              Real-time telemetry across WRISTO luxury marketplace, editorial CMS, and horological ledger.
-            </p>
-            <span className="admin-live-pulse-badge">
-              <span className="admin-live-dot" />
-              <span>LIVE TELEMETRY &bull; SPRING STOMP</span>
-            </span>
-          </div>
+          <p style={{ fontSize: '13px', color: 'var(--color-text-muted, #8A8A8A)', margin: 0 }}>
+            Real-time telemetry across WRISTO luxury marketplace, editorial CMS, and horological ledger.
+          </p>
         </div>
-        <div style={{ display: 'flex', gap: '10px' }}>
+
+        {/* Primary Header Action Controls */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <Link href="/admin/journal" className="admin-btn-primary">
-            <BookOpen size={14} strokeWidth={1.5} />
-            <span>New Essay</span>
+            <BookOpen size={14} strokeWidth={1.8} />
+            <span>+ New Essay</span>
           </Link>
           <Link href="/admin/coupons" className="admin-btn-secondary">
-            <Tag size={14} strokeWidth={1.5} />
-            <span>New Promotion</span>
+            <Tag size={14} strokeWidth={1.8} />
+            <span>+ New Promotion</span>
           </Link>
         </div>
-      </div>
+      </header>
 
-      {/* 4 Primary KPI Cards with Dynamic Roll-Up */}
-      <div className="admin-stats-grid">
-        <div className="admin-stat-card">
-          <div className="admin-stat-header">
-            <span className="admin-stat-label">Gross Marketplace Volume</span>
-            <div className="admin-stat-icon">
-              <IndianRupee size={18} strokeWidth={1.5} />
+      {/* 1. Responsive 4-Column KPI Metrics Grid */}
+      <section aria-label="Executive Key Performance Indicators">
+        <div className="admin-stats-grid">
+          {/* Card 1: GMV */}
+          <div className="admin-stat-card">
+            <div className="admin-stat-header">
+              <span className="admin-stat-label">Gross Marketplace Volume</span>
+              <div className="admin-stat-icon">
+                <IndianRupee size={16} strokeWidth={1.8} />
+              </div>
+            </div>
+            <div className="admin-stat-value tabular-nums">
+              <span className="admin-stat-currency">₹</span>
+              <span>
+                {(displayStats.revenue || stats?.totalRevenue || 48250000).toLocaleString('en-IN')}
+              </span>
+            </div>
+            <div className="admin-stat-footer">
+              <span className="admin-stat-pill positive">
+                <TrendingUp size={12} strokeWidth={2.2} />
+                <span>+18.4%</span>
+              </span>
+              <span>vs previous quarter</span>
             </div>
           </div>
-          <div className="admin-stat-value tabular-nums">
-            {formatCurrency(displayStats.revenue || stats?.totalRevenue || 4328500)}
-          </div>
-          <div className="admin-stat-footer">
-            <span className="admin-stat-trend positive">
-              <TrendingUp size={13} strokeWidth={2} />
-              +18.4%
-            </span>
-            <span>vs previous quarter</span>
-          </div>
-        </div>
 
-        <div className="admin-stat-card">
-          <div className="admin-stat-header">
-            <span className="admin-stat-label">Acquisition Orders</span>
-            <div className="admin-stat-icon">
-              <ShoppingBag size={18} strokeWidth={1.5} />
+          {/* Card 2: Acquisition Orders */}
+          <div className="admin-stat-card">
+            <div className="admin-stat-header">
+              <span className="admin-stat-label">Acquisition Orders</span>
+              <div className="admin-stat-icon">
+                <ShoppingBag size={16} strokeWidth={1.8} />
+              </div>
+            </div>
+            <div className="admin-stat-value tabular-nums">
+              <span>{displayStats.orders || stats?.totalOrders || 84}</span>
+            </div>
+            <div className="admin-stat-footer">
+              <span className="admin-stat-pill warning">
+                <TrendingUp size={12} strokeWidth={2.2} />
+                <span>↗ {stats?.pendingOrders || 3} pending</span>
+              </span>
+              <span>fulfillment</span>
             </div>
           </div>
-          <div className="admin-stat-value tabular-nums">
-            {displayStats.orders || stats?.totalOrders || 84}
-          </div>
-          <div className="admin-stat-footer">
-            <span className="admin-stat-trend positive">
-              <TrendingUp size={13} strokeWidth={2} />
-              {stats?.pendingOrders || 3} pending
-            </span>
-            <span>fulfillment</span>
-          </div>
-        </div>
 
-        <div className="admin-stat-card">
-          <div className="admin-stat-header">
-            <span className="admin-stat-label">Active Timepiece Inventory</span>
-            <div className="admin-stat-icon">
-              <Watch size={18} strokeWidth={1.5} />
+          {/* Card 3: Active Timepiece Inventory */}
+          <div className="admin-stat-card">
+            <div className="admin-stat-header">
+              <span className="admin-stat-label">Active Timepiece Inventory</span>
+              <div className="admin-stat-icon">
+                <Watch size={16} strokeWidth={1.8} />
+              </div>
+            </div>
+            <div className="admin-stat-value tabular-nums">
+              <span>{displayStats.listings || stats?.activeListings || 40}</span>
+            </div>
+            <div className="admin-stat-footer">
+              <span className="admin-stat-pill neutral">
+                <ShieldCheck size={12} strokeWidth={2.2} />
+                <span>⊘ 100%</span>
+              </span>
+              <span>authenticated stock</span>
             </div>
           </div>
-          <div className="admin-stat-value tabular-nums">
-            {displayStats.listings || stats?.activeListings || 40}
-          </div>
-          <div className="admin-stat-footer">
-            <span className="admin-stat-trend positive">
-              <ShieldCheck size={13} strokeWidth={2} />
-              100%
-            </span>
-            <span>authenticated stock</span>
-          </div>
-        </div>
 
-        <div className="admin-stat-card">
-          <div className="admin-stat-header">
-            <span className="admin-stat-label">Editorial Essays Published</span>
-            <div className="admin-stat-icon">
-              <BookOpen size={18} strokeWidth={1.5} />
+          {/* Card 4: Editorial Essays */}
+          <div className="admin-stat-card">
+            <div className="admin-stat-header">
+              <span className="admin-stat-label">Editorial Essays Published</span>
+              <div className="admin-stat-icon">
+                <BookOpen size={16} strokeWidth={1.8} />
+              </div>
+            </div>
+            <div className="admin-stat-value tabular-nums">
+              <span>{displayStats.articles || stats?.publishedArticles || 6}</span>
+            </div>
+            <div className="admin-stat-footer">
+              <span className="admin-stat-pill positive">
+                <ArrowUpRight size={12} strokeWidth={2.2} />
+                <span>↗ {stats?.draftArticles || 1} draft</span>
+              </span>
+              <span>in review</span>
             </div>
           </div>
-          <div className="admin-stat-value tabular-nums">
-            {displayStats.articles || stats?.publishedArticles || 6}
-          </div>
-          <div className="admin-stat-footer">
-            <span className="admin-stat-trend positive">
-              <ArrowUpRight size={13} strokeWidth={2} />
-              {stats?.draftArticles || 1} draft
-            </span>
-            <span>in review</span>
-          </div>
         </div>
-      </div>
+      </section>
 
-      {/* Quick Access Matrix */}
-      <div>
+      {/* 2. Governance Command Modules */}
+      <section aria-label="Governance Command Modules">
         <h2 style={{
-          fontSize: '13px',
-          fontWeight: 600,
-          letterSpacing: '0.08em',
+          fontSize: '11.5px',
+          fontWeight: 700,
+          letterSpacing: '0.12em',
           textTransform: 'uppercase',
           color: 'var(--brand-bronze, #B08D6B)',
-          marginBottom: '14px'
+          marginBottom: '14px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px'
         }}>
-          Governance Command Modules
+          <span>Governance Command Modules</span>
         </h2>
+
         <div className="admin-quick-actions-grid">
           <Link href="/admin/journal" className="admin-quick-action-card">
             <div className="admin-quick-action-icon">
               <BookOpen size={18} strokeWidth={1.5} />
             </div>
             <div className="admin-quick-action-title">Editorial Journal CMS</div>
-            <div className="admin-quick-action-desc">Manage horological essays, lead stories, and collectors guides.</div>
+            <div className="admin-quick-action-desc">Manage Haute Horlogerie essays, lead stories, and collector guides.</div>
           </Link>
 
           <Link href="/admin/coupons" className="admin-quick-action-card">
             <div className="admin-quick-action-icon">
               <Tag size={18} strokeWidth={1.5} />
             </div>
-            <div className="admin-quick-action-title">Promotions & Privilege</div>
-            <div className="admin-quick-action-desc">Issue VIP concession codes, min-order thresholds, and validity periods.</div>
+            <div className="admin-quick-action-title">Promotions &amp; Privilege</div>
+            <div className="admin-quick-action-desc">Issue VIP concession codes, minimum thresholds, and validity tiers.</div>
           </Link>
 
           <Link href="/admin/orders" className="admin-quick-action-card">
@@ -286,7 +297,7 @@ export default function AdminDashboardOverviewPage() {
               <ShoppingBag size={18} strokeWidth={1.5} />
             </div>
             <div className="admin-quick-action-title">Order Fulfillment</div>
-            <div className="admin-quick-action-desc">Dispatch white-glove couriers, update statuses, and verify payments.</div>
+            <div className="admin-quick-action-desc">Dispatch white-glove couriers, update transit tracking, and verify escrows.</div>
           </Link>
 
           <Link href="/admin/sellers" className="admin-quick-action-card">
@@ -294,171 +305,193 @@ export default function AdminDashboardOverviewPage() {
               <Users size={18} strokeWidth={1.5} />
             </div>
             <div className="admin-quick-action-title">Seller Authorizations</div>
-            <div className="admin-quick-action-desc">Review boutique KYC dossiers, authorization tiers, and ratings.</div>
+            <div className="admin-quick-action-desc">Review boutique KYC dossiers, authorization tiers, and reliability scores.</div>
           </Link>
         </div>
-      </div>
+      </section>
 
-      {/* 2 Column Layout: Recent Orders & Editorial Pipeline */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '1.4fr 1fr',
-        gap: '24px'
-      }}>
-        {/* Recent Orders Card */}
-        <div className="admin-card">
-          <div style={{
-            padding: '18px 20px',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between'
-          }}>
-            <div>
-              <h3 style={{
-                fontFamily: 'var(--font-serif)',
-                fontSize: '17px',
-                fontWeight: 600,
-                color: 'var(--brand-ivory, #F7F3EC)'
-              }}>
-                Recent Acquisitions
-              </h3>
-              <p style={{ fontSize: '11.5px', color: 'var(--color-text-muted, #8A8A8A)' }}>
-                Latest luxury client transactions & concierge checkouts
-              </p>
-            </div>
-            <Link href="/admin/orders" style={{
-              fontSize: '12px',
-              color: 'var(--color-accent-champagne, #E8C89A)',
-              display: 'inline-flex',
+      {/* 3. Structured 2-Column Split: Data Table (2/3) & Feed (1/3) */}
+      <section aria-label="Acquisitions and Editorial Pipeline">
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+          gap: '24px'
+        }}>
+          {/* Recent Acquisitions Data Table (2 cols equivalent on desktop) */}
+          <div className="admin-card" style={{ gridColumn: 'span 2' }}>
+            <div style={{
+              padding: '18px 22px',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+              display: 'flex',
               alignItems: 'center',
-              gap: '4px',
-              textDecoration: 'none'
+              justifyContent: 'space-between'
             }}>
-              <span>View All</span>
-              <ChevronRight size={13} strokeWidth={1.5} />
-            </Link>
-          </div>
+              <div>
+                <h3 style={{
+                  fontFamily: 'var(--font-serif)',
+                  fontSize: '18px',
+                  fontWeight: 600,
+                  color: 'var(--brand-ivory, #F7F3EC)',
+                  marginBottom: '2px'
+                }}>
+                  Recent Acquisitions
+                </h3>
+                <p style={{ fontSize: '12px', color: 'var(--color-text-muted, #8A8A8A)', margin: 0 }}>
+                  Latest client transactions, concierge checkouts &amp; escrow settlements
+                </p>
+              </div>
 
-          <div style={{ overflowX: 'auto' }}>
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>Order Ref</th>
-                  <th>Client</th>
-                  <th>Amount</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recentOrders.map((order) => (
-                  <tr key={order.id}>
-                    <td>
-                      <span style={{ fontFamily: 'monospace', fontWeight: 600, color: 'var(--brand-ivory)' }}>
-                        {order.orderNumber}
-                      </span>
-                    </td>
-                    <td>
-                      <div>
-                        <div style={{ fontWeight: 500 }}>{order.customerName}</div>
-                        <div style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>{order.customerEmail}</div>
-                      </div>
-                    </td>
-                    <td>
-                      <span className="tabular-nums" style={{ fontWeight: 600, color: 'var(--color-accent-champagne)' }}>
-                        {formatCurrency(order.totalAmount)}
-                      </span>
-                    </td>
-                    <td>
-                      <span className={`status-pill ${getStatusClass(order.orderStatus)}`}>
-                        {order.orderStatus}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Editorial Pipeline Card */}
-        <div className="admin-card">
-          <div style={{
-            padding: '18px 20px',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between'
-          }}>
-            <div>
-              <h3 style={{
-                fontFamily: 'var(--font-serif)',
-                fontSize: '17px',
-                fontWeight: 600,
-                color: 'var(--brand-ivory, #F7F3EC)'
-              }}>
-                Journal Pipeline
-              </h3>
-              <p style={{ fontSize: '11.5px', color: 'var(--color-text-muted, #8A8A8A)' }}>
-                Editorial essays & horological critique
-              </p>
-            </div>
-            <Link href="/admin/journal" style={{
-              fontSize: '12px',
-              color: 'var(--color-accent-champagne, #E8C89A)',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '4px',
-              textDecoration: 'none'
-            }}>
-              <span>Manage</span>
-              <ChevronRight size={13} strokeWidth={1.5} />
-            </Link>
-          </div>
-
-          <div style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            {recentArticles.map((art) => (
-              <div key={art.id} style={{
-                display: 'flex',
+              <Link href="/admin/orders" style={{
+                fontSize: '12px',
+                color: 'var(--color-accent-champagne, #E8C89A)',
+                display: 'inline-flex',
                 alignItems: 'center',
-                justifyContent: 'space-between',
-                paddingBottom: '12px',
-                borderBottom: '1px solid rgba(255, 255, 255, 0.04)'
+                gap: '4px',
+                textDecoration: 'none',
+                fontWeight: 500
               }}>
-                <div style={{ maxWidth: '240px' }}>
-                  <div style={{
-                    fontSize: '13px',
-                    fontWeight: 500,
-                    color: 'var(--brand-ivory)',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis'
-                  }}>
-                    {art.title}
-                  </div>
-                  <div style={{
-                    fontSize: '11px',
-                    color: 'var(--brand-bronze)',
+                <span>View All Orders</span>
+                <ChevronRight size={13} strokeWidth={2} />
+              </Link>
+            </div>
+
+            <div style={{ overflowX: 'auto' }}>
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>Order Ref</th>
+                    <th>Client</th>
+                    <th>Settlement</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {recentOrders.length === 0 ? (
+                    <tr>
+                      <td colSpan={4} style={{ textAlign: 'center', padding: '36px', color: 'var(--color-text-muted)' }}>
+                        No recent acquisitions found in current settlement period.
+                      </td>
+                    </tr>
+                  ) : (
+                    recentOrders.map((order) => (
+                      <tr key={order.id}>
+                        <td>
+                          <span style={{ fontFamily: 'monospace', fontWeight: 600, color: 'var(--brand-ivory)', fontSize: '12.5px' }}>
+                            {order.orderNumber}
+                          </span>
+                        </td>
+                        <td>
+                          <div>
+                            <div style={{ fontWeight: 500, color: '#FFFFFF' }}>{order.customerName}</div>
+                            <div style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>{order.customerEmail}</div>
+                          </div>
+                        </td>
+                        <td>
+                          <span className="tabular-nums" style={{ fontWeight: 600, color: 'var(--color-accent-champagne)' }}>
+                            {formatCurrency(order.totalAmount)}
+                          </span>
+                        </td>
+                        <td>
+                          <span className={`status-pill ${getStatusClass(order.orderStatus)}`}>
+                            {order.orderStatus}
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Journal Pipeline Feed (1 col equivalent on desktop) */}
+          <div className="admin-card">
+            <div style={{
+              padding: '18px 20px',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}>
+              <div>
+                <h3 style={{
+                  fontFamily: 'var(--font-serif)',
+                  fontSize: '18px',
+                  fontWeight: 600,
+                  color: 'var(--brand-ivory, #F7F3EC)',
+                  marginBottom: '2px'
+                }}>
+                  Journal Pipeline
+                </h3>
+                <p style={{ fontSize: '12px', color: 'var(--color-text-muted, #8A8A8A)', margin: 0 }}>
+                  Editorial essays &amp; horological critique
+                </p>
+              </div>
+
+              <Link href="/admin/journal" style={{
+                fontSize: '12px',
+                color: 'var(--color-accent-champagne, #E8C89A)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px',
+                textDecoration: 'none',
+                fontWeight: 500
+              }}>
+                <span>Manage</span>
+                <ChevronRight size={13} strokeWidth={2} />
+              </Link>
+            </div>
+
+            <div style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              {recentArticles.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '24px 0', color: 'var(--color-text-muted)', fontSize: '13px' }}>
+                  No editorial drafts currently in pipeline.
+                </div>
+              ) : (
+                recentArticles.map((art) => (
+                  <div key={art.id} style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '6px',
-                    marginTop: '2px'
+                    justifyContent: 'space-between',
+                    paddingBottom: '12px',
+                    borderBottom: '1px solid rgba(255, 255, 255, 0.04)'
                   }}>
-                    <span>{art.category}</span>
-                    <span>•</span>
-                    <span>{art.readTime}</span>
+                    <div style={{ maxWidth: '210px' }}>
+                      <div style={{
+                        fontSize: '13px',
+                        fontWeight: 500,
+                        color: 'var(--brand-ivory)',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis'
+                      }}>
+                        {art.title}
+                      </div>
+                      <div style={{
+                        fontSize: '11px',
+                        color: 'var(--brand-bronze)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        marginTop: '2px'
+                      }}>
+                        <span>{art.category}</span>
+                        <span>&bull;</span>
+                        <span>{art.readTime}</span>
+                      </div>
+                    </div>
+                    <div>
+                      <span className={`status-pill ${art.published ? 'success' : 'warning'}`}>
+                        {art.published ? 'Published' : 'Draft'}
+                      </span>
+                    </div>
                   </div>
-                </div>
-                <div>
-                  <span className={`status-pill ${art.published ? 'success' : 'warning'}`}>
-                    {art.published ? 'Published' : 'Draft'}
-                  </span>
-                </div>
-              </div>
-            ))}
+                ))
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

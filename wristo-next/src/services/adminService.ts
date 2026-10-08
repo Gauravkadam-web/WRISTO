@@ -85,6 +85,10 @@ class AdminService {
     return null;
   }
 
+  isAuthenticated(): boolean {
+    return this.getCurrentAdmin() !== null;
+  }
+
   logout(): void {
     this.currentAdmin = null;
     if (typeof window !== 'undefined') {
