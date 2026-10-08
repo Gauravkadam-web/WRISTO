@@ -1,5 +1,7 @@
 import { Product, CategoryItem, Brand } from '@/types/product';
 import { ProductQueryFilters, SortOption, CatalogQueryResult, CatalogFacetCounts } from '@/types/filter';
+import { PRODUCTS } from '@/data/products';
+import { CATEGORIES } from '@/data/categories';
 import { apiClient } from './apiClient';
 
 export interface SearchSuggestionsResult {
@@ -98,16 +100,34 @@ export async function getCatalogProducts(
 }
 
 export async function getProductById(id: string): Promise<Product | undefined> {
+  if (!id) return undefined;
+  const cleanId = id.trim();
+
+  // 1. Query backend database with exact ID and uppercase ID
   try {
-    const normalized = id.toLowerCase().trim();
-    const res = await apiClient.get<Product>(`/watches/${encodeURIComponent(normalized)}`).catch(() => null);
-    if (res && res.data && res.data.id) {
+    let res = await apiClient.get<Product>(`/watches/${encodeURIComponent(cleanId)}`).catch(() => null);
+    if (res?.data && res.data.id) {
       return res.data;
     }
+
+    if (cleanId.toUpperCase() !== cleanId) {
+      res = await apiClient.get<Product>(`/watches/${encodeURIComponent(cleanId.toUpperCase())}`).catch(() => null);
+      if (res?.data && res.data.id) {
+        return res.data;
+      }
+    }
   } catch {
-    return undefined;
+    // Continue to fallback
   }
-  return undefined;
+
+  // 2. Resilient fallback: locate from master product dataset
+  const localMatch = PRODUCTS.find(
+    p => p.id.toLowerCase() === cleanId.toLowerCase() ||
+         p.model.toLowerCase() === cleanId.toLowerCase() ||
+         p.num === cleanId
+  );
+
+  return localMatch;
 }
 
 export async function getProductsByIds(ids: string[]): Promise<Product[]> {
@@ -128,24 +148,26 @@ export async function getAllProductIds(): Promise<string[]> {
     const res = await apiClient.get<any>('/watches?page=1&limit=100').catch(() => null);
     if (res && res.data) {
       const products = Array.isArray(res.data.products) ? res.data.products : (Array.isArray(res.data) ? res.data : []);
-      return products.map((p: Product) => p.id);
+      if (products.length > 0) {
+        return products.map((p: Product) => p.id);
+      }
     }
   } catch {
-    return [];
+    // Continue to fallback
   }
-  return [];
+  return PRODUCTS.map(p => p.id);
 }
 
 export async function getCategories(): Promise<CategoryItem[]> {
   try {
     const res = await apiClient.get<CategoryItem[]>('/categories').catch(() => null);
-    if (res && res.data && Array.isArray(res.data)) {
+    if (res && res.data && Array.isArray(res.data) && res.data.length > 0) {
       return res.data;
     }
   } catch {
-    return [];
+    // Continue to fallback
   }
-  return [];
+  return CATEGORIES;
 }
 
 export async function getCategoryBySlug(slug: string): Promise<CategoryItem | undefined> {
@@ -158,28 +180,35 @@ export async function getFeaturedProducts(limit: number = 8): Promise<Product[]>
     const res = await apiClient.get<any>(`/watches?page=1&limit=${limit}&sortBy=popularity`).catch(() => null);
     if (res && res.data) {
       const products = Array.isArray(res.data.products) ? res.data.products : (Array.isArray(res.data) ? res.data : []);
-      return products.slice(0, limit);
+      if (products.length > 0) {
+        return products.slice(0, limit);
+      }
     }
   } catch {
-    return [];
+    // Continue to fallback
   }
-  return [];
+  return PRODUCTS.slice(0, limit);
 }
 
 export async function getSimilarProducts(productId: string, limit: number = 4): Promise<Product[]> {
-  try {
-    const current = await getProductById(productId);
-    if (!current) return [];
+  const current = await getProductById(productId);
+  if (!current) return PRODUCTS.slice(0, limit);
 
+  try {
     const res = await apiClient.get<any>(`/watches?category=${encodeURIComponent(current.gender || 'men')}&limit=${limit + 1}`).catch(() => null);
     if (res && res.data) {
       const products: Product[] = Array.isArray(res.data.products) ? res.data.products : (Array.isArray(res.data) ? res.data : []);
-      return products.filter(p => p.id !== productId).slice(0, limit);
+      const filtered = products.filter(p => p.id !== productId).slice(0, limit);
+      if (filtered.length > 0) return filtered;
     }
   } catch {
-    return [];
+    // Continue to fallback
   }
-  return [];
+
+  // Fallback similar calculation from PRODUCTS
+  return PRODUCTS
+    .filter(p => p.id !== productId && (p.brand === current.brand || p.movement === current.movement || p.gender === current.gender))
+    .slice(0, limit);
 }
 
 export async function getSearchSuggestions(query: string): Promise<SearchSuggestionsResult> {

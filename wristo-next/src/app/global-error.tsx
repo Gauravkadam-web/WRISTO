@@ -16,7 +16,7 @@ export default function GlobalError({
   return (
     <html lang="en">
       <head>
-        <title>System Variance | WRISTO Haute Horlogerie</title>
+        <title>Something Went Wrong | WRISTO Luxury Watches</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
       <body
@@ -75,7 +75,7 @@ export default function GlobalError({
               fontWeight: 600,
             }}
           >
-            SYSTEM VARIANCE
+            APPLICATION ERROR
           </span>
 
           <h1
@@ -87,7 +87,7 @@ export default function GlobalError({
               color: '#FFFFFF',
             }}
           >
-            Escapement Disengaged
+            Unable to Load Page
           </h1>
 
           <p
@@ -98,7 +98,7 @@ export default function GlobalError({
               margin: '0 0 32px 0',
             }}
           >
-            A high-level variance occurred in the horological rendering engine. The core subsystem has paused to maintain registry integrity.
+            We encountered an unexpected error while loading the application. Please try reloading or return to the home page.
           </p>
 
           <div
@@ -124,7 +124,7 @@ export default function GlobalError({
                 transition: 'all 0.2s ease',
               }}
             >
-              Re-engage Movement
+              Reload Page
             </button>
 
             <button
@@ -146,7 +146,7 @@ export default function GlobalError({
                 transition: 'all 0.2s ease',
               }}
             >
-              Return to Salon Home
+              Return to Home
             </button>
           </div>
         </div>

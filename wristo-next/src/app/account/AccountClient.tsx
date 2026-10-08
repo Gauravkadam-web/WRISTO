@@ -129,9 +129,9 @@ export default function AccountClient({ initialTab = 'overview', initialCert }: 
     return (
       <div className="account-loading-skeleton">
         <div className="container" style={{ padding: '80px 24px', textAlign: 'center' }}>
-          <div className="section-label">HOROLOGICAL VAULT</div>
+          <div className="section-label">ACCOUNT</div>
           <p style={{ color: 'var(--color-text-secondary)', marginTop: '8px' }}>
-            Verifying 256-bit client identity...
+            Loading your account...
           </p>
         </div>
       </div>

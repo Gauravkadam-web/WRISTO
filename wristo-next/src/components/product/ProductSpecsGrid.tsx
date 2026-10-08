@@ -18,7 +18,7 @@ export default function ProductSpecsGrid({ product }: ProductSpecsGridProps) {
   return (
     <div className="pdp-specs-section">
       <div className="pdp-section-eyebrow">
-        <span>TECHNICAL HOROLOGY MATRIX</span>
+        <span>TECHNICAL SPECIFICATIONS</span>
       </div>
 
       <div className="pdp-specs-grid">
@@ -33,10 +33,10 @@ export default function ProductSpecsGrid({ product }: ProductSpecsGridProps) {
 
       <div className="pdp-horology-notes">
         <div className="pdp-note-item">
-          <strong>Reference Identifier:</strong> {product.id}
+          <strong>Model Reference:</strong> {product.id}
         </div>
         <div className="pdp-note-item">
-          <strong>Horological Category:</strong> {product.gender} &bull; {product.style} Style
+          <strong>Category:</strong> {product.gender} &bull; {product.style} Style
         </div>
       </div>
     </div>

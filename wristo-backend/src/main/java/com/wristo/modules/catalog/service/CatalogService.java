@@ -59,7 +59,10 @@ public class CatalogService {
     }
 
     public WatchDetailResponse getWatchById(String id) {
-        Watch watch = watchRepository.findByIdAndIsActiveTrue(id)
+        String cleanId = id != null ? id.trim() : "";
+        Watch watch = watchRepository.findByIdAndIsActiveTrue(cleanId)
+                .or(() -> watchRepository.findByIdAndIsActiveTrue(cleanId.toUpperCase()))
+                .or(() -> watchRepository.findByIdAndIsActiveTrue(cleanId.toLowerCase()))
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.WATCH_NOT_FOUND, "Timepiece not found in catalog: " + id));
         return WatchDetailResponse.from(watch);
     }

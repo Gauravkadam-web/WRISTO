@@ -81,7 +81,7 @@ export default function AccountHeader({ profile, currentUser, onLogout }: Accoun
             }}
           >
             <Shield size={14} />
-            <span>Launch Executive Vault</span>
+            <span>Admin Dashboard</span>
             <ExternalLink size={12} />
           </Link>
         )}
@@ -91,7 +91,7 @@ export default function AccountHeader({ profile, currentUser, onLogout }: Accoun
             type="button"
             onClick={onLogout}
             className="btn btn-ghost-luxury"
-            title="Sign out of private horological vault"
+            title="Sign out of account"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -106,7 +106,7 @@ export default function AccountHeader({ profile, currentUser, onLogout }: Accoun
             }}
           >
             <LogOut size={14} />
-            <span>Exit Vault</span>
+            <span>Log Out</span>
           </button>
         )}
 
@@ -116,10 +116,10 @@ export default function AccountHeader({ profile, currentUser, onLogout }: Accoun
           </span>
           <div>
             <div style={{ fontWeight: 600, color: 'var(--color-text-primary)', fontSize: '12px' }}>
-              Vault Protected
+              Verified Account
             </div>
             <div style={{ color: 'var(--color-text-secondary)', fontSize: '11px' }}>
-              256-Bit Cryptographic
+              Secure Session
             </div>
           </div>
         </div>

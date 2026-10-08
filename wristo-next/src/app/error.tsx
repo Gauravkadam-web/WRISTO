@@ -22,9 +22,9 @@ export default function ErrorBoundary({
         <span className="error-boundary-icon" aria-hidden="true" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
           <Cog size={36} strokeWidth={1.5} color="var(--brand-bronze)" />
         </span>
-        <h1 className="error-boundary-title">Mechanism Disengaged</h1>
+        <h1 className="error-boundary-title">Something Went Wrong</h1>
         <p className="error-boundary-desc">
-          An unforeseen variance occurred in our digital timepiece rendering engine. The horological movement has been temporarily halted to preserve system integrity.
+          We encountered an issue loading this section. Please try reloading the page or return to the home page.
         </p>
         <div className="error-boundary-actions">
           <button
@@ -33,11 +33,11 @@ export default function ErrorBoundary({
             className="not-found-btn-primary"
             style={{ cursor: 'pointer', border: 'none', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
           >
-            <span>Re-engage Escapement Mechanism</span>
+            <span>Try Again</span>
             <RotateCcw size={14} strokeWidth={2} />
           </button>
           <Link href="/" className="not-found-btn-secondary">
-            <span>Return to Salon Home</span>
+            <span>Return to Home</span>
           </Link>
         </div>
       </div>

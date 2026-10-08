@@ -119,6 +119,11 @@ export async function apiRequest<T>(
       } catch {
         // Ignore parse failure
       }
+
+      if (response.status === 401 && (!errorMessage || errorMessage.startsWith('HTTP Error 401') || errorMessage.includes('Full authentication is required'))) {
+        errorMessage = 'Incorrect email or password. Please try again.';
+      }
+
       throw new Error(errorMessage);
     }
 

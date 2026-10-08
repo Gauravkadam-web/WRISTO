@@ -63,7 +63,7 @@ export default function Footer() {
             <div className="footer-heading">Customer Care</div>
             <div className="footer-links-list">
               <Link href="/account?tab=orders">Track Your Order</Link>
-              <Link href="/account?tab=provenance">Provenance Ledger</Link>
+              <Link href="/account?tab=orders">Certificate of Authenticity</Link>
               <Link href="/compare">Compare Timepieces</Link>
               <Link href="/wishlist">Saved Wishlist</Link>
               <a href="#shipping">Complimentary Insured Shipping</a>
