@@ -148,6 +148,45 @@ export async function verifyPayment(payload: VerifyPaymentPayload): Promise<bool
 /**
  * Launches the Razorpay checkout modal
  */
+/**
+ * Helper to determine if an API key is a sandbox/mock placeholder
+ */
+export function isMockRazorpayKey(key?: string): boolean {
+  if (!key || typeof key !== 'string') return true;
+  const clean = key.trim().toLowerCase();
+  return (
+    clean === '' ||
+    clean.includes('mock') ||
+    clean.includes('your_') ||
+    clean.includes('placeholder') ||
+    clean === 'rzp_test_mock_wristo' ||
+    clean === 'rzp_test_mock_key' ||
+    !clean.startsWith('rzp_')
+  );
+}
+
+/**
+ * Helper to verify if an orderId is an authentic Razorpay server order ID
+ */
+export function isRealRazorpayOrderId(orderId?: string): boolean {
+  if (!orderId || typeof orderId !== 'string') return false;
+  if (
+    orderId.startsWith('order_rzp_') ||
+    orderId.startsWith('order_sim_') ||
+    orderId.startsWith('order_mock_') ||
+    orderId.startsWith('pay_ord_') ||
+    orderId.includes('mock') ||
+    orderId.includes('sim')
+  ) {
+    return false;
+  }
+  // Authentic Razorpay Order IDs are formatted as "order_" followed by alphanumeric ID
+  return /^order_[A-Za-z0-9]{10,30}$/.test(orderId);
+}
+
+/**
+ * Launches the Razorpay checkout modal
+ */
 export async function openRazorpayCheckout({
   key,
   amount,
@@ -171,6 +210,21 @@ export async function openRazorpayCheckout({
   onDismiss?: () => void;
   onError?: (error: any) => void;
 }): Promise<void> {
+  const effectiveKey = key || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_mock_wristo';
+
+  // If using mock/unconfigured Razorpay key, simulate seamless luxury checkout
+  if (isMockRazorpayKey(effectiveKey)) {
+    console.info('Sandbox preview mode active. Simulating instant luxury order acquisition.');
+    setTimeout(() => {
+      onSuccess({
+        razorpay_payment_id: `pay_sim_${Date.now()}`,
+        razorpay_order_id: orderId || `order_sim_${Date.now()}`,
+        razorpay_signature: `sig_sim_${Date.now()}`
+      });
+    }, 500);
+    return;
+  }
+
   const isLoaded = await loadRazorpayScript();
 
   if (!isLoaded || !(window as any).Razorpay) {
@@ -184,8 +238,8 @@ export async function openRazorpayCheckout({
     return;
   }
 
-  const effectiveKey = key || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_mock_wristo';
   const amountInPaise = Math.round(amount * 100);
+  const validRazorpayOrderId = isRealRazorpayOrderId(orderId) ? orderId : undefined;
 
   const options: RazorpayCheckoutOptions = {
     key: effectiveKey,
@@ -194,7 +248,7 @@ export async function openRazorpayCheckout({
     name: 'WRISTO Luxury Timepieces',
     description: 'Haute Horlogerie Acquisition',
     image: '/assets/logo-emblem.png',
-    order_id: orderId && !orderId.startsWith('order_rzp_mock') && !orderId.startsWith('pay_ord_') ? orderId : undefined,
+    order_id: validRazorpayOrderId,
     handler: (response: RazorpaySuccessResponse) => {
       onSuccess(response);
     },
