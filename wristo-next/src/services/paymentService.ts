@@ -104,6 +104,8 @@ export async function createPaymentIntent(
   orderId?: string,
   gateway: 'RAZORPAY' | 'STRIPE' | 'COD' = 'RAZORPAY'
 ): Promise<PaymentIntentResponse> {
+  const clientEnvKey = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+
   try {
     const res = await apiClient.post<PaymentIntentResponse>('/payments/create-intent', {
       gateway,
@@ -113,6 +115,10 @@ export async function createPaymentIntent(
     });
 
     if (res && res.data) {
+      // If backend returned a mock key but client has a real key configured, prioritize client's real key
+      if (isMockRazorpayKey(res.data.keyId) && clientEnvKey && !isMockRazorpayKey(clientEnvKey)) {
+        res.data.keyId = clientEnvKey;
+      }
       return res.data;
     }
   } catch (err) {
@@ -120,7 +126,7 @@ export async function createPaymentIntent(
   }
 
   // Resilient fallback intent for local testing / offline sandbox
-  const defaultKeyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_mock_wristo';
+  const defaultKeyId = (clientEnvKey && !isMockRazorpayKey(clientEnvKey)) ? clientEnvKey : 'rzp_test_mock_wristo';
   return {
     gatewayOrderId: `order_rzp_${Date.now()}`,
     gateway,
@@ -210,7 +216,17 @@ export async function openRazorpayCheckout({
   onDismiss?: () => void;
   onError?: (error: any) => void;
 }): Promise<void> {
-  const effectiveKey = key || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_mock_wristo';
+  const clientEnvKey = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+
+  // Resolve best available key: prioritize real non-mock key over mock placeholder
+  let effectiveKey = '';
+  if (key && !isMockRazorpayKey(key)) {
+    effectiveKey = key;
+  } else if (clientEnvKey && !isMockRazorpayKey(clientEnvKey)) {
+    effectiveKey = clientEnvKey;
+  } else {
+    effectiveKey = key || clientEnvKey || 'rzp_test_mock_wristo';
+  }
 
   // If using mock/unconfigured Razorpay key, simulate seamless luxury checkout
   if (isMockRazorpayKey(effectiveKey)) {
