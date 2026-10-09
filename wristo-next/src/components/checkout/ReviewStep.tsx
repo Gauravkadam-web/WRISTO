@@ -32,8 +32,8 @@ export default function ReviewStep({
 }: ReviewStepProps) {
   const [agreedToTerms, setAgreedToTerms] = useState(true);
 
-  const selectedDeliveryObj = DELIVERY_OPTIONS.find(d => d.id === deliveryTier);
-  const selectedPaymentObj = PAYMENT_OPTIONS.find(p => p.id === paymentMethod);
+  const selectedDeliveryObj = DELIVERY_OPTIONS.find(d => d.id === deliveryTier) || DELIVERY_OPTIONS[0];
+  const selectedPaymentObj = PAYMENT_OPTIONS.find(p => p.id === paymentMethod) || PAYMENT_OPTIONS[0];
 
   return (
     <div className="checkout-step-card">

@@ -56,7 +56,7 @@ export default function CheckoutClient() {
     initialStep >= 3 ? 'white_glove' : 'insured_express'
   );
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethodType>(
-    initialStep >= 4 ? 'cod' : 'upi'
+    initialStep >= 4 ? 'cod' : 'razorpay'
   );
 
   const selectedDelivery = DELIVERY_OPTIONS.find(d => d.id === deliveryTier);

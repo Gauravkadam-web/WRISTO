@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { PaymentMethodType } from '@/types/order';
 import { PAYMENT_OPTIONS } from '@/services/orderService';
-import { Check, ShieldCheck, Sparkles } from 'lucide-react';
+import { ShieldCheck, Lock, CreditCard, Smartphone, Building2, Sparkles, CheckCircle2 } from 'lucide-react';
 
 interface PaymentStepProps {
   selectedPayment: PaymentMethodType;
@@ -20,15 +20,8 @@ export default function PaymentStep({
   onBack,
   totalAmount
 }: PaymentStepProps) {
-  const [upiId, setUpiId] = useState('');
-  const [cardDetails, setCardDetails] = useState({
-    number: '',
-    holder: '',
-    expiry: '',
-    cvv: ''
-  });
-  const [selectedBank, setSelectedBank] = useState('HDFC Bank');
-  const [emiTenure, setEmiTenure] = useState('3_months');
+  // Normalize selection: if it was upi/card/netbanking, map to razorpay
+  const activeMethod = selectedPayment === 'cod' ? 'cod' : 'razorpay';
 
   const monthlyEmi3 = Math.round(totalAmount / 3);
   const monthlyEmi6 = Math.round(totalAmount / 6);
@@ -38,228 +31,132 @@ export default function PaymentStep({
       <div className="checkout-card-header">
         <h2 className="checkout-card-title">03. Secure Horological Settlement</h2>
         <p className="checkout-card-subtitle">
-          Select your preferred payment channel. All transactions are protected by bank-grade 256-bit encryption.
+          Select your settlement gateway. All transactions are protected with bank-grade 256-bit encryption and horological escrow protection.
         </p>
       </div>
 
       <div className="checkout-options-list">
         {PAYMENT_OPTIONS.map(opt => {
-          const isSelected = selectedPayment === opt.id;
+          const isSelected = activeMethod === opt.id;
 
           return (
-            <div key={opt.id}>
+            <div key={opt.id} style={{ marginBottom: '16px' }}>
               <div
                 onClick={() => onSelect(opt.id)}
                 className={`checkout-option-card ${isSelected ? 'selected' : ''}`}
+                style={{
+                  cursor: 'pointer',
+                  transition: 'all 200ms ease',
+                  border: isSelected ? '1.5px solid var(--brand-bronze, #B08D6B)' : '1px solid var(--color-border-light, #E5E5E5)',
+                  backgroundColor: isSelected ? 'rgba(176, 141, 107, 0.04)' : '#FFFFFF'
+                }}
               >
                 <div className="checkout-radio-circle">
                   {isSelected && <div className="checkout-radio-dot" />}
                 </div>
 
-                <div className="checkout-option-content">
-                  <div className="checkout-option-head">
-                    <div className="checkout-option-title">
-                      <span>{opt.title}</span>
+                <div className="checkout-option-content" style={{ width: '100%' }}>
+                  <div className="checkout-option-head" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
+                    <div className="checkout-option-title" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <span style={{ fontWeight: 600, fontSize: '15px' }}>{opt.title}</span>
                       {opt.badge && (
-                        <span className="checkout-option-badge">{opt.badge}</span>
+                        <span className="checkout-option-badge" style={{ backgroundColor: 'var(--brand-bronze)', color: '#FFFFFF', fontSize: '10px', padding: '2px 8px', borderRadius: '999px', fontWeight: 700 }}>
+                          {opt.badge}
+                        </span>
                       )}
                     </div>
-                  </div>
-                  <p className="checkout-option-desc">{opt.subtitle}</p>
-                </div>
-              </div>
 
-              {/* Sub-panels when selected */}
-              {isSelected && opt.id === 'upi' && (
-                <div style={{
-                  padding: '16px 20px',
-                  backgroundColor: '#FAF8F5',
-                  border: '1px solid var(--color-border-light)',
-                  borderTop: 'none',
-                  borderRadius: '0 0 8px 8px',
-                  marginTop: '-4px',
-                  marginBottom: '10px'
-                }}>
-                  <label className="checkout-label" style={{ fontSize: '11px' }}>
-                    Enter Virtual Payment Address (UPI ID)
-                  </label>
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <input
-                      type="text"
-                      placeholder="e.g. collector@okhdfcbank"
-                      value={upiId}
-                      onChange={e => setUpiId(e.target.value)}
-                      className="checkout-input"
-                      style={{ fontSize: '13px' }}
-                    />
-                    <button
-                      type="button"
-                      className="btn btn-outline btn-sm"
-                      style={{ whiteSpace: 'nowrap' }}
-                      onClick={() => alert(`Simulated payment request initiated for ${upiId || 'collector@upi'}.`)}
-                    >
-                      Verify UPI
-                    </button>
-                  </div>
-                  <div style={{ display: 'flex', gap: '16px', marginTop: '10px', fontSize: '11px', color: 'var(--color-text-muted)' }}>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Check size={12} strokeWidth={2} style={{ color: 'var(--color-success)' }} /> Google Pay</span>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Check size={12} strokeWidth={2} style={{ color: 'var(--color-success)' }} /> PhonePe</span>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Check size={12} strokeWidth={2} style={{ color: 'var(--color-success)' }} /> Paytm</span>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><Check size={12} strokeWidth={2} style={{ color: 'var(--color-success)' }} /> Cred UPI</span>
-                  </div>
-                </div>
-              )}
-
-              {isSelected && opt.id === 'card' && (
-                <div style={{
-                  padding: '16px 20px',
-                  backgroundColor: '#FAF8F5',
-                  border: '1px solid var(--color-border-light)',
-                  borderTop: 'none',
-                  borderRadius: '0 0 8px 8px',
-                  marginTop: '-4px',
-                  marginBottom: '10px'
-                }}>
-                  <div className="checkout-form-grid">
-                    <div className="checkout-field-full">
-                      <label className="checkout-label" style={{ fontSize: '11px' }}>Card Number</label>
-                      <input
-                        type="text"
-                        placeholder="4532 •••• •••• 8912"
-                        maxLength={19}
-                        value={cardDetails.number}
-                        onChange={e => setCardDetails({ ...cardDetails, number: e.target.value })}
-                        className="checkout-input"
-                        style={{ fontSize: '13px' }}
-                      />
-                    </div>
-                    <div className="checkout-field-half">
-                      <label className="checkout-label" style={{ fontSize: '11px' }}>Cardholder Name</label>
-                      <input
-                        type="text"
-                        placeholder="Name on card"
-                        value={cardDetails.holder}
-                        onChange={e => setCardDetails({ ...cardDetails, holder: e.target.value })}
-                        className="checkout-input"
-                        style={{ fontSize: '13px' }}
-                      />
-                    </div>
-                    <div className="checkout-field-half" style={{ display: 'flex', gap: '8px' }}>
-                      <div style={{ flex: 1 }}>
-                        <label className="checkout-label" style={{ fontSize: '11px' }}>Valid Thru</label>
-                        <input
-                          type="text"
-                          placeholder="MM/YY"
-                          maxLength={5}
-                          value={cardDetails.expiry}
-                          onChange={e => setCardDetails({ ...cardDetails, expiry: e.target.value })}
-                          className="checkout-input"
-                          style={{ fontSize: '13px' }}
-                        />
-                      </div>
-                      <div style={{ flex: 1 }}>
-                        <label className="checkout-label" style={{ fontSize: '11px' }}>CVV</label>
-                        <input
-                          type="password"
-                          placeholder="•••"
-                          maxLength={4}
-                          value={cardDetails.cvv}
-                          onChange={e => setCardDetails({ ...cardDetails, cvv: e.target.value })}
-                          className="checkout-input"
-                          style={{ fontSize: '13px' }}
-                        />
-                      </div>
-                    </div>
-
-                    {totalAmount >= 10000 && (
-                      <div className="checkout-field-full" style={{ marginTop: '8px', paddingTop: '10px', borderTop: '1px solid var(--color-border-light)' }}>
-                        <label className="checkout-label" style={{ fontSize: '11px', color: 'var(--color-gold-hover)', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                          <Sparkles size={14} strokeWidth={1.5} /> 0% No-Cost EMI Available for this timepiece:
-                        </label>
-                        <div style={{ display: 'flex', gap: '8px', marginTop: '6px' }}>
-                          <button
-                            type="button"
-                            onClick={() => setEmiTenure('full')}
-                            className={`btn btn-sm ${emiTenure === 'full' ? 'btn-primary' : 'btn-outline'}`}
-                            style={{ fontSize: '11px' }}
-                          >
-                            Full Payment (₹{totalAmount.toLocaleString('en-IN')})
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setEmiTenure('3_months')}
-                            className={`btn btn-sm ${emiTenure === '3_months' ? 'btn-primary' : 'btn-outline'}`}
-                            style={{ fontSize: '11px' }}
-                          >
-                            3 Months × ₹{monthlyEmi3.toLocaleString('en-IN')}/mo
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setEmiTenure('6_months')}
-                            className={`btn btn-sm ${emiTenure === '6_months' ? 'btn-primary' : 'btn-outline'}`}
-                            style={{ fontSize: '11px' }}
-                          >
-                            6 Months × ₹{monthlyEmi6.toLocaleString('en-IN')}/mo
-                          </button>
-                        </div>
-                      </div>
+                    {opt.id === 'razorpay' && (
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: 'var(--color-success, #3F8A62)', fontWeight: 600 }}>
+                        <Lock size={12} strokeWidth={2.2} /> 256-Bit SSL Encrypted
+                      </span>
                     )}
                   </div>
-                </div>
-              )}
 
-              {isSelected && opt.id === 'netbanking' && (
-                <div style={{
-                  padding: '16px 20px',
-                  backgroundColor: '#FAF8F5',
-                  border: '1px solid var(--color-border-light)',
-                  borderTop: 'none',
-                  borderRadius: '0 0 8px 8px',
-                  marginTop: '-4px',
-                  marginBottom: '10px'
-                }}>
-                  <label className="checkout-label" style={{ fontSize: '11px' }}>Select Bank</label>
-                  <select
-                    value={selectedBank}
-                    onChange={e => setSelectedBank(e.target.value)}
-                    className="checkout-select"
-                    style={{ fontSize: '13px' }}
-                  >
-                    <option value="HDFC Bank">HDFC Bank</option>
-                    <option value="ICICI Bank">ICICI Bank</option>
-                    <option value="State Bank of India">State Bank of India</option>
-                    <option value="Axis Bank">Axis Bank</option>
-                    <option value="Kotak Mahindra Bank">Kotak Mahindra Bank</option>
-                    <option value="Federal Bank">Federal Bank</option>
-                  </select>
-                </div>
-              )}
+                  <p className="checkout-option-desc" style={{ marginTop: '6px', fontSize: '13px', color: 'var(--color-text-secondary, #666666)', lineHeight: 1.5 }}>
+                    {opt.subtitle}
+                  </p>
 
-              {isSelected && opt.id === 'cod' && (
-                <div style={{
-                  padding: '14px 20px',
-                  backgroundColor: '#FFFDF9',
-                  border: '1px solid rgba(176, 141, 107, 0.3)',
-                  borderTop: 'none',
-                  borderRadius: '0 0 8px 8px',
-                  marginTop: '-4px',
-                  marginBottom: '10px',
-                  fontSize: '12px',
-                  color: 'var(--color-text-secondary)',
-                  lineHeight: 1.5,
-                  display: 'flex',
-                  gap: '10px',
-                  alignItems: 'flex-start'
-                }}>
-                  <ShieldCheck size={18} strokeWidth={1.5} style={{ color: 'var(--brand-bronze)', flexShrink: 0, marginTop: '2px' }} />
-                  <div>
-                    <strong>Horological Inspection Protocol:</strong> Your timepiece arrives in an armored security box with a serialized tamper-evident seal. You are invited to inspect the outer seal and documentation with the courier before releasing payment via Cash or Mobile UPI.
-                  </div>
+                  {/* Luxury Gateway Trust Chips for Razorpay */}
+                  {opt.id === 'razorpay' && (
+                    <div style={{ marginTop: '14px', paddingTop: '12px', borderTop: '1px solid rgba(0, 0, 0, 0.06)', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center' }}>
+                        <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                          Supported Channels:
+                        </span>
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '11.5px', padding: '3px 8px', background: '#F5F3EF', borderRadius: '4px', border: '1px solid #E6E1D8', color: '#333333' }}>
+                          <Smartphone size={12} strokeWidth={1.8} style={{ color: 'var(--brand-bronze)' }} /> UPI (GPay, PhonePe, Paytm, Cred)
+                        </div>
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '11.5px', padding: '3px 8px', background: '#F5F3EF', borderRadius: '4px', border: '1px solid #E6E1D8', color: '#333333' }}>
+                          <CreditCard size={12} strokeWidth={1.8} style={{ color: 'var(--brand-bronze)' }} /> Visa, Mastercard, Amex, RuPay
+                        </div>
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '11.5px', padding: '3px 8px', background: '#F5F3EF', borderRadius: '4px', border: '1px solid #E6E1D8', color: '#333333' }}>
+                          <Building2 size={12} strokeWidth={1.8} style={{ color: 'var(--brand-bronze)' }} /> 50+ Premier Banks NetBanking
+                        </div>
+                      </div>
+
+                      {totalAmount >= 10000 && (
+                        <div style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          fontSize: '12px',
+                          color: '#8A6D3B',
+                          background: 'rgba(232, 200, 154, 0.15)',
+                          padding: '6px 12px',
+                          borderRadius: '6px',
+                          border: '1px solid rgba(176, 141, 107, 0.25)'
+                        }}>
+                          <Sparkles size={13} strokeWidth={2} style={{ color: 'var(--brand-bronze)' }} />
+                          <span><strong>0% No-Cost EMI Available:</strong> ₹{monthlyEmi3.toLocaleString('en-IN')}/mo (3 mos) or ₹{monthlyEmi6.toLocaleString('en-IN')}/mo (6 mos) selectable in Razorpay.</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* COD Inspection Protocol */}
+                  {opt.id === 'cod' && (
+                    <div style={{
+                      marginTop: '12px',
+                      padding: '12px 14px',
+                      backgroundColor: '#FFFDF9',
+                      border: '1px solid rgba(176, 141, 107, 0.25)',
+                      borderRadius: '6px',
+                      fontSize: '12px',
+                      color: 'var(--color-text-secondary)',
+                      lineHeight: 1.5,
+                      display: 'flex',
+                      gap: '10px',
+                      alignItems: 'flex-start'
+                    }}>
+                      <ShieldCheck size={18} strokeWidth={1.8} style={{ color: 'var(--brand-bronze)', flexShrink: 0, marginTop: '2px' }} />
+                      <div>
+                        <strong>Horological Inspection Protocol:</strong> Your timepiece arrives in an armored security case with a serialized tamper-evident seal. You are invited to inspect the seal and documentation with our courier before releasing payment.
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
           );
         })}
+      </div>
+
+      {/* Security Assurance Guarantee */}
+      <div style={{
+        marginTop: '16px',
+        padding: '14px 18px',
+        background: '#FAFAFA',
+        border: '1px solid #EEEEEE',
+        borderRadius: '8px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '12px'
+      }}>
+        <CheckCircle2 size={18} strokeWidth={2} style={{ color: 'var(--color-success, #3F8A62)', flexShrink: 0 }} />
+        <span style={{ fontSize: '12px', color: '#666666', lineHeight: 1.4 }}>
+          <strong>WRISTO Escrow Protection:</strong> Funds are held securely in escrow until physical delivery and certification are fulfilled by our master horology boutique.
+        </span>
       </div>
 
       <div style={{ marginTop: '28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

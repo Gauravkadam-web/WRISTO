@@ -22,7 +22,7 @@ export interface DeliveryOption {
   badge?: string;
 }
 
-export type PaymentMethodType = 'upi' | 'card' | 'netbanking' | 'cod';
+export type PaymentMethodType = 'razorpay' | 'upi' | 'card' | 'netbanking' | 'cod';
 
 export interface PaymentOption {
   id: PaymentMethodType;

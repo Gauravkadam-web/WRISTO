@@ -33,25 +33,15 @@ export const DELIVERY_OPTIONS: DeliveryOption[] = [
 
 export const PAYMENT_OPTIONS: PaymentOption[] = [
   {
-    id: 'upi',
-    title: 'Instant UPI (Zero Surcharge)',
-    subtitle: 'Google Pay, PhonePe, Paytm, BHIM or any UPI App via Razorpay.',
+    id: 'razorpay',
+    title: 'Razorpay Luxury Escrow Gateway',
+    subtitle: 'Instant secure settlement via UPI (Google Pay, PhonePe, Paytm, QR), Credit & Debit Cards (Visa, MasterCard, RuPay, Amex), Private NetBanking across 50+ premier institutions, or 0% No-Cost EMI.',
     badge: 'RECOMMENDED'
-  },
-  {
-    id: 'card',
-    title: 'Credit / Debit Cards (Amex & International)',
-    subtitle: 'Visa, MasterCard, RuPay, American Express with 3D Secure 2.0 verification.'
-  },
-  {
-    id: 'netbanking',
-    title: 'Private Wealth NetBanking',
-    subtitle: 'Direct high-value authentication across 50+ premier Indian and international banking institutions.'
   },
   {
     id: 'cod',
     title: 'Boutique Escrow Cash on Delivery',
-    subtitle: 'Physical verification before cash release at your doorstep for timepieces under ₹50,000.'
+    subtitle: 'White-glove doorstep inspection protocol before releasing payment via Cash or Mobile UPI for timepieces under ₹50,000.'
   }
 ];
 
