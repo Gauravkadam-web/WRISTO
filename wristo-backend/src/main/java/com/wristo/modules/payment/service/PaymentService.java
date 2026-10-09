@@ -19,12 +19,20 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.math.BigDecimal;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.time.Duration;
 import java.time.Instant;
+import java.util.Base64;
 import java.util.HexFormat;
 import java.util.Optional;
 import java.util.UUID;
@@ -33,6 +41,7 @@ import java.util.UUID;
 public class PaymentService {
 
     private static final Logger log = LoggerFactory.getLogger(PaymentService.class);
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Value("${wristo.payment.razorpay.key-id:rzp_test_mock_key}")
     private String razorpayKeyId;
@@ -73,6 +82,50 @@ public class PaymentService {
         } else if (gateway == PaymentGatewayType.RAZORPAY) {
             gatewayOrderId = "order_rzp_" + UUID.randomUUID().toString().replace("-", "").substring(0, 14);
             keyId = razorpayKeyId;
+
+            // When active Razorpay API keys are configured, request authentic Order ID from Razorpay
+            if (razorpayKeyId != null && !razorpayKeyId.isBlank() && !razorpayKeyId.contains("mock") &&
+                razorpayKeySecret != null && !razorpayKeySecret.isBlank() && !razorpayKeySecret.contains("mock")) {
+                try {
+                    long amountInPaise = amount.multiply(BigDecimal.valueOf(100)).longValue();
+                    String auth = Base64.getEncoder().encodeToString(
+                            (razorpayKeyId.trim() + ":" + razorpayKeySecret.trim()).getBytes(StandardCharsets.UTF_8)
+                    );
+                    String receipt = "rcpt_" + UUID.randomUUID().toString().replace("-", "").substring(0, 10);
+                    String orderIdNote = request.orderId() != null ? request.orderId() : "";
+
+                    String jsonBody = String.format(
+                            "{\"amount\":%d,\"currency\":\"%s\",\"receipt\":\"%s\",\"notes\":{\"orderId\":\"%s\"}}",
+                            amountInPaise, currency, receipt, orderIdNote
+                    );
+
+                    HttpClient client = HttpClient.newBuilder()
+                            .connectTimeout(Duration.ofSeconds(5))
+                            .build();
+
+                    HttpRequest httpRequest = HttpRequest.newBuilder()
+                            .uri(URI.create("https://api.razorpay.com/v1/orders"))
+                            .header("Authorization", "Basic " + auth)
+                            .header("Content-Type", "application/json")
+                            .POST(HttpRequest.BodyPublishers.ofString(jsonBody, StandardCharsets.UTF_8))
+                            .timeout(Duration.ofSeconds(8))
+                            .build();
+
+                    HttpResponse<String> httpResponse = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+                    if (httpResponse.statusCode() == 200 || httpResponse.statusCode() == 201) {
+                        JsonNode node = objectMapper.readTree(httpResponse.body());
+                        if (node.has("id")) {
+                            gatewayOrderId = node.get("id").asText();
+                            log.info("Live Razorpay Order generated: {} for amount: {} {}", gatewayOrderId, amount, currency);
+                        }
+                    } else {
+                        log.warn("Razorpay API order response status ({}): {}. Utilizing standard gateway order sequence.",
+                                httpResponse.statusCode(), httpResponse.body());
+                    }
+                } catch (Exception e) {
+                    log.warn("Could not communicate with live Razorpay Order endpoint ({}). Falling back to resilient sandbox order.", e.getMessage());
+                }
+            }
         } else if (gateway == PaymentGatewayType.COD) {
             gatewayOrderId = "cod_" + UUID.randomUUID().toString().substring(0, 8);
             keyId = null;

@@ -84,4 +84,8 @@ export interface CreateOrderPayload {
   coupon?: AppliedCoupon;
   isGiftWrapped: boolean;
   giftMessage?: string;
+  paymentTransactionId?: string;
+  gatewayOrderId?: string;
+  gatewayPaymentId?: string;
+  gatewaySignature?: string;
 }

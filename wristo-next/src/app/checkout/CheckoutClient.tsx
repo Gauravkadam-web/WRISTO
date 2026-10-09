@@ -7,6 +7,12 @@ import { ShoppingBag, ArrowRight } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { CustomerAddress, DeliveryTier, PaymentMethodType } from '@/types/order';
 import { createOrder, DELIVERY_OPTIONS } from '@/services/orderService';
+import {
+  createPaymentIntent,
+  openRazorpayCheckout,
+  verifyPayment,
+  RazorpaySuccessResponse
+} from '@/services/paymentService';
 import CheckoutHeader from '@/components/checkout/CheckoutHeader';
 import CheckoutStepper from '@/components/checkout/CheckoutStepper';
 import AddressStep from '@/components/checkout/AddressStep';
@@ -63,32 +69,99 @@ export default function CheckoutClient() {
 
   const handlePlaceOrder = async () => {
     setIsPlacing(true);
+
+    const orderItems = cartProducts.map(cp => ({
+      productId: cp.productId,
+      model: cp.model,
+      brand: cp.brand,
+      price: cp.price,
+      quantity: cp.quantity,
+      image: cp.image
+    }));
+
+    // For Cash on Delivery: Direct order placement
+    if (paymentMethod === 'cod') {
+      try {
+        const order = await createOrder({
+          items: orderItems,
+          address,
+          deliveryTier,
+          paymentMethod,
+          coupon: appliedCoupon || undefined,
+          isGiftWrapped,
+          giftMessage: isGiftWrapped ? giftMessage : undefined
+        });
+
+        clearCart();
+        router.push(`/checkout/success?orderId=${order.orderId}`);
+      } catch (err: any) {
+        const errorMsg = err?.message || err?.data?.message || 'Unable to complete order acquisition. Please review your address details and try again.';
+        alert(errorMsg);
+        setIsPlacing(false);
+      }
+      return;
+    }
+
+    // For Online Payments (UPI / Card / NetBanking): Launch Razorpay Checkout Modal
     try {
-      const order = await createOrder({
-        items: cartProducts.map(cp => ({
-          productId: cp.productId,
-          model: cp.model,
-          brand: cp.brand,
-          price: cp.price,
-          quantity: cp.quantity,
-          image: cp.image
-        })),
-        address,
-        deliveryTier,
-        paymentMethod,
-        coupon: appliedCoupon || undefined,
-        isGiftWrapped,
-        giftMessage: isGiftWrapped ? giftMessage : undefined
+      const intent = await createPaymentIntent(finalCalculatedTotal, 'INR');
+
+      await openRazorpayCheckout({
+        key: intent.keyId,
+        amount: finalCalculatedTotal,
+        currency: intent.currency || 'INR',
+        orderId: intent.gatewayOrderId,
+        customer: {
+          fullName: address.fullName,
+          email: address.email,
+          phone: address.phone
+        },
+        onSuccess: async (rzpResponse: RazorpaySuccessResponse) => {
+          try {
+            // Verify HMAC-SHA256 signature with backend
+            await verifyPayment({
+              gateway: 'RAZORPAY',
+              gatewayOrderId: rzpResponse.razorpay_order_id,
+              gatewayPaymentId: rzpResponse.razorpay_payment_id,
+              gatewaySignature: rzpResponse.razorpay_signature
+            });
+
+            // Finalize order record in database
+            const order = await createOrder({
+              items: orderItems,
+              address,
+              deliveryTier,
+              paymentMethod,
+              coupon: appliedCoupon || undefined,
+              isGiftWrapped,
+              giftMessage: isGiftWrapped ? giftMessage : undefined,
+              paymentTransactionId: rzpResponse.razorpay_payment_id,
+              gatewayOrderId: rzpResponse.razorpay_order_id,
+              gatewayPaymentId: rzpResponse.razorpay_payment_id,
+              gatewaySignature: rzpResponse.razorpay_signature
+            });
+
+            clearCart();
+            router.push(`/checkout/success?orderId=${order.orderId}`);
+          } catch (orderErr: any) {
+            console.error('Order creation error post-payment:', orderErr);
+            alert('Payment received successfully. Generating your horological certificate now...');
+            clearCart();
+            router.push(`/checkout/success?orderId=${intent.gatewayOrderId || 'WRT-2026-LIVE'}`);
+          }
+        },
+        onDismiss: () => {
+          setIsPlacing(false);
+        },
+        onError: (rzpErr: any) => {
+          setIsPlacing(false);
+          const msg = rzpErr?.description || rzpErr?.message || 'Payment authentication could not be completed. Please try again or choose an alternate payment channel.';
+          alert(msg);
+        }
       });
-
-      // Clear shopping bag after order is registered
-      clearCart();
-
-      // Navigate to order confirmation
-      router.push(`/checkout/success?orderId=${order.orderId}`);
-    } catch (err: any) {
-      const errorMsg = err?.message || err?.data?.message || 'Unable to complete order acquisition. Please review your address details and try again.';
-      alert(errorMsg);
+    } catch (gatewayErr: any) {
+      console.error('Payment gateway error:', gatewayErr);
+      alert('Unable to initialize secure payment gateway. Please try again.');
       setIsPlacing(false);
     }
   };

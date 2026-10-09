@@ -295,7 +295,11 @@ export async function createOrder(payload: CreateOrderPayload): Promise<OrderRec
       deliveryTier: payload.deliveryTier,
       isGiftWrapped: payload.isGiftWrapped || false,
       giftMessage: payload.giftMessage || '',
-      couponCode: payload.coupon?.code || undefined
+      couponCode: payload.coupon?.code || undefined,
+      paymentTransactionId: payload.paymentTransactionId,
+      gatewayOrderId: payload.gatewayOrderId,
+      gatewayPaymentId: payload.gatewayPaymentId,
+      gatewaySignature: payload.gatewaySignature
     });
     if (res && res.data) {
       data = res.data;
