@@ -111,7 +111,8 @@ export async function createPaymentIntent(
       gateway,
       amount,
       currency,
-      orderId
+      orderId,
+      paymentMethod: gateway === 'COD' ? 'COD' : 'RAZORPAY'
     });
 
     if (res && res.data) {

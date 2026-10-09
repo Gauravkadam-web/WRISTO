@@ -17,7 +17,6 @@ public record CreatePaymentOrderRequest(
         @NotNull(message = "Payment gateway type is required")
         PaymentGatewayType gateway,
 
-        @NotNull(message = "Payment method is required")
         PaymentMethod paymentMethod,
 
         String customerEmail,
