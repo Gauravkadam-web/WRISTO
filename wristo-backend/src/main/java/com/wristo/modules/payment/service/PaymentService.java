@@ -87,20 +87,31 @@ public class PaymentService {
             if (razorpayKeyId != null && !razorpayKeyId.isBlank() && !razorpayKeyId.contains("mock") &&
                 razorpayKeySecret != null && !razorpayKeySecret.isBlank() && !razorpayKeySecret.contains("mock")) {
                 try {
-                    long amountInPaise = amount.multiply(BigDecimal.valueOf(100)).longValue();
+                    long amountInPaise = amount != null ? amount.multiply(BigDecimal.valueOf(100)).longValue() : 10000L;
+                    if (amountInPaise < 100) {
+                        amountInPaise = 100;
+                    }
                     String auth = Base64.getEncoder().encodeToString(
                             (razorpayKeyId.trim() + ":" + razorpayKeySecret.trim()).getBytes(StandardCharsets.UTF_8)
                     );
-                    String receipt = "rcpt_" + UUID.randomUUID().toString().replace("-", "").substring(0, 10);
-                    String orderIdNote = request.orderId() != null ? request.orderId() : "";
+                    String receipt = "rcpt_" + UUID.randomUUID().toString().replace("-", "").substring(0, 12);
 
-                    String jsonBody = String.format(
-                            "{\"amount\":%d,\"currency\":\"%s\",\"receipt\":\"%s\",\"notes\":{\"orderId\":\"%s\"}}",
-                            amountInPaise, currency, receipt, orderIdNote
-                    );
+                    java.util.Map<String, Object> bodyMap = new java.util.HashMap<>();
+                    bodyMap.put("amount", amountInPaise);
+                    bodyMap.put("currency", currency != null && !currency.isBlank() ? currency : "INR");
+                    bodyMap.put("receipt", receipt);
+
+                    java.util.Map<String, String> notes = new java.util.HashMap<>();
+                    notes.put("platform", "WRISTO");
+                    if (request.orderId() != null && !request.orderId().isBlank()) {
+                        notes.put("orderId", request.orderId());
+                    }
+                    bodyMap.put("notes", notes);
+
+                    String jsonBody = objectMapper.writeValueAsString(bodyMap);
 
                     HttpClient client = HttpClient.newBuilder()
-                            .connectTimeout(Duration.ofSeconds(5))
+                            .connectTimeout(Duration.ofSeconds(6))
                             .build();
 
                     HttpRequest httpRequest = HttpRequest.newBuilder()
@@ -108,7 +119,7 @@ public class PaymentService {
                             .header("Authorization", "Basic " + auth)
                             .header("Content-Type", "application/json")
                             .POST(HttpRequest.BodyPublishers.ofString(jsonBody, StandardCharsets.UTF_8))
-                            .timeout(Duration.ofSeconds(8))
+                            .timeout(Duration.ofSeconds(10))
                             .build();
 
                     HttpResponse<String> httpResponse = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());

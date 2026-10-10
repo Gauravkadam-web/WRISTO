@@ -120,10 +120,42 @@ export async function createPaymentIntent(
       if (isMockRazorpayKey(res.data.keyId) && clientEnvKey && !isMockRazorpayKey(clientEnvKey)) {
         res.data.keyId = clientEnvKey;
       }
-      return res.data;
+      if (isRealRazorpayOrderId(res.data.gatewayOrderId)) {
+        return res.data;
+      }
+      // If backend order ID was fallback mock, keep the res data but allow Next.js fallback to upgrade it
+      if (gateway !== 'RAZORPAY') {
+        return res.data;
+      }
     }
   } catch (err) {
     console.warn('Backend payment intent endpoint offline or in fallback mode:', err);
+  }
+
+  // Resilient Next.js direct API fallback
+  if (gateway === 'RAZORPAY' && typeof window !== 'undefined') {
+    try {
+      const nextApiRes = await fetch('/api/payments/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount, currency, orderId })
+      });
+      if (nextApiRes.ok) {
+        const nextData = await nextApiRes.json();
+        if (nextData?.data?.gatewayOrderId) {
+          return {
+            gatewayOrderId: nextData.data.gatewayOrderId,
+            gateway: 'RAZORPAY',
+            amount,
+            currency,
+            keyId: nextData.data.keyId || clientEnvKey,
+            status: 'CREATED'
+          };
+        }
+      }
+    } catch (edgeErr) {
+      console.warn('Next.js payment order proxy offline:', edgeErr);
+    }
   }
 
   // Resilient fallback intent for local testing / offline sandbox
