@@ -258,13 +258,14 @@ export async function openRazorpayCheckout({
   const amountInPaise = Math.round(amount * 100);
   const validRazorpayOrderId = isRealRazorpayOrderId(orderId) ? orderId : undefined;
 
+  const cleanPhone = (customer.phone || '9876543210').replace(/\D/g, '').slice(-10);
+
   const options: RazorpayCheckoutOptions = {
     key: effectiveKey,
     amount: amountInPaise,
     currency,
     name: 'WRISTO Luxury Timepieces',
     description: 'Haute Horlogerie Acquisition',
-    image: '/assets/logo-emblem.png',
     order_id: validRazorpayOrderId,
     handler: (response: RazorpaySuccessResponse) => {
       onSuccess(response);
@@ -272,15 +273,14 @@ export async function openRazorpayCheckout({
     prefill: {
       name: customer.fullName || 'Valued Collector',
       email: customer.email || 'collector@wristo.luxury',
-      contact: customer.phone || '9876543210'
+      contact: cleanPhone
     },
     notes: {
       platform: 'WRISTO Executive Vault',
       client: customer.fullName
     },
     theme: {
-      color: '#B08D6B', // Luxury Bronze
-      backdrop_color: '#0A0A0A'
+      color: '#B08D6B' // Luxury Bronze Accent
     },
     modal: {
       ondismiss: () => {
