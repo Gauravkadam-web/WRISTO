@@ -36,7 +36,8 @@ export const PRODUCTS: Product[] = [
     ],
     "caseLugToLug": "47.5mm",
     "caseThickness": "9.8mm",
-    "lugWidth": "20mm"
+    "lugWidth": "20mm",
+    "model3dUrl": "/assets/models/classic-watch.glb"
   },
   {
     "id": "WRT-002",
@@ -69,7 +70,11 @@ export const PRODUCTS: Product[] = [
     "colors": [
       "#E0E0E0",
       "#FFFFFF"
-    ]
+    ],
+    "caseLugToLug": "48.2mm",
+    "caseThickness": "9.5mm",
+    "lugWidth": "20mm",
+    "model3dUrl": "/assets/models/classic-watch.glb"
   },
   {
     "id": "WRT-003",
@@ -103,7 +108,11 @@ export const PRODUCTS: Product[] = [
     "colors": [
       "#C89B5B",
       "#8B4513"
-    ]
+    ],
+    "caseLugToLug": "46.0mm",
+    "caseThickness": "9.2mm",
+    "lugWidth": "19mm",
+    "model3dUrl": "/assets/models/classic-watch.glb"
   },
   {
     "id": "WRT-004",

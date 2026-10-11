@@ -585,7 +585,7 @@
 - **Objective:** Eliminate procedural placeholder rings/spheres in favor of a real CAD asset loader and a bespoke Option B Luxury Vault Twin fallback when CAD models are in production.
 - **Achievements:**
   - **Schema Extension:** Updated `Product` interface in `wristo-next/src/types/product.ts` with `model3dUrl?`, `posterImageUrl?`, `hotspots?`, `caseLugToLug?`, `caseThickness?`, and `lugWidth?`.
-  - **Real GLTF/GLB Engine:** Implemented `WebGLWatchStage` inside `Watch3DCanvas.tsx` utilizing Three.js `GLTFLoader`, `OrbitControls` with smooth damping, studio lighting presets (key, fill, rim), and camera presets (`[Dial]`, `[Crown]`, `[Angle]`, `[Back]`) with smooth lerp interpolation.
+  - **Real GLTF/GLB Engine:** Implemented `WebGLWatchStage` inside `Watch3DCanvas.tsx` utilizing Three.js `GLTFLoader`, `OrbitControls` with smooth damping, studio lighting presets (key, fill, rim), and camera presets (`[Dial]`, `[Crown]`, `[Angle]`, `[Back]`) with smooth lerp interpolation. Sourced and bundled photorealistic `classic-watch.glb` (2 MB) in `public/assets/models/` and wired to flagship models (`WRT-001`, `WRT-002`, `WRT-003`).
   - **Option B Digital Twin Vault Card:** When `product.model3dUrl` is absent, renders a dark luxury archival vault card featuring 2.5D interactive mouse/touch perspective tilt physics, dynamic sapphire crystal glint reflection, drag-to-spin turntable azimuth tracking, live caliber ledger metrics, and quick jump actions to Macro Dial view and Caliper Specs.
   - **Gallery Integration:** Updated `ProductGallery.tsx` thumbnail rail and toolbar to distinguish between `3D MODEL` and `3D VAULT` with seamless view switching.
 
