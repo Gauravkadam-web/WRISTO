@@ -75,6 +75,7 @@ public class PaymentService {
         String gatewayOrderId = "pay_ord_" + UUID.randomUUID().toString().replace("-", "").substring(0, 16);
         String keyId = razorpayKeyId;
         String clientSecret = null;
+        String orderStatus = "CREATED";
 
         if (gateway == PaymentGatewayType.STRIPE) {
             keyId = stripePublishableKey;
@@ -127,15 +128,21 @@ public class PaymentService {
                         JsonNode node = objectMapper.readTree(httpResponse.body());
                         if (node.has("id")) {
                             gatewayOrderId = node.get("id").asText();
+                            orderStatus = "AUTHENTIC_ORDER_CREATED";
                             log.info("Live Razorpay Order generated: {} for amount: {} {}", gatewayOrderId, amount, currency);
                         }
                     } else {
+                        orderStatus = "RZP_ERR_" + httpResponse.statusCode() + ": " + httpResponse.body();
                         log.warn("Razorpay API order response status ({}): {}. Utilizing standard gateway order sequence.",
                                 httpResponse.statusCode(), httpResponse.body());
                     }
                 } catch (Exception e) {
+                    orderStatus = "RZP_EXC: " + e.getMessage();
                     log.warn("Could not communicate with live Razorpay Order endpoint ({}). Falling back to resilient sandbox order.", e.getMessage());
                 }
+            } else {
+                orderStatus = "RZP_CREDENTIALS_MISSING_OR_MOCK (id=" + (razorpayKeyId != null ? razorpayKeyId : "null") +
+                        ", secret=" + (razorpayKeySecret != null && !razorpayKeySecret.isBlank() ? "present" : "missing") + ")";
             }
         } else if (gateway == PaymentGatewayType.COD) {
             gatewayOrderId = "cod_" + UUID.randomUUID().toString().substring(0, 8);
@@ -153,7 +160,7 @@ public class PaymentService {
                 keyId,
                 request.orderId(),
                 clientSecret,
-                "CREATED"
+                orderStatus != null ? orderStatus : "CREATED"
         );
     }
 

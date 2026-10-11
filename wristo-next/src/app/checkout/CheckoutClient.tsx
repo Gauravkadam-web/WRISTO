@@ -55,9 +55,7 @@ export default function CheckoutClient() {
   const [deliveryTier, setDeliveryTier] = useState<DeliveryTier>(
     initialStep >= 3 ? 'white_glove' : 'insured_express'
   );
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethodType>(
-    initialStep >= 4 ? 'cod' : 'razorpay'
-  );
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethodType>('razorpay');
 
   const selectedDelivery = DELIVERY_OPTIONS.find(d => d.id === deliveryTier);
   const deliveryFee = selectedDelivery ? selectedDelivery.price : 0;
