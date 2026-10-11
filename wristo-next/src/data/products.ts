@@ -33,7 +33,10 @@ export const PRODUCTS: Product[] = [
     "colors": [
       "#111111",
       "#4A4A4A"
-    ]
+    ],
+    "caseLugToLug": "47.5mm",
+    "caseThickness": "9.8mm",
+    "lugWidth": "20mm"
   },
   {
     "id": "WRT-002",

@@ -2,6 +2,13 @@ export type MovementType = 'Quartz' | 'Automatic' | 'Smart Digital' | 'Mechanica
 export type StyleType = 'Minimal' | 'Classic' | 'Chronograph' | 'Dress' | 'Sport' | 'Skeleton';
 export type GenderType = 'Men' | 'Women' | 'Unisex';
 
+export interface ProductHotspot {
+  label: string;
+  position: [number, number, number];
+  normal?: [number, number, number];
+  description?: string;
+}
+
 export interface Product {
   id: string;
   num: string;
@@ -28,6 +35,12 @@ export interface Product {
   aiReason?: string;
   occasion: string[];
   colors: string[];
+  model3dUrl?: string;
+  posterImageUrl?: string;
+  hotspots?: ProductHotspot[];
+  caseLugToLug?: string;
+  caseThickness?: string;
+  lugWidth?: string;
 }
 
 export interface Brand {

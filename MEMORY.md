@@ -5,8 +5,8 @@
 **Platform:** Ultra-Luxury Multi-Brand Watch E-Commerce Experience  
 **Core Technologies:** Next.js 16+ (App Router, Turbopack, React 19, TypeScript), Vanilla CSS Custom Tokens, Decoupled Service Architecture (Spring Boot-Ready)  
 **Total Production Routes:** 69 Statically Pre-rendered SSG Routes (40 Watches + 6 Journal Articles + Standalone Wishlist, Cart, Brands & Core Pages)  
-**GitHub Remote:** `https://github.com/Gauravkadam-web/WRISTO.git` (Branch: `main`, Latest Push: `ce3d1d3`)  
-**Last Updated:** October 7, 2026  
+**GitHub Remote:** `https://github.com/Gauravkadam-web/WRISTO.git` (Branch: `main`, Latest Push: `4c929c8`)  
+**Last Updated:** October 11, 2026  
 
 ---
 
@@ -202,12 +202,18 @@ WRISTO/
 * **Dynamic OpenGraph Metadata:** Title, description, and high-res imagery generated dynamically via `generateMetadata()`.
 
 ### Layout & Component Architecture:
-* **Interactive 3D Stage (`ProductGallery.tsx`):** Level 3 depth tracking cursor (`perspective: 1200px`, `rotateX: 1-3deg`, `rotateY: 2-4deg`, `scale: 1.01`, spring reset on leave). Vertical thumbnail rail with official authenticity seal.
+* **Dynamic 3D Asset Pipeline & Option B Vault (`Watch3DCanvas.tsx`):**
+  * When `product.model3dUrl` is defined: Loads `.glb`/`.gltf` CAD mesh dynamically using Three.js `GLTFLoader`, OrbitControls with smooth damping, studio lighting presets, and camera angle presets (`[Dial]`, `[Crown]`, `[Angle]`, `[Back]`).
+  * Option B Fallback (when `product.model3dUrl` is absent): Renders a luxury dark horological Digital Twin Vault card with interactive 2.5D mouse/touch perspective tilt physics, real-time sapphire crystal glint reflection, drag-to-spin turntable azimuth tracking, live caliber ledger chips, and direct shortcuts to Macro Dial Inspection and Caliper Specs.
+* **Balanced Two-Column Grid Layout (`ProductDetailClient.tsx`):**
+  * **Left Rail (`.pdp-gallery-column`):**
+    * `ProductGallery.tsx`: Interactive gallery with thumbnail rail distinguishing `3D MODEL` and `3D VAULT`.
+    * `CaseDimensionVisualizer.tsx`: SVG caliper blueprint displaying Case Diameter, Lug-to-Lug, Thickness, and Lug Width, plus interactive wrist scale selector (`Slim 6.0"`, `Standard 6.75"`, `Broad 7.5"`) with proportional coverage meter.
+    * `ProductTrustGrid.tsx`: Compact 2x2 luxury assurance card grid (100% Authenticity, Insured Express, 30-Day Inspection, 2-Year Caliber Warranty) replacing stacked accordions and eliminating left-rail empty white space.
+  * **Right Rail (`.pdp-content-col`):**
+    * Editorial Header, Pricing, Description narrative, Variants, Actions, AI Concierge, and Technical Specifications Matrix.
+    * Both columns achieve balanced ~960px visual heights with zero dead space.
 * **Macro Lightbox Modal:** Click-to-enlarge modal with zoom-in, zoom-out, and reset controls with keyboard `Escape` dismissal.
-* **Content Hierarchy (`ProductHeader.tsx` & `ProductPricing.tsx`):** Serif title (`Playfair Display`), tracked brand eyebrow, rating verification, INR currency formatting with savings badge (`SAVE ₹X (Y% OFF)`), and tax notes.
-* **AI Style Concierge Insight (`AIConciergeInsight.tsx`):** Distinctive ivory card with gold accent bar grounded in `product.aiReason`, compatibility score (`98% Style Match`), and occasion chips.
-* **Technical Horology Matrix (`ProductSpecsGrid.tsx`):** 6-cell tactile grid (Caliber Movement, Case Diameter, Case Material, Dial & Finish, Strap & Clasp, Water Resistance).
-* **Luxury Trust Disclosures (`ProductTrustAccordions.tsx`):** 4 expandable accordions for Authenticity, Insured Shipping, 30-Day Returns, and 2-Year International Warranty.
 * **Purchase Actions (`ProductActions.tsx`):** Quantity stepper, `[ Add to Cart ]` with cart drawer slide-over, `[ Buy Now → ]` champagne CTA, wishlist toggle, and `"Compare Specs"` matrix action.
 * **Coordinated Timepieces (`CoordinatedWatches.tsx`):** 4-card companion timepieces grid powered by `getSimilarProducts()`.
 * **Mobile Sticky Purchase Bar (`StickyMobilePurchaseBar.tsx`):** Fixed bottom bar on viewports `< 768px` revealing on scroll with watch thumbnail, price, and instant Add/Buy buttons.
@@ -547,4 +553,39 @@ Pending commit to `main` (awaiting explicit Gaurav Bhau confirmation):
 - `wristo-next/public/assets/products/watch-03.png` through `watch-25.png` — sanitized AI images
 - Deleted: `assets/test/`, `wristo-next/public/assets/test/` — calibration test image cleanup
 - Deleted: `ref_images/40_images_*.png` — planning reference image cleanup
+
+---
+
+## 20. Live Razorpay Payment Gateway Integration & Hardening (Session 10 — October 11, 2026)
+
+### End-to-End Payment Architecture
+WRISTO supports an ultra-luxury checkout sequence where online transactions (Card, UPI, NetBanking) trigger the Razorpay Payment Gateway modal themed with WRISTO's bespoke luxury bronze accent (`#B08D6B`).
+
+1. **Order Intent Generation (`POST /api/v1/payments/create-intent`):**
+   - Implemented in `PaymentService.java` & `PaymentController.java`.
+   - When real API keys (`rzp_test_...` or `rzp_live_...`) are present, directly requests an authentic order ID from Razorpay's official REST API (`https://api.razorpay.com/v1/orders`) via HTTP Basic Auth.
+   - Automatically sanitizes API credentials by stripping whitespace and wrapping quotation marks (`"`, `'`) to prevent copy-paste configuration defects on cloud providers (Render, Vercel).
+   - Returns authentic Razorpay Order ID (`order_...`) and status `AUTHENTIC_ORDER_CREATED`.
+
+2. **Cryptographic HMAC-SHA256 Verification (`POST /api/v1/payments/verify`):**
+   - Server computes cryptographic HMAC-SHA256 signature using `Mac.getInstance("HmacSHA256")` on `gatewayOrderId + "|" + gatewayPaymentId` using the sanitized `razorpayKeySecret`.
+   - Uses constant-time `MessageDigest.isEqual()` to prevent timing attacks.
+   - On signature match, persists `Payment` entity with status `PAID`, links to `Order`, and marks order as paid.
+   - Preserves seamless sandbox fallback for unit testing and local offline mock runs.
+
+3. **Client-Side Next.js SDK Loader & Checkout Modal:**
+   - `wristo-next/src/services/paymentService.ts`:
+     - Dynamically injects official `https://checkout.razorpay.com/v1/checkout.js` with singleton promise deduplication.
+     - `isMockRazorpayKey()` and `openRazorpayCheckout()` with sanitized key resolution prioritizing live backend-returned keys.
+     - Prefills customer contact info (name, email, 10-digit sanitized phone) and applies `#B08D6B` bronze branding.
+   - `wristo-next/src/app/api/payments/create-order/route.ts`:
+     - Edge proxy fallback for Next.js direct order generation with credential sanitization.
+   - `wristo-next/src/app/checkout/CheckoutClient.tsx`:
+     - Seamless integration in checkout stepper: launches modal, verifies signature with backend upon success, creates order record, clears cart, and redirects to `/checkout/success`.
+
+### Live Verification & Test Report
+- **Backend Tests:** `PaymentControllerTest.java` 3/3 tests passing green; entire Spring Boot test suite 102/102 tests passing.
+- **Frontend Build:** `npm run build` compiled 104/104 static and dynamic routes with 0 errors.
+- **Live Endpoint Test:** Verified live Render endpoint `https://wristo.onrender.com/api/v1/payments/create-intent` successfully creating authentic Razorpay orders (`order_TmZBu8l364r8ZW`, status: `AUTHENTIC_ORDER_CREATED`).
+- **Git Commit:** `4c929c8` pushed to `origin/main`.
 

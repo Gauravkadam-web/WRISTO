@@ -26,11 +26,13 @@ interface ProductGalleryProps {
 }
 
 export default function ProductGallery({ product }: ProductGalleryProps) {
-  // Gallery items: 1. Primary view, 2. Dial macro view, 3. 3D WebGL Stage, 4. WRISTO Authenticity Seal
+  const has3DModel = Boolean(product.model3dUrl);
+
+  // Gallery items: 1. Primary view, 2. Dial macro view, 3. 3D WebGL/Vault Stage, 4. WRISTO Authenticity Seal
   const galleryItems = [
     { id: 'main', src: product.image, alt: `${product.brand} ${product.model} Main View`, label: 'Primary View' },
     { id: 'dial', src: product.image, alt: `${product.brand} ${product.model} Dial Detail`, label: 'Dial Macro', isMacro: true },
-    { id: '3d', src: product.image, alt: `${product.brand} ${product.model} 3D Model`, label: '3D WebGL Model', is3D: true },
+    { id: '3d', src: product.image, alt: `${product.brand} ${product.model} 3D Model`, label: has3DModel ? '3D CAD Model' : '3D Vault Twin', is3D: true },
     { id: 'seal', src: '/assets/brand/brand-seal.png', alt: 'WRISTO Certified Authenticity Seal', label: 'Horology Seal' }
   ];
 
@@ -126,7 +128,7 @@ export default function ProductGallery({ product }: ProductGalleryProps) {
               {item.is3D ? (
                 <div className="pdp-thumb-3d-badge">
                   <Box size={18} strokeWidth={1.8} />
-                  <span>3D VIEW</span>
+                  <span>{has3DModel ? '3D MODEL' : '3D VAULT'}</span>
                 </div>
               ) : (
                 <img
@@ -160,7 +162,13 @@ export default function ProductGallery({ product }: ProductGalleryProps) {
 
           {/* Conditional Rendering: Real 3D WebGL Watch Model vs Studio Photo */}
           {is360Mode ? (
-            <Watch3DCanvas product={product} />
+            <Watch3DCanvas
+              product={product}
+              onSwitchToMacro={() => {
+                setIs360Mode(false);
+                setActiveIndex(1); // 'dial' is index 1
+              }}
+            />
           ) : (
             <>
               {/* Zoom Lightbox Trigger Button */}
@@ -212,7 +220,7 @@ export default function ProductGallery({ product }: ProductGalleryProps) {
             onClick={() => setIs360Mode(!is360Mode)}
           >
             {is360Mode ? <RotateCcw size={14} strokeWidth={1.8} /> : <RotateCw size={14} strokeWidth={1.8} />}
-            <span>{is360Mode ? 'Exit 3D Model Stage' : 'Launch 360° 3D Model'}</span>
+            <span>{is360Mode ? 'Exit 3D Stage' : (has3DModel ? 'Launch 360° 3D Model' : 'Launch 3D Digital Twin')}</span>
           </button>
 
           <button

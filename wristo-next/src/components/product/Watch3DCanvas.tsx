@@ -2,443 +2,107 @@
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import * as THREE from 'three';
-import { RotateCw, RotateCcw, ZoomIn, ZoomOut, Play, Pause, Eye, Compass } from 'lucide-react';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import {
+  RotateCcw,
+  RotateCw,
+  ZoomIn,
+  ZoomOut,
+  Play,
+  Pause,
+  Eye,
+  Compass,
+  Layers,
+  Search,
+  Move3d,
+  ShieldCheck,
+  Cpu
+} from 'lucide-react';
 import { Product } from '@/types/product';
 
 interface Watch3DCanvasProps {
   product: Product;
   className?: string;
   onAngleChange?: (yaw: number) => void;
+  onSwitchToMacro?: () => void;
 }
 
-export default function Watch3DCanvas({ product, className = '', onAngleChange }: Watch3DCanvasProps) {
+export default function Watch3DCanvas({
+  product,
+  className = '',
+  onAngleChange,
+  onSwitchToMacro
+}: Watch3DCanvasProps) {
+  // If product has a 3D model asset, render the WebGL GLTF Stage
+  // Otherwise, render Option B: Luxury Horological Digital Twin Vault Card
+  const hasModel = Boolean(product.model3dUrl);
+
+  return hasModel ? (
+    <WebGLWatchStage
+      product={product}
+      className={className}
+      onAngleChange={onAngleChange}
+    />
+  ) : (
+    <OptionBVaultFallback
+      product={product}
+      className={className}
+      onSwitchToMacro={onSwitchToMacro}
+      onAngleChange={onAngleChange}
+    />
+  );
+}
+
+/* ==========================================================================
+   1. WEBGL WATCH STAGE — Dynamic GLTF/GLB Asset Loader & 3D Stage
+   ========================================================================== */
+function WebGLWatchStage({
+  product,
+  className = '',
+  onAngleChange
+}: {
+  product: Product;
+  className?: string;
+  onAngleChange?: (yaw: number) => void;
+}) {
   const mountRef = useRef<HTMLDivElement>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [isAutoSpin, setIsAutoSpin] = useState(true);
   const [currentYawDeg, setCurrentYawDeg] = useState(0);
   const [currentPitchDeg, setCurrentPitchDeg] = useState(0);
   const [zoomFactor, setZoomFactor] = useState(1);
-  const [isInteracting, setIsInteracting] = useState(false);
 
-  // References for animation and control
-  const animFrameIdRef = useRef<number | null>(null);
-  const sceneRef = useRef<THREE.Scene | null>(null);
+  const controlsRef = useRef<OrbitControls | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
-  const watchGroupRef = useRef<THREE.Group | null>(null);
-  const handsGroupRef = useRef<{ hour: THREE.Mesh; minute: THREE.Mesh; second: THREE.Mesh } | null>(null);
+  const animFrameIdRef = useRef<number | null>(null);
+  const modelGroupRef = useRef<THREE.Group | null>(null);
 
-  // Interaction state
-  const isDraggingRef = useRef(false);
-  const lastMousePosRef = useRef({ x: 0, y: 0 });
-  const targetRotationRef = useRef({ yaw: 0, pitch: 0 });
-  const currentRotationRef = useRef({ yaw: 0, pitch: 0 });
-  const targetZoomRef = useRef(1);
-  const isAutoSpinRef = useRef(true);
-  isAutoSpinRef.current = isAutoSpin;
+  // Target camera position for smooth interpolation
+  const targetCameraPosRef = useRef<THREE.Vector3 | null>(null);
+  const targetLookAtRef = useRef<THREE.Vector3 | null>(null);
 
-  // Generate procedural high-resolution dial texture
-  const createDialTexture = useCallback((prod: Product) => {
-    const canvas = document.createElement('canvas');
-    canvas.width = 1024;
-    canvas.height = 1024;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return null;
-
-    const cx = 512;
-    const cy = 512;
-    const radius = 480;
-
-    const isSmart = prod.movement === 'Smart Digital' || prod.brand === 'PULSE';
-    const isSkeleton = prod.movement === 'Mechanical Skeleton' || prod.style === 'Skeleton' || prod.model.includes('Skeleton') || prod.model.includes('Open Heart');
-    const isChrono = prod.movement === 'Quartz' && (prod.model.includes('Chrono') || prod.model.includes('Apex') || prod.style === 'Chronograph');
-
-    if (isSmart) {
-      // AMOLED Smartwatch Digital Screen
-      ctx.fillStyle = '#05070a';
-      ctx.beginPath();
-      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Outer active ring
-      ctx.strokeStyle = '#22d3ee';
-      ctx.lineWidth = 14;
-      ctx.beginPath();
-      ctx.arc(cx, cy, radius - 20, -Math.PI * 0.5, Math.PI * 0.85);
-      ctx.stroke();
-
-      ctx.strokeStyle = '#ec4899';
-      ctx.lineWidth = 10;
-      ctx.beginPath();
-      ctx.arc(cx, cy, radius - 45, -Math.PI * 0.5, Math.PI * 0.5);
-      ctx.stroke();
-
-      // Digital Horology readout
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 150px system-ui, -apple-system, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('10:08', cx, cy - 30);
-
-      ctx.fillStyle = '#94a3b8';
-      ctx.font = '600 36px system-ui, sans-serif';
-      ctx.fillText('WED 06 OCT', cx, cy + 85);
-
-      // Heart rate / step pill
-      ctx.fillStyle = '#ef4444';
-      ctx.font = 'bold 32px system-ui, sans-serif';
-      ctx.fillText('♥ 74 BPM  •  8,420 STEPS', cx, cy + 160);
-
-      // Brand mark
-      ctx.fillStyle = '#38bdf8';
-      ctx.font = 'bold 28px system-ui, sans-serif';
-      ctx.letterSpacing = '6px';
-      ctx.fillText(prod.brand, cx, cy - 180);
-
-      const tex = new THREE.CanvasTexture(canvas);
-      tex.colorSpace = THREE.SRGBColorSpace;
-      return tex;
-    }
-
-    // Traditional Horology Dial (Mechanical / Quartz / Luxury)
-    // 1. Dial base gradient / sunray
-    const dialGradient = ctx.createRadialGradient(cx, cy, 10, cx, cy, radius);
-    const dialName = prod.dial.toLowerCase();
-
-    if (dialName.includes('black') || dialName.includes('obsidian') || dialName.includes('carbon')) {
-      dialGradient.addColorStop(0, '#1c1c20');
-      dialGradient.addColorStop(0.7, '#111114');
-      dialGradient.addColorStop(1, '#08080a');
-    } else if (dialName.includes('silver') || dialName.includes('white') || dialName.includes('chalk')) {
-      dialGradient.addColorStop(0, '#fafafc');
-      dialGradient.addColorStop(0.7, '#e4e7eb');
-      dialGradient.addColorStop(1, '#c8cbd0');
-    } else if (dialName.includes('blue') || dialName.includes('cobalt') || dialName.includes('royal')) {
-      dialGradient.addColorStop(0, '#1e3a8a');
-      dialGradient.addColorStop(0.65, '#0f172a');
-      dialGradient.addColorStop(1, '#020617');
-    } else if (dialName.includes('green') || dialName.includes('emerald') || dialName.includes('olive')) {
-      dialGradient.addColorStop(0, '#065f46');
-      dialGradient.addColorStop(0.7, '#022c22');
-      dialGradient.addColorStop(1, '#011510');
-    } else if (dialName.includes('gold') || dialName.includes('champagne') || dialName.includes('sand')) {
-      dialGradient.addColorStop(0, '#fef3c7');
-      dialGradient.addColorStop(0.65, '#d97706');
-      dialGradient.addColorStop(1, '#78350f');
-    } else if (dialName.includes('rose') || dialName.includes('pink') || dialName.includes('terra')) {
-      dialGradient.addColorStop(0, '#ffe4e6');
-      dialGradient.addColorStop(0.65, '#be185d');
-      dialGradient.addColorStop(1, '#4c0519');
-    } else {
-      dialGradient.addColorStop(0, '#27272a');
-      dialGradient.addColorStop(0.8, '#18181b');
-      dialGradient.addColorStop(1, '#09090b');
-    }
-
-    ctx.fillStyle = dialGradient;
-    ctx.beginPath();
-    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-    ctx.fill();
-
-    // 2. Sunray radial lines
-    ctx.save();
-    ctx.translate(cx, cy);
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
-    ctx.lineWidth = 1;
-    for (let i = 0; i < 360; i += 2) {
-      ctx.rotate((Math.PI / 180) * 2);
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
-      ctx.lineTo(0, radius - 10);
-      ctx.stroke();
-    }
-    ctx.restore();
-
-    // 3. Minute Track (60 ticks)
-    ctx.save();
-    ctx.translate(cx, cy);
-    const tickColor = (dialName.includes('silver') || dialName.includes('white') || dialName.includes('ivory'))
-      ? '#262626'
-      : '#d4af37';
-
-    for (let i = 0; i < 60; i++) {
-      const isFive = i % 5 === 0;
-      ctx.strokeStyle = isFive ? tickColor : 'rgba(200, 200, 200, 0.45)';
-      ctx.lineWidth = isFive ? 4 : 1.8;
-      ctx.beginPath();
-      ctx.moveTo(0, -radius + (isFive ? 32 : 16));
-      ctx.lineTo(0, -radius + 8);
-      ctx.stroke();
-      ctx.rotate((Math.PI / 180) * 6);
-    }
-    ctx.restore();
-
-    // 4. Applied 12 Hour Indices
-    ctx.save();
-    ctx.translate(cx, cy);
-    for (let i = 0; i < 12; i++) {
-      const angle = (Math.PI / 6) * i;
-      ctx.save();
-      ctx.rotate(angle);
-
-      // Baton index
-      const markerW = i === 0 ? 18 : 12;
-      const markerH = i === 0 ? 56 : 46;
-      const markerY = -radius + 40;
-
-      // Drop shadow for 3D depth
-      ctx.fillStyle = 'rgba(0,0,0,0.45)';
-      ctx.fillRect(-markerW / 2 + 2, markerY + 3, markerW, markerH);
-
-      // Gold / Silver Metallic Gradient for index
-      const indexGrad = ctx.createLinearGradient(-markerW / 2, markerY, markerW / 2, markerY + markerH);
-      if (prod.material.includes('Gold') || dialName.includes('gold') || dialName.includes('champagne')) {
-        indexGrad.addColorStop(0, '#fffbeb');
-        indexGrad.addColorStop(0.5, '#d4af37');
-        indexGrad.addColorStop(1, '#92400e');
-      } else {
-        indexGrad.addColorStop(0, '#ffffff');
-        indexGrad.addColorStop(0.5, '#d1d5db');
-        indexGrad.addColorStop(1, '#6b7280');
-      }
-
-      ctx.fillStyle = indexGrad;
-      ctx.fillRect(-markerW / 2, markerY, markerW, markerH);
-
-      // Lume Pip in center
-      ctx.fillStyle = '#ecfdf5';
-      ctx.fillRect(-markerW / 4, markerY + 4, markerW / 2, markerH - 8);
-
-      ctx.restore();
-    }
-    ctx.restore();
-
-    // 5. Sub-dials if Chronograph
-    if (isChrono) {
-      const subRadius = 105;
-      const subCenters = [
-        { x: cx - 170, y: cy },
-        { x: cx + 170, y: cy },
-        { x: cx, y: cy + 155 }
-      ];
-
-      subCenters.forEach((sub) => {
-        // Sub-dial background with concentric tracks
-        ctx.fillStyle = 'rgba(0,0,0,0.4)';
-        ctx.beginPath();
-        ctx.arc(sub.x, sub.y, subRadius, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.strokeStyle = 'rgba(212, 175, 55, 0.4)';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-
-        // Sub-dial ticks
-        ctx.save();
-        ctx.translate(sub.x, sub.y);
-        ctx.strokeStyle = 'rgba(255,255,255,0.6)';
-        ctx.lineWidth = 1.5;
-        for (let t = 0; t < 12; t++) {
-          ctx.beginPath();
-          ctx.moveTo(0, -subRadius + 12);
-          ctx.lineTo(0, -subRadius + 4);
-          ctx.stroke();
-          ctx.rotate((Math.PI / 180) * 30);
-        }
-        ctx.restore();
-      });
-    }
-
-    // 6. Skeleton / Open Heart Aperture
-    if (isSkeleton) {
-      ctx.save();
-      const openX = cx;
-      const openY = cy + 130;
-      const openR = 125;
-
-      // Aperture outer rim
-      ctx.strokeStyle = '#d4af37';
-      ctx.lineWidth = 5;
-      ctx.beginPath();
-      ctx.arc(openX, openY, openR, 0, Math.PI * 2);
-      ctx.stroke();
-
-      // Mechanical gear escapement cutout
-      ctx.fillStyle = '#18181b';
-      ctx.fill();
-
-      // Gear teeth
-      ctx.strokeStyle = '#f59e0b';
-      ctx.lineWidth = 3;
-      ctx.beginPath();
-      ctx.arc(openX, openY, openR - 25, 0, Math.PI * 2);
-      ctx.stroke();
-
-      // Balance wheel ruby jewel
-      ctx.fillStyle = '#ef4444';
-      ctx.beginPath();
-      ctx.arc(openX, openY, 18, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-    }
-
-    // 7. Horology Brand & Caliber Typography
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-
-    // Brand Name
-    const fontPrimaryColor = (dialName.includes('silver') || dialName.includes('white') || dialName.includes('ivory'))
-      ? '#111827'
-      : '#f8fafc';
-
-    ctx.fillStyle = fontPrimaryColor;
-    ctx.font = 'bold 36px "Cinzel", "Playfair Display", Georgia, serif';
-    ctx.fillText(prod.brand, cx, cy - 170);
-
-    // Model Name
-    ctx.fillStyle = 'rgba(212, 175, 55, 0.9)';
-    ctx.font = '500 22px system-ui, -apple-system, sans-serif';
-    ctx.fillText(prod.model.toUpperCase(), cx, cy - 128);
-
-    // Movement & Swiss Mark
-    ctx.fillStyle = 'rgba(156, 163, 175, 0.85)';
-    ctx.font = '600 18px system-ui, sans-serif';
-    ctx.fillText(prod.movement.toUpperCase(), cx, cy + (isSkeleton || isChrono ? 245 : 170));
-
-    ctx.font = '500 15px system-ui, sans-serif';
-    ctx.fillText('SWISS ARCHIVE  •  100M / 330FT', cx, cy + (isSkeleton || isChrono ? 275 : 205));
-
-    // Date Window at 3 o'clock (x: +300, y: 0)
-    if (!isChrono && !isSkeleton) {
-      const dwX = cx + 290;
-      const dwY = cy;
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(dwX - 24, dwY - 20, 48, 40);
-      ctx.strokeStyle = '#d4af37';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(dwX - 24, dwY - 20, 48, 40);
-
-      ctx.fillStyle = '#111827';
-      ctx.font = 'bold 24px system-ui, sans-serif';
-      ctx.fillText('06', dwX, dwY + 2);
-    }
-
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.colorSpace = THREE.SRGBColorSpace;
-    texture.generateMipmaps = true;
-    texture.minFilter = THREE.LinearMipmapLinearFilter;
-    return texture;
-  }, []);
-
-  // Material builder based on product specifications
-  const getCaseMaterial = useCallback((prod: Product) => {
-    const mat = prod.material.toLowerCase();
-    if (mat.includes('rose gold')) {
-      return new THREE.MeshPhysicalMaterial({
-        color: new THREE.Color('#d48b78'),
-        metalness: 0.92,
-        roughness: 0.16,
-        clearcoat: 0.6,
-        clearcoatRoughness: 0.12,
-        reflectivity: 0.8
-      });
-    }
-    if (mat.includes('gold')) {
-      return new THREE.MeshPhysicalMaterial({
-        color: new THREE.Color('#d4af37'),
-        metalness: 0.94,
-        roughness: 0.18,
-        clearcoat: 0.6,
-        clearcoatRoughness: 0.15,
-        reflectivity: 0.85
-      });
-    }
-    if (mat.includes('pvd') || mat.includes('black') || mat.includes('dlc') || mat.includes('matte black')) {
-      return new THREE.MeshPhysicalMaterial({
-        color: new THREE.Color('#1c1c22'),
-        metalness: 0.88,
-        roughness: 0.28,
-        clearcoat: 0.35,
-        clearcoatRoughness: 0.2
-      });
-    }
-    if (mat.includes('bronze')) {
-      return new THREE.MeshPhysicalMaterial({
-        color: new THREE.Color('#9c6e3b'),
-        metalness: 0.85,
-        roughness: 0.35,
-        clearcoat: 0.2
-      });
-    }
-    if (mat.includes('titanium')) {
-      return new THREE.MeshPhysicalMaterial({
-        color: new THREE.Color('#a8a29e'),
-        metalness: 0.82,
-        roughness: 0.32,
-        clearcoat: 0.3
-      });
-    }
-    // Default 316L Stainless Steel
-    return new THREE.MeshPhysicalMaterial({
-      color: new THREE.Color('#d4d4d8'),
-      metalness: 0.96,
-      roughness: 0.14,
-      clearcoat: 0.65,
-      clearcoatRoughness: 0.1
-    });
-  }, []);
-
-  const getStrapMaterial = useCallback((prod: Product) => {
-    const strap = prod.strap.toLowerCase();
-    if (strap.includes('leather')) {
-      let strapColor = '#261b17';
-      if (strap.includes('brown') || strap.includes('tan') || strap.includes('terracotta')) strapColor = '#5c3317';
-      if (strap.includes('navy') || strap.includes('blue')) strapColor = '#0f172a';
-      if (strap.includes('beige') || strap.includes('cream')) strapColor = '#d6c5b0';
-      if (strap.includes('pink') || strap.includes('rose')) strapColor = '#e29578';
-      return new THREE.MeshStandardMaterial({
-        color: new THREE.Color(strapColor),
-        roughness: 0.72,
-        metalness: 0.08
-      });
-    }
-    if (strap.includes('mesh') || strap.includes('steel') || strap.includes('oyster') || strap.includes('link')) {
-      return getCaseMaterial(prod);
-    }
-    if (strap.includes('silicone') || strap.includes('rubber') || strap.includes('fluororubber')) {
-      let sColor = '#18181b';
-      if (strap.includes('crimson') || strap.includes('red')) sColor = '#991b1b';
-      if (strap.includes('blue') || strap.includes('navy')) sColor = '#1e3a8a';
-      if (strap.includes('olive') || strap.includes('green')) sColor = '#166534';
-      if (strap.includes('lilac')) sColor = '#c084fc';
-      return new THREE.MeshStandardMaterial({
-        color: new THREE.Color(sColor),
-        roughness: 0.85,
-        metalness: 0.02
-      });
-    }
-    return new THREE.MeshStandardMaterial({
-      color: new THREE.Color('#27272a'),
-      roughness: 0.8,
-      metalness: 0.1
-    });
-  }, [getCaseMaterial]);
-
-  // Main Three.js Scene Setup & Render Loop
   useEffect(() => {
     const container = mountRef.current;
-    if (!container) return;
+    if (!container || !product.model3dUrl) return;
 
-    const width = container.clientWidth || 600;
-    const height = container.clientHeight || 550;
+    let isMounted = true;
+    setIsLoading(true);
+    setLoadError(null);
 
-    // 1. Scene, Camera, Renderer
+    // Scene setup
     const scene = new THREE.Scene();
-    sceneRef.current = scene;
+    scene.background = null;
 
-    const camera = new THREE.PerspectiveCamera(38, width / height, 0.1, 100);
-    camera.position.set(0, 0, 7.8);
+    // Camera setup
+    const width = container.clientWidth || 500;
+    const height = container.clientHeight || 500;
+    const camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 100);
+    camera.position.set(0, 0, 3.2);
     cameraRef.current = camera;
 
+    // Renderer setup
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
       alpha: true,
@@ -447,389 +111,190 @@ export default function Watch3DCanvas({ product, className = '', onAngleChange }
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.25;
-    rendererRef.current = renderer;
-
+    renderer.toneMappingExposure = 1.15;
     container.innerHTML = '';
     container.appendChild(renderer.domElement);
 
-    // 2. Horology Studio 3-Point Lighting
+    // Controls setup
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.rotateSpeed = 0.8;
+    controls.zoomSpeed = 0.8;
+    controls.enablePan = false;
+    controls.minDistance = 1.4;
+    controls.maxDistance = 5.5;
+    controls.autoRotate = isAutoSpin;
+    controls.autoRotateSpeed = 1.2;
+    controlsRef.current = controls;
+
+    // Lighting setup (Luxury Horology Studio)
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
     scene.add(ambientLight);
 
-    // Main Studio Key Light (Top-Right)
-    const keyLight = new THREE.DirectionalLight(0xfff7ed, 2.4);
-    keyLight.position.set(4, 5, 4);
+    // Key warm light (accentuating gold/steel indices)
+    const keyLight = new THREE.DirectionalLight(0xffecd2, 1.4);
+    keyLight.position.set(3, 4, 3);
     scene.add(keyLight);
 
-    // Fill Light (Bottom-Left)
-    const fillLight = new THREE.DirectionalLight(0xe0f2fe, 1.4);
-    fillLight.position.set(-4, -2, 3);
+    // Fill cool light (for metallic bezel reflections)
+    const fillLight = new THREE.DirectionalLight(0xdbeafe, 0.9);
+    fillLight.position.set(-3, -2, 2);
     scene.add(fillLight);
 
-    // Specular Rim Light (Top Edge glint)
-    const rimLight = new THREE.DirectionalLight(0xfef08a, 2.8);
-    rimLight.position.set(0, 6, -3);
+    // Rim light (highlighting case silhouette)
+    const rimLight = new THREE.DirectionalLight(0xffffff, 1.2);
+    rimLight.position.set(0, -3, -3);
     scene.add(rimLight);
 
-    // Back-facing backlight
-    const backLight = new THREE.DirectionalLight(0xffffff, 1.2);
-    backLight.position.set(0, -5, -4);
-    scene.add(backLight);
+    // GLTF Model Loader
+    const loader = new GLTFLoader();
+    loader.load(
+      product.model3dUrl,
+      (gltf) => {
+        if (!isMounted) return;
 
-    // 3. Watch Root Assembly Group
-    const watchGroup = new THREE.Group();
-    watchGroupRef.current = watchGroup;
-    scene.add(watchGroup);
+        const model = gltf.scene;
+        modelGroupRef.current = model;
 
-    // Materials
-    const caseMat = getCaseMaterial(product);
-    const strapMat = getStrapMaterial(product);
+        // Auto-center and fit to bounding box
+        const box = new THREE.Box3().setFromObject(model);
+        const center = box.getCenter(new THREE.Vector3());
+        const size = box.getSize(new THREE.Vector3());
+        const maxDim = Math.max(size.x, size.y, size.z);
 
-    // --- CASE MAIN CYLINDER ---
-    const caseGeo = new THREE.CylinderGeometry(2.15, 2.1, 0.52, 64);
-    caseGeo.rotateX(Math.PI / 2);
-    const caseMesh = new THREE.Mesh(caseGeo, caseMat);
-    watchGroup.add(caseMesh);
+        // Normalize model size
+        const scale = 2.0 / (maxDim || 1);
+        model.scale.setScalar(scale);
 
-    // --- BEZEL STEPPED RING ---
-    const bezelGeo = new THREE.TorusGeometry(2.12, 0.08, 16, 64);
-    bezelGeo.rotateX(Math.PI / 2);
-    const bezelMesh = new THREE.Mesh(bezelGeo, caseMat);
-    bezelMesh.position.z = 0.28;
-    watchGroup.add(bezelMesh);
+        // Center pivot
+        model.position.x = -center.x * scale;
+        model.position.y = -center.y * scale;
+        model.position.z = -center.z * scale;
 
-    // Inner Bezel Chamfer
-    const innerBezelGeo = new THREE.RingGeometry(1.98, 2.14, 64);
-    const innerBezelMesh = new THREE.Mesh(innerBezelGeo, caseMat);
-    innerBezelMesh.position.z = 0.27;
-    watchGroup.add(innerBezelMesh);
+        const wrapperGroup = new THREE.Group();
+        wrapperGroup.add(model);
+        scene.add(wrapperGroup);
 
-    // --- 4 LUGS ---
-    const lugGeo = new THREE.BoxGeometry(0.24, 0.95, 0.44);
-    const lugPositions = [
-      [-1.15, 2.2, -0.05],
-      [1.15, 2.2, -0.05],
-      [-1.15, -2.2, -0.05],
-      [1.15, -2.2, -0.05]
-    ];
-    lugPositions.forEach(([lx, ly, lz]) => {
-      const lug = new THREE.Mesh(lugGeo, caseMat);
-      lug.position.set(lx, ly, lz);
-      // Angle lugs inward slightly
-      lug.rotation.z = (ly > 0 ? (lx > 0 ? -0.12 : 0.12) : (lx > 0 ? 0.12 : -0.12));
-      lug.rotation.x = ly > 0 ? -0.18 : 0.18;
-      watchGroup.add(lug);
-    });
-
-    // --- CROWN AT 3 O'CLOCK ---
-    const crownGeo = new THREE.CylinderGeometry(0.22, 0.22, 0.32, 24);
-    crownGeo.rotateZ(Math.PI / 2);
-    const crownMesh = new THREE.Mesh(crownGeo, caseMat);
-    crownMesh.position.set(2.32, 0, 0);
-    watchGroup.add(crownMesh);
-
-    // Crown Cap
-    const crownCapGeo = new THREE.SphereGeometry(0.18, 16, 16);
-    crownCapGeo.scale(0.5, 1, 1);
-    const crownCap = new THREE.Mesh(crownCapGeo, caseMat);
-    crownCap.position.set(2.48, 0, 0);
-    watchGroup.add(crownCap);
-
-    // Chrono Pushers (if applicable)
-    if (product.model.includes('Chrono') || product.movement === 'Chronograph') {
-      const pusherGeo = new THREE.CylinderGeometry(0.14, 0.14, 0.28, 16);
-      pusherGeo.rotateZ(Math.PI / 2);
-
-      const pusherTop = new THREE.Mesh(pusherGeo, caseMat);
-      pusherTop.position.set(2.15, 1.05, 0);
-      pusherTop.rotation.z = -0.4;
-      watchGroup.add(pusherTop);
-
-      const pusherBottom = new THREE.Mesh(pusherGeo, caseMat);
-      pusherBottom.position.set(2.15, -1.05, 0);
-      pusherBottom.rotation.z = 0.4;
-      watchGroup.add(pusherBottom);
-    }
-
-    // --- DIAL PLANE ---
-    const dialTex = createDialTexture(product);
-    const dialMat = new THREE.MeshStandardMaterial({
-      map: dialTex,
-      roughness: 0.35,
-      metalness: 0.15
-    });
-    const dialGeo = new THREE.CircleGeometry(2.0, 64);
-    const dialMesh = new THREE.Mesh(dialGeo, dialMat);
-    dialMesh.position.z = 0.15;
-    watchGroup.add(dialMesh);
-
-    // --- 3D WATCH HANDS ---
-    const handsMaterial = (product.material.includes('Gold') || product.dial.toLowerCase().includes('gold'))
-      ? new THREE.MeshPhysicalMaterial({ color: 0xd4af37, metalness: 0.95, roughness: 0.15 })
-      : new THREE.MeshPhysicalMaterial({ color: 0xe5e7eb, metalness: 0.95, roughness: 0.15 });
-
-    const secondHandMaterial = new THREE.MeshPhysicalMaterial({
-      color: product.dial.toLowerCase().includes('blue') ? 0xef4444 : 0xd4af37,
-      metalness: 0.9,
-      roughness: 0.2
-    });
-
-    // Hour Hand
-    const hourGeo = new THREE.ConeGeometry(0.09, 1.05, 4);
-    hourGeo.translate(0, 0.52, 0);
-    const hourHand = new THREE.Mesh(hourGeo, handsMaterial);
-    hourHand.position.z = 0.20;
-    hourHand.rotation.z = -Math.PI * 0.58; // 10 o'clock position
-    watchGroup.add(hourHand);
-
-    // Minute Hand
-    const minuteGeo = new THREE.ConeGeometry(0.07, 1.55, 4);
-    minuteGeo.translate(0, 0.77, 0);
-    const minuteHand = new THREE.Mesh(minuteGeo, handsMaterial);
-    minuteHand.position.z = 0.22;
-    minuteHand.rotation.z = -Math.PI * 0.16; // 2 o'clock position (10:10 classic)
-    watchGroup.add(minuteHand);
-
-    // Second Hand
-    const secondGeo = new THREE.CylinderGeometry(0.02, 0.02, 1.75, 8);
-    secondGeo.translate(0, 0.65, 0);
-    const secondHand = new THREE.Mesh(secondGeo, secondHandMaterial);
-    secondHand.position.z = 0.24;
-    watchGroup.add(secondHand);
-
-    // Center Pin / Cap
-    const centerPinGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.08, 16);
-    centerPinGeo.rotateX(Math.PI / 2);
-    const centerPin = new THREE.Mesh(centerPinGeo, handsMaterial);
-    centerPin.position.z = 0.26;
-    watchGroup.add(centerPin);
-
-    handsGroupRef.current = { hour: hourHand, minute: minuteHand, second: secondHand };
-
-    // --- CURVED SAPPHIRE CRYSTAL GLASS DOME ---
-    const glassGeo = new THREE.CylinderGeometry(2.05, 2.05, 0.04, 64);
-    glassGeo.rotateX(Math.PI / 2);
-    const glassMat = new THREE.MeshPhysicalMaterial({
-      color: 0xffffff,
-      transmission: 0.94,
-      opacity: 1,
-      transparent: true,
-      roughness: 0.04,
-      ior: 1.77, // Sapphire crystal refractive index
-      reflectivity: 0.55,
-      clearcoat: 1.0,
-      clearcoatRoughness: 0.05
-    });
-    const glassMesh = new THREE.Mesh(glassGeo, glassMat);
-    glassMesh.position.z = 0.32;
-    watchGroup.add(glassMesh);
-
-    // --- CURVED STRAPS (TOP & BOTTOM) ---
-    const buildStrap = (isTop: boolean) => {
-      const strapCurveGroup = new THREE.Group();
-      const segments = 12;
-      const length = 2.4;
-      const width = 1.9;
-
-      for (let i = 0; i < segments; i++) {
-        const segGeo = new THREE.BoxGeometry(
-          width - (i * 0.03), // Gentle taper
-          length / segments,
-          0.18
-        );
-        const segMesh = new THREE.Mesh(segGeo, strapMat);
-
-        const progress = i / segments;
-        const arcY = (isTop ? 1 : -1) * (2.1 + progress * 2.2);
-        // Curve downward around wrist
-        const arcZ = -0.15 - Math.pow(progress, 1.8) * 1.4;
-
-        segMesh.position.set(0, arcY, arcZ);
-        segMesh.rotation.x = (isTop ? -1 : 1) * progress * 0.85;
-
-        strapCurveGroup.add(segMesh);
+        setIsLoading(false);
+      },
+      undefined,
+      (err) => {
+        if (!isMounted) return;
+        console.error('Error loading 3D GLTF watch model:', err);
+        setLoadError('Failed to load 3D CAD asset.');
+        setIsLoading(false);
       }
-      return strapCurveGroup;
-    };
+    );
 
-    watchGroup.add(buildStrap(true));
-    watchGroup.add(buildStrap(false));
-
-    // --- CONTACT SHADOW PLANE ---
-    const shadowGeo = new THREE.PlaneGeometry(8, 8);
-    const shadowCanvas = document.createElement('canvas');
-    shadowCanvas.width = 256;
-    shadowCanvas.height = 256;
-    const sCtx = shadowCanvas.getContext('2d');
-    if (sCtx) {
-      const sGrad = sCtx.createRadialGradient(128, 128, 10, 128, 128, 120);
-      sGrad.addColorStop(0, 'rgba(0, 0, 0, 0.45)');
-      sGrad.addColorStop(0.5, 'rgba(0, 0, 0, 0.18)');
-      sGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-      sCtx.fillStyle = sGrad;
-      sCtx.fillRect(0, 0, 256, 256);
-    }
-    const shadowTex = new THREE.CanvasTexture(shadowCanvas);
-    const shadowMat = new THREE.MeshBasicMaterial({
-      map: shadowTex,
-      transparent: true,
-      opacity: 0.75,
-      depthWrite: false
-    });
-    const shadowMesh = new THREE.Mesh(shadowGeo, shadowMat);
-    shadowMesh.position.set(0, 0, -1.8);
-    scene.add(shadowMesh);
-
-    // Initial slight angle for beauty
-    targetRotationRef.current.yaw = 0.25;
-    targetRotationRef.current.pitch = 0.12;
-
-    // 4. Render Animation Loop
-    let lastTime = performance.now();
-
-    const animate = (time: number) => {
+    // Animation Loop
+    const animate = () => {
       animFrameIdRef.current = requestAnimationFrame(animate);
-      const delta = (time - lastTime) / 1000;
-      lastTime = time;
 
-      // Auto-spin logic
-      if (isAutoSpinRef.current && !isDraggingRef.current) {
-        targetRotationRef.current.yaw += delta * 0.45;
-      }
-
-      // Smooth inertia damping
-      currentRotationRef.current.yaw += (targetRotationRef.current.yaw - currentRotationRef.current.yaw) * 0.12;
-      currentRotationRef.current.pitch += (targetRotationRef.current.pitch - currentRotationRef.current.pitch) * 0.12;
-      const curZoom = camera.position.z;
-      const targetZ = 7.8 / targetZoomRef.current;
-      camera.position.z += (targetZ - curZoom) * 0.15;
-
-      if (watchGroupRef.current) {
-        watchGroupRef.current.rotation.y = currentRotationRef.current.yaw;
-        watchGroupRef.current.rotation.x = currentRotationRef.current.pitch;
-      }
-
-      // Dynamic Hand Movements
-      if (handsGroupRef.current) {
-        const isAuto = product.movement === 'Automatic';
-        if (isAuto) {
-          // Smooth sweeping seconds hand (28,800 vph Swiss sweep)
-          handsGroupRef.current.second.rotation.z -= delta * 1.05;
-        } else {
-          // Quartz crisp 1-second ticks
-          const secondStep = Math.floor((time / 1000) * 1) % 60;
-          handsGroupRef.current.second.rotation.z = - (secondStep / 60) * Math.PI * 2;
+      // Handle smooth camera preset lerp
+      if (targetCameraPosRef.current && cameraRef.current) {
+        cameraRef.current.position.lerp(targetCameraPosRef.current, 0.08);
+        if (targetLookAtRef.current && controlsRef.current) {
+          controlsRef.current.target.lerp(targetLookAtRef.current, 0.08);
+        }
+        if (cameraRef.current.position.distanceTo(targetCameraPosRef.current) < 0.01) {
+          targetCameraPosRef.current = null;
         }
       }
 
-      // Readouts
-      const degYaw = Math.round((((currentRotationRef.current.yaw * 180 / Math.PI) % 360) + 360) % 360);
-      const degPitch = Math.round(currentRotationRef.current.pitch * 180 / Math.PI);
-      setCurrentYawDeg(degYaw);
-      setCurrentPitchDeg(degPitch);
-      if (onAngleChange) onAngleChange(degYaw);
+      controls.update();
+
+      // Update angle HUD readouts
+      const spherical = new THREE.Spherical().setFromVector3(camera.position);
+      const yawDeg = Math.round((spherical.theta * 180) / Math.PI) % 360;
+      const normalizedYaw = yawDeg < 0 ? yawDeg + 360 : yawDeg;
+      const pitchDeg = Math.round(((spherical.phi - Math.PI / 2) * 180) / Math.PI);
+
+      setCurrentYawDeg(normalizedYaw);
+      setCurrentPitchDeg(pitchDeg);
+      setZoomFactor(Number((3.2 / camera.position.length()).toFixed(2)));
+
+      if (onAngleChange) {
+        onAngleChange(normalizedYaw);
+      }
 
       renderer.render(scene, camera);
     };
 
-    animFrameIdRef.current = requestAnimationFrame(animate);
+    animate();
 
-    // 5. Responsive Resize
-    const resizeObserver = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        const { width: newW, height: newH } = entry.contentRect;
-        if (newW > 0 && newH > 0) {
-          camera.aspect = newW / newH;
-          camera.updateProjectionMatrix();
-          renderer.setSize(newW, newH);
-        }
-      }
-    });
+    // Resize observer
+    const handleResize = () => {
+      if (!container || !camera || !renderer) return;
+      const newWidth = container.clientWidth;
+      const newHeight = container.clientHeight;
+      camera.aspect = newWidth / newHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(newWidth, newHeight);
+    };
+
+    const resizeObserver = new ResizeObserver(handleResize);
     resizeObserver.observe(container);
 
-    // 6. Cleanup
     return () => {
+      isMounted = false;
       resizeObserver.disconnect();
       if (animFrameIdRef.current) cancelAnimationFrame(animFrameIdRef.current);
+      controls.dispose();
       renderer.dispose();
-      caseGeo.dispose();
-      bezelGeo.dispose();
-      innerBezelGeo.dispose();
-      dialGeo.dispose();
-      glassGeo.dispose();
-      if (dialTex) dialTex.dispose();
-      shadowTex.dispose();
       container.innerHTML = '';
     };
-  }, [product, getCaseMaterial, getStrapMaterial, createDialTexture, onAngleChange]);
+  }, [product.model3dUrl, onAngleChange, isAutoSpin]);
 
-  // Pointer Interaction Handlers
-  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    isDraggingRef.current = true;
-    setIsInteracting(true);
-    setIsAutoSpin(false);
-    lastMousePosRef.current = { x: e.clientX, y: e.clientY };
-    (e.target as HTMLElement).setPointerCapture(e.pointerId);
-  };
-
-  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!isDraggingRef.current) return;
-    const deltaX = e.clientX - lastMousePosRef.current.x;
-    const deltaY = e.clientY - lastMousePosRef.current.y;
-    lastMousePosRef.current = { x: e.clientX, y: e.clientY };
-
-    targetRotationRef.current.yaw += deltaX * 0.009;
-    targetRotationRef.current.pitch = Math.max(-0.65, Math.min(0.65, targetRotationRef.current.pitch + deltaY * 0.009));
-  };
-
-  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
-    isDraggingRef.current = false;
-    setIsInteracting(false);
-    try {
-      (e.target as HTMLElement).releasePointerCapture(e.pointerId);
-    } catch {
-      // safe fallback
+  // Sync auto-spin with OrbitControls
+  useEffect(() => {
+    if (controlsRef.current) {
+      controlsRef.current.autoRotate = isAutoSpin;
     }
-  };
+  }, [isAutoSpin]);
 
-  // Zoom Handlers
-  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    const zoomDelta = e.deltaY * -0.0015;
-    const newZoom = Math.max(0.7, Math.min(2.2, targetZoomRef.current + zoomDelta));
-    targetZoomRef.current = newZoom;
-    setZoomFactor(newZoom);
-  };
-
-  const handlePresetAngle = (yawDeg: number, pitchDeg: number) => {
+  // Camera preset transitions
+  const handlePreset = (azimuthDeg: number, polarDeg: number) => {
     setIsAutoSpin(false);
-    targetRotationRef.current.yaw = (yawDeg * Math.PI) / 180;
-    targetRotationRef.current.pitch = (pitchDeg * Math.PI) / 180;
+    const radius = cameraRef.current ? cameraRef.current.position.length() : 3.2;
+    const phi = (90 - polarDeg) * (Math.PI / 180);
+    const theta = azimuthDeg * (Math.PI / 180);
+
+    const x = radius * Math.sin(phi) * Math.sin(theta);
+    const y = radius * Math.cos(phi);
+    const z = radius * Math.sin(phi) * Math.cos(theta);
+
+    targetCameraPosRef.current = new THREE.Vector3(x, y, z);
+    targetLookAtRef.current = new THREE.Vector3(0, 0, 0);
   };
 
   const handleReset = () => {
-    setIsAutoSpin(false);
-    targetRotationRef.current.yaw = 0;
-    targetRotationRef.current.pitch = 0;
-    targetZoomRef.current = 1;
-    setZoomFactor(1);
+    handlePreset(0, 0);
+    setIsAutoSpin(true);
   };
 
   return (
     <div className={`watch-3d-stage-container ${className}`}>
-      {/* 3D WebGL Canvas Viewport */}
-      <div
-        ref={mountRef}
-        className="watch-3d-viewport"
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onWheel={handleWheel}
-        style={{ cursor: isInteracting ? 'grabbing' : 'grab' }}
-      />
+      {/* Loading & Error States */}
+      {isLoading && (
+        <div className="watch-3d-loading-overlay">
+          <RotateCw className="animate-spin text-amber-300" size={32} />
+          <span className="text-xs uppercase tracking-widest text-amber-200 font-medium">
+            Resolving Caliber 3D CAD Mesh...
+          </span>
+        </div>
+      )}
 
-      {/* Real-time Angle & Mode Floating HUD */}
+      {loadError && (
+        <div className="watch-3d-error-overlay">
+          <span className="text-xs text-rose-300">{loadError}</span>
+        </div>
+      )}
+
+      {/* WebGL Canvas Viewport */}
+      <div ref={mountRef} className="watch-3d-viewport" />
+
+      {/* Floating Tactical HUD */}
       <div className="watch-3d-hud" aria-live="polite">
         <div className="watch-3d-hud-pill">
           <Compass size={13} className="spin-slow" />
@@ -837,19 +302,18 @@ export default function Watch3DCanvas({ product, className = '', onAngleChange }
           <span className="watch-3d-hud-divider">•</span>
           <span>{currentPitchDeg > 0 ? `+${currentPitchDeg}°` : `${currentPitchDeg}°`} TILT</span>
           <span className="watch-3d-hud-divider">•</span>
-          <span>{zoomFactor.toFixed(1)}X MACRO</span>
+          <span>{zoomFactor.toFixed(1)}X MAG</span>
         </div>
       </div>
 
-      {/* Floating Tactical Horology Control Bar */}
+      {/* Floating Camera Presets & Action Controls */}
       <div className="watch-3d-controls-overlay">
-        {/* Preset Angle Buttons */}
         <div className="watch-3d-preset-group">
           <button
             type="button"
             className="watch-3d-ctrl-btn"
-            onClick={() => handlePresetAngle(0, 0)}
-            title="Front Dial Face (0°)"
+            onClick={() => handlePreset(0, 0)}
+            title="Dial View (0°)"
           >
             <Eye size={13} />
             <span>Dial</span>
@@ -857,7 +321,7 @@ export default function Watch3DCanvas({ product, className = '', onAngleChange }
           <button
             type="button"
             className="watch-3d-ctrl-btn"
-            onClick={() => handlePresetAngle(90, 0)}
+            onClick={() => handlePreset(90, 0)}
             title="Crown Profile (90°)"
           >
             <span>Crown</span>
@@ -865,7 +329,7 @@ export default function Watch3DCanvas({ product, className = '', onAngleChange }
           <button
             type="button"
             className="watch-3d-ctrl-btn"
-            onClick={() => handlePresetAngle(45, 20)}
+            onClick={() => handlePreset(45, 20)}
             title="Hero Isometric (45° / +20°)"
           >
             <span>Angle</span>
@@ -873,14 +337,13 @@ export default function Watch3DCanvas({ product, className = '', onAngleChange }
           <button
             type="button"
             className="watch-3d-ctrl-btn"
-            onClick={() => handlePresetAngle(180, 0)}
+            onClick={() => handlePreset(180, 0)}
             title="Caseback View (180°)"
           >
             <span>Back</span>
           </button>
         </div>
 
-        {/* Action Controls */}
         <div className="watch-3d-action-group">
           <button
             type="button"
@@ -896,8 +359,9 @@ export default function Watch3DCanvas({ product, className = '', onAngleChange }
             type="button"
             className="watch-3d-ctrl-btn icon-only"
             onClick={() => {
-              targetZoomRef.current = Math.min(2.2, targetZoomRef.current + 0.25);
-              setZoomFactor(targetZoomRef.current);
+              if (cameraRef.current) {
+                cameraRef.current.position.multiplyScalar(0.85);
+              }
             }}
             title="Zoom In"
             aria-label="Zoom in"
@@ -909,8 +373,9 @@ export default function Watch3DCanvas({ product, className = '', onAngleChange }
             type="button"
             className="watch-3d-ctrl-btn icon-only"
             onClick={() => {
-              targetZoomRef.current = Math.max(0.7, targetZoomRef.current - 0.25);
-              setZoomFactor(targetZoomRef.current);
+              if (cameraRef.current) {
+                cameraRef.current.position.multiplyScalar(1.18);
+              }
             }}
             title="Zoom Out"
             aria-label="Zoom out"
@@ -922,12 +387,310 @@ export default function Watch3DCanvas({ product, className = '', onAngleChange }
             type="button"
             className="watch-3d-ctrl-btn icon-only reset"
             onClick={handleReset}
-            title="Reset to 0°"
+            title="Reset Orientation"
             aria-label="Reset orientation"
           >
             <RotateCcw size={13} />
           </button>
         </div>
+      </div>
+    </div>
+  );
+}
+
+/* ==========================================================================
+   2. OPTION B: LUXURY HOROLOGICAL DIGITAL TWIN VAULT CARD
+   ========================================================================== */
+function OptionBVaultFallback({
+  product,
+  className = '',
+  onSwitchToMacro,
+  onAngleChange
+}: {
+  product: Product;
+  className?: string;
+  onSwitchToMacro?: () => void;
+  onAngleChange?: (yaw: number) => void;
+}) {
+  const stageRef = useRef<HTMLDivElement>(null);
+  const [rotateX, setRotateX] = useState(0);
+  const [rotateY, setRotateY] = useState(0);
+  const [azimuthDeg, setAzimuthDeg] = useState(0);
+  const [glintPos, setGlintPos] = useState({ x: 50, y: 50 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [isAutoRocking, setIsAutoRocking] = useState(false);
+
+  const startDragXRef = useRef(0);
+  const startAzimuthRef = useRef(0);
+  const animFrameRef = useRef<number | null>(null);
+
+  // Auto-rocking turntable animation
+  useEffect(() => {
+    if (!isAutoRocking) {
+      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+      return;
+    }
+
+    let startTime = performance.now();
+    const loop = (now: number) => {
+      const elapsed = (now - startTime) / 1000;
+      const angle = Math.sin(elapsed * 1.5) * 22; // gentle -22 to +22 deg rocking
+      const normalizedYaw = Math.round(angle < 0 ? angle + 360 : angle);
+      setRotateY(angle);
+      setRotateX(Math.cos(elapsed * 1.5) * 6);
+      setAzimuthDeg(normalizedYaw);
+      if (onAngleChange) onAngleChange(normalizedYaw);
+      animFrameRef.current = requestAnimationFrame(loop);
+    };
+
+    animFrameRef.current = requestAnimationFrame(loop);
+    return () => {
+      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+    };
+  }, [isAutoRocking, onAngleChange]);
+
+  // Mouse move perspective physics
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (isDragging || isAutoRocking) return;
+    const stage = stageRef.current;
+    if (!stage) return;
+
+    const rect = stage.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const cx = rect.width / 2;
+    const cy = rect.height / 2;
+
+    const nx = (x - cx) / cx;
+    const ny = (y - cy) / cy;
+
+    const rotX = -ny * 14;
+    const rotY = nx * 18;
+    setRotateX(rotX);
+    setRotateY(rotY);
+
+    const deg = Math.round(rotY * 2);
+    const yaw = deg < 0 ? deg + 360 : deg;
+    setAzimuthDeg(yaw);
+    if (onAngleChange) onAngleChange(yaw);
+
+    setGlintPos({
+      x: Math.round((x / rect.width) * 100),
+      y: Math.round((y / rect.height) * 100)
+    });
+  };
+
+  const handleMouseLeave = () => {
+    if (isDragging || isAutoRocking) return;
+    setRotateX(0);
+    setRotateY(0);
+    setAzimuthDeg(0);
+    if (onAngleChange) onAngleChange(0);
+  };
+
+  // Drag-to-spin interaction
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setIsAutoRocking(false);
+    setIsDragging(true);
+    startDragXRef.current = e.clientX;
+    startAzimuthRef.current = azimuthDeg;
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      setIsAutoRocking(false);
+      setIsDragging(true);
+      startDragXRef.current = e.touches[0].clientX;
+      startAzimuthRef.current = azimuthDeg;
+    }
+  };
+
+  useEffect(() => {
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+      if (!isDragging) return;
+      const deltaX = e.clientX - startDragXRef.current;
+      const newAzimuth = (startAzimuthRef.current + Math.round(deltaX * 0.8)) % 360;
+      const normalizedYaw = newAzimuth < 0 ? newAzimuth + 360 : newAzimuth;
+      setAzimuthDeg(normalizedYaw);
+      setRotateY(Math.sin((normalizedYaw * Math.PI) / 180) * 16);
+      if (onAngleChange) onAngleChange(normalizedYaw);
+    };
+
+    const handleGlobalTouchMove = (e: TouchEvent) => {
+      if (!isDragging || e.touches.length !== 1) return;
+      const deltaX = e.touches[0].clientX - startDragXRef.current;
+      const newAzimuth = (startAzimuthRef.current + Math.round(deltaX * 0.8)) % 360;
+      const normalizedYaw = newAzimuth < 0 ? newAzimuth + 360 : newAzimuth;
+      setAzimuthDeg(normalizedYaw);
+      setRotateY(Math.sin((normalizedYaw * Math.PI) / 180) * 16);
+      if (onAngleChange) onAngleChange(normalizedYaw);
+    };
+
+    const handleGlobalEnd = () => {
+      if (isDragging) {
+        setIsDragging(false);
+      }
+    };
+
+    if (isDragging) {
+      window.addEventListener('mousemove', handleGlobalMouseMove);
+      window.addEventListener('mouseup', handleGlobalEnd);
+      window.addEventListener('touchmove', handleGlobalTouchMove);
+      window.addEventListener('touchend', handleGlobalEnd);
+    }
+
+    return () => {
+      window.removeEventListener('mousemove', handleGlobalMouseMove);
+      window.removeEventListener('mouseup', handleGlobalEnd);
+      window.removeEventListener('touchmove', handleGlobalTouchMove);
+      window.removeEventListener('touchend', handleGlobalEnd);
+    };
+  }, [isDragging, onAngleChange]);
+
+  const scrollToDimensions = () => {
+    const elem = document.querySelector('.case-dimensions-wrapper');
+    if (elem) {
+      elem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  };
+
+  return (
+    <div className={`watch-3d-stage-container vault-twin-stage ${className}`}>
+      {/* Top Archival Status Banner */}
+      <div className="vault-twin-header">
+        <div className="vault-twin-status-badge">
+          <ShieldCheck size={12} strokeWidth={2} className="vault-gold-icon" />
+          <span>3D DIGITAL TWIN ARCHIVE</span>
+        </div>
+        <div className="vault-twin-stage-tag">
+          <span className="vault-pulse-dot" />
+          <span>PHOTOGRAMMETRY SCANNING</span>
+        </div>
+      </div>
+
+      {/* Floating Tactical HUD */}
+      <div className="watch-3d-hud" aria-live="polite">
+        <div className="watch-3d-hud-pill">
+          <Compass size={13} className={isAutoRocking ? 'spin-slow' : ''} />
+          <span>{azimuthDeg}° AZIMUTH</span>
+          <span className="watch-3d-hud-divider">•</span>
+          <span>{rotateX > 0 ? `+${Math.round(rotateX)}°` : `${Math.round(rotateX)}°`} TILT</span>
+          <span className="watch-3d-hud-divider">•</span>
+          <span>DYNAMIC 2.5D</span>
+        </div>
+      </div>
+
+      {/* Interactive 2.5D Dial Disc Aperture */}
+      <div
+        ref={stageRef}
+        className={`vault-twin-aperture ${isDragging ? 'is-dragging' : ''}`}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        onMouseDown={handleMouseDown}
+        onTouchStart={handleTouchStart}
+        role="region"
+        aria-label="Interactive 2.5D Watch Stage"
+      >
+        {/* Outer Circular Caliper Ring */}
+        <div className="vault-twin-guilloche-ring" aria-hidden="true" />
+
+        {/* Dynamic Watch Silhouette with Perspective Tilt */}
+        <div
+          className="vault-twin-image-wrap"
+          style={{
+            transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`,
+            transition: isDragging ? 'none' : 'transform 160ms cubic-bezier(0.16, 1, 0.3, 1)'
+          }}
+        >
+          <img
+            src={product.posterImageUrl || product.image}
+            alt={`${product.brand} ${product.model} Vault 3D Twin`}
+            className="vault-twin-img"
+            draggable={false}
+          />
+
+          {/* Dynamic Sapphire Glint Shimmer */}
+          <div
+            className="vault-twin-glint"
+            style={{
+              background: `radial-gradient(circle at ${glintPos.x}% ${glintPos.y}%, rgba(255,255,255,0.4) 0%, rgba(222,192,149,0.2) 32%, transparent 68%)`
+            }}
+            aria-hidden="true"
+          />
+        </div>
+
+        {/* Interactive Drag Hint Pill */}
+        <div className="vault-twin-drag-hint">
+          <Move3d size={12} strokeWidth={2} />
+          <span>DRAG TO TILT &bull; 360° PREVIEW</span>
+        </div>
+      </div>
+
+      {/* Vault Caliber Ledger Badges */}
+      <div className="vault-twin-specs-row">
+        <div className="vault-spec-pill">
+          <span className="vault-spec-label">DIAMETER</span>
+          <span className="vault-spec-val">{product.caseSize || '40mm'}</span>
+        </div>
+        <div className="vault-spec-pill">
+          <span className="vault-spec-label">CALIBER</span>
+          <span className="vault-spec-val">{product.movement}</span>
+        </div>
+        <div className="vault-spec-pill">
+          <span className="vault-spec-label">LUG SPAN</span>
+          <span className="vault-spec-val">{product.caseLugToLug || '47.5mm'}</span>
+        </div>
+      </div>
+
+      {/* Vault Footer Action Controls */}
+      <div className="vault-twin-footer-actions">
+        {onSwitchToMacro && (
+          <button
+            type="button"
+            className="vault-action-btn primary"
+            onClick={onSwitchToMacro}
+            title="Inspect Macro Dial Finish"
+          >
+            <Search size={13} strokeWidth={2} />
+            <span>Macro Dial View</span>
+          </button>
+        )}
+
+        <button
+          type="button"
+          className="vault-action-btn"
+          onClick={scrollToDimensions}
+          title="Jump to Case Dimension Calipers"
+        >
+          <Cpu size={13} strokeWidth={2} />
+          <span>Caliper Specs</span>
+        </button>
+
+        <button
+          type="button"
+          className={`vault-action-btn icon-only ${isAutoRocking ? 'active' : ''}`}
+          onClick={() => setIsAutoRocking(!isAutoRocking)}
+          title={isAutoRocking ? 'Pause Turntable' : 'Play Auto-Rocking Turntable'}
+          aria-label={isAutoRocking ? 'Pause turntable' : 'Play turntable'}
+        >
+          {isAutoRocking ? <Pause size={13} strokeWidth={2} /> : <Play size={13} strokeWidth={2} />}
+        </button>
+
+        <button
+          type="button"
+          className="vault-action-btn icon-only"
+          onClick={() => {
+            setIsAutoRocking(false);
+            setRotateX(0);
+            setRotateY(0);
+            setAzimuthDeg(0);
+            if (onAngleChange) onAngleChange(0);
+          }}
+          title="Reset Orientation"
+          aria-label="Reset orientation"
+        >
+          <RotateCcw size={13} strokeWidth={2} />
+        </button>
       </div>
     </div>
   );

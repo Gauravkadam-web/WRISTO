@@ -5,8 +5,8 @@
 **Status:** All 8 Full-Stack Backend Modules + Desktop Parity Milestones 1–5 + Production DevOps + Cloud Storage Infrastructure 100% Complete & Verified.  
 **Backend Status:** Java 21 + Spring Boot 3.3+ (103/103 Tests Green) + PostgreSQL Flyway (V1–V11) + Docker + GitHub Actions CI.  
 **Total Production Routes:** 69 Statically Pre-rendered SSG & Dynamic Routes.  
-**GitHub Remote:** `https://github.com/Gauravkadam-web/WRISTO.git` (Branch: `main`, Latest Push: `ce3d1d3`)  
-**Last Updated:** October 7, 2026 (Production Bug Fixes & Isolation Complete)  
+**GitHub Remote:** `https://github.com/Gauravkadam-web/WRISTO.git` (Branch: `main`, Latest Push: `4c929c8`)  
+**Last Updated:** October 11, 2026 (Live Razorpay Payment Gateway Integration Verified & Deployed)  
 
 ---
 
@@ -555,11 +555,60 @@
 
 ---
 
-## 10. Pending Backlog
+## 10. Live Razorpay Payment Gateway Integration & Hardening (Session 10 — Oct 11, 2026)
 
-- [ ] **Watch Images 26–40:** Fresh AI generation required (quota resets ~3:00 PM IST Oct 7, 2026). Prompts pre-written in `wristo-next/scripts/watch_prompts.json` (entries 26–40).
+### Session 10A: API Key & Secret Auto-Sanitization ✅
+- **Objective:** Prevent common cloud environment copy-paste bugs where whitespace or enclosing quotes (`"..."`, `'...'`) break HTTP Basic Authentication and HMAC signature verification.
+- **Files Modified:**
+  - `wristo-backend/src/main/java/com/wristo/modules/payment/service/PaymentService.java`: Sanitized `cleanKeyId` and `cleanSecret` by trimming and stripping quotes; applied sanitized values across order creation, Basic Auth headers, response payloads, and HMAC generation.
+  - `wristo-next/src/app/api/payments/create-order/route.ts`: Sanitized `rawKeyId` and `rawKeySecret`.
+  - `wristo-next/src/services/paymentService.ts`: Sanitized `key` and `effectiveKey` in `isMockRazorpayKey()` and `openRazorpayCheckout()`.
+
+### Session 10B: Live Authentic Order Creation & Verification ✅
+- **Objective:** Enable authentic order generation via Razorpay REST API (`https://api.razorpay.com/v1/orders`) with seamless fallback.
+- **Outcome:** Live Render backend verified via `POST /payments/create-intent` returning authentic order `order_TmZBu8l364r8ZW` with status `AUTHENTIC_ORDER_CREATED`.
+
+### Session 10C: Cryptographic HMAC-SHA256 Verification ✅
+- **Objective:** Validate gateway signatures upon customer checkout completion using `Mac.getInstance("HmacSHA256")` and `MessageDigest.isEqual()`.
+- **Outcome:** Persists payment entity linked to order with status `PAID`, transitioning order payment status.
+
+### Session 10D: Git Commit & Production Push ✅
+- **Commit Hash:** `4c929c8`
+- **Branch:** `main` ➔ `origin/main`
+- **Test Suite:** Spring Boot `PaymentControllerTest` 3/3 green, full backend 102/102 green, Next.js build 104/104 routes compiled cleanly.
+
+---
+
+## 11. Product Detail Page (PDP) 3D Viewer Refactor & Two-Column Grid Rebalance (Session 11 — Oct 11, 2026) ✅
+
+### Session 11A: Dynamic 3D Model Asset Pipeline & Option B Vault Twin Fallback ✅
+- **Objective:** Eliminate procedural placeholder rings/spheres in favor of a real CAD asset loader and a bespoke Option B Luxury Vault Twin fallback when CAD models are in production.
+- **Achievements:**
+  - **Schema Extension:** Updated `Product` interface in `wristo-next/src/types/product.ts` with `model3dUrl?`, `posterImageUrl?`, `hotspots?`, `caseLugToLug?`, `caseThickness?`, and `lugWidth?`.
+  - **Real GLTF/GLB Engine:** Implemented `WebGLWatchStage` inside `Watch3DCanvas.tsx` utilizing Three.js `GLTFLoader`, `OrbitControls` with smooth damping, studio lighting presets (key, fill, rim), and camera presets (`[Dial]`, `[Crown]`, `[Angle]`, `[Back]`) with smooth lerp interpolation.
+  - **Option B Digital Twin Vault Card:** When `product.model3dUrl` is absent, renders a dark luxury archival vault card featuring 2.5D interactive mouse/touch perspective tilt physics, dynamic sapphire crystal glint reflection, drag-to-spin turntable azimuth tracking, live caliber ledger metrics, and quick jump actions to Macro Dial view and Caliper Specs.
+  - **Gallery Integration:** Updated `ProductGallery.tsx` thumbnail rail and toolbar to distinguish between `3D MODEL` and `3D VAULT` with seamless view switching.
+
+### Session 11B: Two-Column Grid Rebalance & Left Column Densification ✅
+- **Objective:** Eliminate severe desktop empty white space under the left gallery rail while the right column scrolls through deep technical specifications.
+- **Achievements:**
+  - **Case Dimension & Wrist Scale Visualizer:** Created `CaseDimensionVisualizer.tsx` with an SVG caliper blueprint (Case Diameter, Lug-to-Lug, Thickness, Lug Width) and interactive wrist scale selector (`Slim 6.0"`, `Standard 6.75"`, `Broad 7.5"`) with proportional coverage meter.
+  - **Luxury Trust Grid:** Created `ProductTrustGrid.tsx` with a compact 2x2 luxury assurance card grid (100% Authenticity, Insured Express, 30-Day Inspection, 2-Year Caliber Warranty) replacing stacked accordions.
+  - **Layout Assembly:** Updated `ProductDetailClient.tsx` to mount `<ProductGallery />`, `<CaseDimensionVisualizer />`, and `<ProductTrustGrid />` in `.pdp-gallery-column`, removing `ProductTrustAccordions` from the right column for balanced ~960px column heights.
+  - **CSS Refinement:** Updated `globals.css` with responsive flex column flow, caliper SVG diagrams, wrist meter animations, and luxury card styling.
+
+### Verification Status:
+- `npm run build` in `wristo-next`: **104/104 routes compiled cleanly (0 errors)**.
+- `mvn test` in `wristo-backend`: **103/103 tests green (BUILD SUCCESS)**.
+
+---
+
+## 12. Pending Backlog
+
+- [x] **Razorpay Payment Gateway Integration:** Live order creation and HMAC verification fully verified on Render & Vercel.
+- [x] **PDP 3D Viewer & Balanced Two-Column Layout:** Option B Horological Vault Twin + Case Dimension Visualizer + Product Trust Grid fully implemented and verified.
+- [ ] **Watch Images 26–40:** Fresh AI generation required. Prompts pre-written in `wristo-next/scripts/watch_prompts.json` (entries 26–40).
 - [ ] **Re-upload to Supabase after generation:** Run `node scripts/upload_to_supabase.js` after new images are placed in `wristo-next/public/assets/products/`.
-- [ ] **Commit & Push Session 9 changes** to `main` (pending explicit Gaurav Bhau confirmation).
 - [ ] **Set `NEXT_PUBLIC_STORAGE_BASE_URL`** in Vercel/Render deployment environment for production CDN routing.
 
 

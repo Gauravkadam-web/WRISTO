@@ -3,13 +3,14 @@
 import React, { useState } from 'react';
 import { Product } from '@/types/product';
 import ProductGallery from './ProductGallery';
+import CaseDimensionVisualizer from './CaseDimensionVisualizer';
+import ProductTrustGrid from './ProductTrustGrid';
 import ProductHeader from './ProductHeader';
 import ProductPricing from './ProductPricing';
 import ProductVariants from './ProductVariants';
 import ProductActions from './ProductActions';
 import AIConciergeInsight from './AIConciergeInsight';
 import ProductSpecsGrid from './ProductSpecsGrid';
-import ProductTrustAccordions from './ProductTrustAccordions';
 import StickyMobilePurchaseBar from './StickyMobilePurchaseBar';
 import CoordinatedWatches from './CoordinatedWatches';
 
@@ -32,9 +33,11 @@ export default function ProductDetailClient({
     <main className="pdp-main-view">
       <div className="container pdp-container">
         <div className="pdp-layout">
-          {/* Left Column: Sticky Gallery & 3D Interactive Stage */}
+          {/* Left Column: Sticky Gallery, Case Dimensions & Luxury Assurance Grid */}
           <div className="pdp-gallery-column">
             <ProductGallery product={product} />
+            <CaseDimensionVisualizer product={product} />
+            <ProductTrustGrid />
           </div>
 
           {/* Right Column: Editorial Information, Pricing, Specs & Actions */}
@@ -71,9 +74,6 @@ export default function ProductDetailClient({
 
             {/* Technical Horological Specifications Matrix */}
             <ProductSpecsGrid product={product} />
-
-            {/* Trust, Delivery & Warranty Accordions */}
-            <ProductTrustAccordions />
           </div>
         </div>
       </div>

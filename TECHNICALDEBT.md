@@ -4,7 +4,7 @@
 **Current Status:** All Core Commerce Phases 1–10 + Desktop Parity Milestones 1–5 + Supabase Cloud Storage Infrastructure 100% Complete & Build-Verified (69 Routes)  
 **Active Milestone:** Watch Image Completion (26–40) + Vercel/Render Production Env Setup  
 **Architecture Spec:** `docs/backend_architecture_specification.md`  
-**Last Updated:** October 7, 2026  
+**Last Updated:** October 11, 2026  
 
 ---
 
@@ -31,7 +31,7 @@ With Desktop Parity Milestones 1–5 fully completed and verified, all frontend 
 | **TD-09** | Backend Auth | JWT Auth, RBAC, User Profiles & Seller Onboarding | High | Backend Phase 2 | ✅ **RESOLVED** (`be27ddc`) |
 | **TD-10** | Backend Catalog & Stock | Master 40 Horology Seed, Multi-Vendor Listings & Atomic Stock Locking | High | Backend Phase 3 | ✅ **RESOLVED** (35/35 Tests Green) |
 | **TD-11** | Backend Cart & Wishlist | Persistent Cart, Coupon Engine, Wishlist & 9-Axis Comparison Matrix | High | Backend Phase 4 | ✅ **RESOLVED** (56/56 Tests Green) |
-| **TD-12** | Backend Checkout & Orders | Multi-Step Checkout, 15m Stock Hold, Order Tracking & Payment Gateway Integration | High | Backend Phase 5 | ✅ **RESOLVED** (66/66 Tests Green) |
+| **TD-12** | Backend Checkout & Orders | Multi-Step Checkout, 15m Stock Hold, Order Tracking & Razorpay Live Gateway Integration | High | Backend Phase 5 & Session 10 | ✅ **RESOLVED** (`4c929c8` — Live Orders & HMAC Verified) |
 | **TD-13** | Backend Provenance | Digital Authenticity Certificates, Guilloché Rosette, QR Verification & Vault Ledger | High | Backend Phase 6 | ✅ **RESOLVED** (77/77 Tests Green) |
 | **TD-14** | Backend AI & Realtime | AI Watch Concierge Tool Calling, Search Tokenizer & STOMP WebSockets | High | Backend Phase 7 | ✅ **RESOLVED** (86/86 Tests Green) |
 | **TD-15** | Backend Editorial CMS | Curators, 6 Canonical Essays, Slug Index, Admin CMS & Lead Story Election | High | Backend Phase 8 | ✅ **RESOLVED** (103/103 Tests Green) |
@@ -44,6 +44,7 @@ With Desktop Parity Milestones 1–5 fully completed and verified, all frontend 
 | **TD-22** | 3D Horology Stage | PDP lacks interactive 360° turntable and exploded caliber view | Medium | Phase 3 (3D & SVG) | ✅ **RESOLVED** (Phase 3 Implemented) |
 | **TD-23** | Certificate Animation | Provenance Certificate lacks animated SVG guilloché drawing & wax stamp | Medium | Phase 3 (3D & SVG) | ✅ **RESOLVED** (Phase 3 Implemented) |
 | **TD-24** | Product Images | Watch images 26–40 are placeholder duplicates (copied from 12/13) pending AI generation | Medium | Session 7 (Image Completion) | 🟡 **In Progress** (Quota resets ~3 PM IST Oct 7) |
+| **TD-25** | PDP Layout & 3D Stage | Procedural 3D rings and left column empty white space on desktop PDP | Medium | Milestone 11 | ✅ **RESOLVED** (Option B Vault Twin + Case Dimension Visualizer + Product Trust Grid) |
 
 ---
 
