@@ -186,7 +186,7 @@ export async function verifyPayment(payload: VerifyPaymentPayload): Promise<bool
  */
 export function isMockRazorpayKey(key?: string): boolean {
   if (!key || typeof key !== 'string') return true;
-  const clean = key.trim().toLowerCase();
+  const clean = key.trim().replace(/['"]/g, '').toLowerCase();
   return (
     clean === '' ||
     clean.includes('mock') ||
@@ -254,6 +254,7 @@ export async function openRazorpayCheckout({
   } else {
     effectiveKey = key || clientEnvKey || 'rzp_test_TlL6IfVxEWFDDd';
   }
+  effectiveKey = effectiveKey.trim().replace(/['"]/g, '');
 
   // Load Razorpay official SDK
   const isLoaded = await loadRazorpayScript();

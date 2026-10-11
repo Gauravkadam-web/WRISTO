@@ -5,8 +5,11 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { amount, currency = 'INR', orderId } = body;
 
-    const keyId = process.env.RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
-    const keySecret = process.env.RAZORPAY_KEY_SECRET;
+    const rawKeyId = process.env.RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+    const rawKeySecret = process.env.RAZORPAY_KEY_SECRET;
+
+    const keyId = rawKeyId ? rawKeyId.trim().replace(/['"]/g, '') : '';
+    const keySecret = rawKeySecret ? rawKeySecret.trim().replace(/['"]/g, '') : '';
 
     if (!keyId || !keySecret) {
       return NextResponse.json({
@@ -16,7 +19,7 @@ export async function POST(req: Request) {
     }
 
     const amountInPaise = Math.round(Number(amount || 100) * 100);
-    const auth = Buffer.from(`${keyId.trim()}:${keySecret.trim()}`).toString('base64');
+    const auth = Buffer.from(`${keyId}:${keySecret}`).toString('base64');
     const receipt = `rcpt_${Date.now().toString(36)}`;
 
     const rzpRes = await fetch('https://api.razorpay.com/v1/orders', {
