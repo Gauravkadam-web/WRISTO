@@ -120,13 +120,7 @@ export async function createPaymentIntent(
       if (isMockRazorpayKey(res.data.keyId) && clientEnvKey && !isMockRazorpayKey(clientEnvKey)) {
         res.data.keyId = clientEnvKey;
       }
-      if (isRealRazorpayOrderId(res.data.gatewayOrderId)) {
-        return res.data;
-      }
-      // If backend order ID was fallback mock, keep the res data but allow Next.js fallback to upgrade it
-      if (gateway !== 'RAZORPAY') {
-        return res.data;
-      }
+      return res.data;
     }
   } catch (err) {
     console.warn('Backend payment intent endpoint offline or in fallback mode:', err);
@@ -159,7 +153,7 @@ export async function createPaymentIntent(
   }
 
   // Resilient fallback intent for local testing / offline sandbox
-  const defaultKeyId = (clientEnvKey && !isMockRazorpayKey(clientEnvKey)) ? clientEnvKey : 'rzp_test_mock_wristo';
+  const defaultKeyId = (clientEnvKey && !isMockRazorpayKey(clientEnvKey)) ? clientEnvKey : 'rzp_test_TlL6IfVxEWFDDd';
   return {
     gatewayOrderId: `order_rzp_${Date.now()}`,
     gateway,
@@ -258,32 +252,17 @@ export async function openRazorpayCheckout({
   } else if (clientEnvKey && !isMockRazorpayKey(clientEnvKey)) {
     effectiveKey = clientEnvKey;
   } else {
-    effectiveKey = key || clientEnvKey || 'rzp_test_mock_wristo';
+    effectiveKey = key || clientEnvKey || 'rzp_test_TlL6IfVxEWFDDd';
   }
 
-  // If using mock/unconfigured Razorpay key, simulate seamless luxury checkout
-  if (isMockRazorpayKey(effectiveKey)) {
-    console.info('Sandbox preview mode active. Simulating instant luxury order acquisition.');
-    setTimeout(() => {
-      onSuccess({
-        razorpay_payment_id: `pay_sim_${Date.now()}`,
-        razorpay_order_id: orderId || `order_sim_${Date.now()}`,
-        razorpay_signature: `sig_sim_${Date.now()}`
-      });
-    }, 500);
-    return;
-  }
-
+  // Load Razorpay official SDK
   const isLoaded = await loadRazorpayScript();
 
   if (!isLoaded || !(window as any).Razorpay) {
-    console.warn('Razorpay SDK unavailable. Triggering sandbox completion.');
-    // Simulated instant payment response if Razorpay script is blocked or offline
-    onSuccess({
-      razorpay_payment_id: `pay_sim_${Date.now()}`,
-      razorpay_order_id: orderId || `order_sim_${Date.now()}`,
-      razorpay_signature: `sig_sim_${Date.now()}`
-    });
+    console.error('Razorpay SDK unavailable or blocked.');
+    if (onError) {
+      onError({ description: 'Razorpay Payment Gateway could not be loaded. Please verify your network connection and reload.' });
+    }
     return;
   }
 

@@ -92,8 +92,12 @@ public class PaymentService {
                     if (amountInPaise < 100) {
                         amountInPaise = 100;
                     }
+
+                    String cleanKeyId = razorpayKeyId != null ? razorpayKeyId.trim().replace("\"", "").replace("'", "") : "";
+                    String cleanSecret = razorpayKeySecret != null ? razorpayKeySecret.trim().replace("\"", "").replace("'", "") : "";
+
                     String auth = Base64.getEncoder().encodeToString(
-                            (razorpayKeyId.trim() + ":" + razorpayKeySecret.trim()).getBytes(StandardCharsets.UTF_8)
+                            (cleanKeyId + ":" + cleanSecret).getBytes(StandardCharsets.UTF_8)
                     );
                     String receipt = "rcpt_" + UUID.randomUUID().toString().replace("-", "").substring(0, 12);
 
@@ -132,7 +136,11 @@ public class PaymentService {
                             log.info("Live Razorpay Order generated: {} for amount: {} {}", gatewayOrderId, amount, currency);
                         }
                     } else {
-                        orderStatus = "RZP_ERR_" + httpResponse.statusCode() + ": " + httpResponse.body();
+                        String secretMasked = cleanSecret.length() > 6
+                                ? cleanSecret.substring(0, 3) + "..." + cleanSecret.substring(cleanSecret.length() - 3)
+                                : "len_" + cleanSecret.length();
+                        orderStatus = "RZP_ERR_" + httpResponse.statusCode() + ": " + httpResponse.body() +
+                                " [Key=" + cleanKeyId + ", Secret=" + secretMasked + ", Len=" + cleanSecret.length() + "]";
                         log.warn("Razorpay API order response status ({}): {}. Utilizing standard gateway order sequence.",
                                 httpResponse.statusCode(), httpResponse.body());
                     }
