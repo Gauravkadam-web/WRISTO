@@ -179,3 +179,101 @@ export interface AdminServiceRecord {
 }
 
 export type AdminServiceRecordPayload = AdminServiceRecord;
+
+export interface AdminWatchSpecifications {
+  caseDiameter?: string;
+  caseMaterial?: string;
+  dialFinish?: string;
+  strapMaterial?: string;
+  waterResistance?: string;
+  powerReserve?: string;
+  glassCrystal?: string;
+  claspType?: string;
+  warrantyPeriod?: string;
+}
+
+export interface AdminWatchDimensions {
+  lugToLug?: string;
+  caseThickness?: string;
+  lugWidth?: string;
+}
+
+export interface AdminWatch3DAssets {
+  modelUrl?: string;
+  posterUrl?: string;
+  has3dModel?: boolean;
+}
+
+export interface AdminWatch {
+  id: string;
+  num: string;
+  brand: string;
+  model: string;
+  price: number;
+  originalPrice: number;
+  imageUrl: string;
+  category: string;
+  gender: string;
+  movement: string;
+  style: string;
+  caseSize: string;
+  strap: string;
+  dial: string;
+  material: string;
+  waterResistance: string;
+  badge?: string;
+  tagline: string;
+  description: string;
+  aiMatchScore: number;
+  aiReason: string;
+  stockCount: number;
+  isActive: boolean;
+  specifications?: AdminWatchSpecifications;
+  dimensions?: AdminWatchDimensions;
+  assets3d?: AdminWatch3DAssets;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface SaveWatchPayload {
+  id?: string;
+  num?: string;
+  brandName: string;
+  brandId?: string;
+  model: string;
+  price: number;
+  originalPrice?: number;
+  imageUrl?: string;
+  categoryName?: string;
+  categoryId?: string;
+  gender?: string;
+  movement?: string;
+  style?: string;
+  caseSize?: string;
+  strap?: string;
+  dial?: string;
+  material?: string;
+  waterResistance?: string;
+  badge?: string;
+  tagline?: string;
+  description?: string;
+  aiMatchScore?: number;
+  aiReason?: string;
+  stockCount?: number;
+  isActive?: boolean;
+  caseDiameterMm?: string;
+  caseMaterial?: string;
+  dialFinish?: string;
+  strapMaterial?: string;
+  waterResistanceAtm?: string;
+  powerReserveHours?: string;
+  glassCrystal?: string;
+  claspType?: string;
+  warrantyPeriod?: string;
+  model3dUrl?: string;
+  posterImageUrl?: string;
+  caseLugToLug?: string;
+  caseThickness?: string;
+  lugWidth?: string;
+}
+

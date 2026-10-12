@@ -2,11 +2,11 @@
 
 **Brand:** WRISTO  
 **Project:** Luxury Watch E-Commerce Web Application  
-**Status:** All 8 Full-Stack Backend Modules + Desktop Parity Milestones 1–5 + Production DevOps + Cloud Storage Infrastructure 100% Complete & Verified.  
-**Backend Status:** Java 21 + Spring Boot 3.3+ (103/103 Tests Green) + PostgreSQL Flyway (V1–V11) + Docker + GitHub Actions CI.  
-**Total Production Routes:** 69 Statically Pre-rendered SSG & Dynamic Routes.  
-**GitHub Remote:** `https://github.com/Gauravkadam-web/WRISTO.git` (Branch: `main`, Latest Push: `0f431a4`)  
-**Last Updated:** October 11, 2026 (PDP 3D Viewer Refactor & Two-Column Grid Rebalance Verified & Deployed)  
+**Status:** All 8 Full-Stack Backend Modules + Desktop Parity Milestones 1–5 + Order Synchronization Bridge + Master Watch Catalog Management (`/admin/watches`) 100% Complete & Verified.  
+**Backend Status:** Java 21 + Spring Boot 3.3+ (110/110 Tests Green) + PostgreSQL Flyway (V1–V11) + Docker + GitHub Actions CI.  
+**Total Production Routes:** 105 Statically Pre-rendered SSG & Dynamic Routes.  
+**GitHub Remote:** `https://github.com/Gauravkadam-web/WRISTO.git` (Branch: `main`)  
+**Last Updated:** October 12, 2026 (Order Synchronization Bridge & Master Watch Catalog Management Verified)  
 
 ---
 
@@ -603,12 +603,51 @@
 
 ---
 
-## 12. Pending Backlog
+## 13. Order Synchronization Bridge & Master Watch Catalog Management (Session 12 — Oct 12, 2026) ✅
 
-- [x] **Razorpay Payment Gateway Integration:** Live order creation and HMAC verification fully verified on Render & Vercel.
-- [x] **PDP 3D Viewer & Balanced Two-Column Layout:** Option B Horological Vault Twin + Case Dimension Visualizer + Product Trust Grid fully implemented and verified.
-- [ ] **Watch Images 26–40:** Fresh AI generation required. Prompts pre-written in `wristo-next/scripts/watch_prompts.json` (entries 26–40).
-- [ ] **Re-upload to Supabase after generation:** Run `node scripts/upload_to_supabase.js` after new images are placed in `wristo-next/public/assets/products/`.
-- [ ] **Set `NEXT_PUBLIC_STORAGE_BASE_URL`** in Vercel/Render deployment environment for production CDN routing.
+### Session 13A: Customer Order Synchronization Bridge ✅
+- **Objective:** Eliminate the disconnection between storefront customer orders (Razorpay/COD placed via `orderService.ts`) and Admin Panel Order Fulfillment (`/admin/orders` via `adminService.ts`).
+- **Achievements:**
+  - **Array Persistence in `orderService.ts`:** Updated `createOrder()` to store orders in the `wristo_orders` array in `localStorage` in addition to `wristo_latest_order`.
+  - **Unified Lookup & Bi-directional Bridge in `adminService.ts`:** Updated `getOrders()` to fetch remote backend orders and seamlessly merge customer local orders (`wristo_orders`), preventing customer orders from disappearing in guest/disconnected mode.
+  - **Synchronized Status Updates:** Updated `updateOrderStatus()` to update the remote Spring Boot backend and write back updated order statuses (`CONFIRMED` ➔ `PROCESSING_VAULT` ➔ `DISPATCHED` ➔ `DELIVERED`) directly to `wristo_orders` and `wristo_latest_order` so client portals reflect real-time updates instantly.
+
+### Session 13B: Backend Master Watch Catalog Management APIs ✅
+- **Objective:** Provide full back-office control plane to curate canonical timepieces (`Watch`), update technical horology specs (`WatchSpec`), toggle active status, and soft-delete/archive models.
+- **Achievements:**
+  - **DTOs:** Created `CreateWatchRequest.java` and `UpdateWatchRequest.java` with validation (`@NotBlank`, `@NotNull`, `@Positive`) for horology specifications and 3D CAD assets.
+  - **Repository:** Created `WatchSpecRepository.java` for JPA specification operations.
+  - **Service:** Added `getAllWatchesAdmin()`, `getWatchByIdAdmin()`, `createWatch()`, `updateWatch()`, `deleteWatch()`, and `toggleWatchActive()` in `CatalogService.java`.
+  - **Controller:** Implemented `AdminCatalogController.java` with endpoints:
+    - `GET /api/v1/admin/watches`: Paginated listing with search, brand, and active status filters.
+    - `GET /api/v1/admin/watches/{id}`: Single timepiece details with technical specs.
+    - `POST /api/v1/admin/watches`: Create canonical timepiece with auto-generated ID and specifications.
+    - `PUT /api/v1/admin/watches/{id}`: Update timepiece attributes, dimensions, and specs.
+    - `DELETE /api/v1/admin/watches/{id}`: Soft-delete/archive watch.
+    - `PATCH /api/v1/admin/watches/{id}/toggle-status`: Toggle storefront active status.
+  - **Security & Testing:** Protected endpoints with `@PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")`. Created `AdminCatalogControllerTest.java` with 7 integration tests covering RBAC security and all CRUD endpoints.
+
+### Session 13C: Next.js Admin Master Timepieces Control Plane (`/admin/watches`) ✅
+- **Objective:** Build an ultra-luxury admin control plane for master watch curation matching WRISTO's bespoke design tokens.
+- **Achievements:**
+  - **Navigation:** Added `Master Timepieces` navigation item (`SlidersHorizontal` icon) in `AdminSidebar.tsx`.
+  - **Service Layer:** Added `getAdminWatches()`, `getAdminWatchById()`, `createAdminWatch()`, `updateAdminWatch()`, `deleteAdminWatch()`, and `toggleAdminWatchStatus()` in `adminService.ts` with live REST endpoints and resilient local storage synchronization (`wristo_custom_watches`).
+  - **Storefront Integration:** Enhanced `productService.ts` (`getProductById` and `getCatalogProducts`) to resolve custom/updated timepieces from `wristo_custom_watches`.
+  - **4-Tab Modal Editor (`WatchEditorModal.tsx`):**
+    - **Tab 1 — Identity & Details:** Brand, Model, Retail Price, Original Price, Ref Num, Category, Gender, Curatorial Badge, Image URL, Tagline, Description.
+    - **Tab 2 — Horological Specs:** Movement, Power Reserve, Case Size, Case Material, Dial Finish, Strap Material, Water Resistance, Glass Crystal, Clasp Type, Warranty.
+    - **Tab 3 — 3D CAD & Blueprint:** Model GLB URL, Poster URL, Lug-to-Lug, Case Thickness, Lug Width.
+    - **Tab 4 — AI Concierge & Inventory:** Stock Count, AI Match Score, AI Reason recommendation, Active Storefront toggle.
+    - Strict Zero-Emoji policy, 100% Lucide vector icons.
+  - **Control Plane Page (`/admin/watches`):**
+    - Executive KPI Cards: Total Models, Active in Storefront, 3D CAD Models, Vault Scarcity.
+    - Dynamic toolbar with search query, manufacture brand filter, and status filter.
+    - Luxury data table with thumbnail preview, 3D model badge indicator, pricing, stock pills, and action triggers.
+
+### Verification Status:
+- `mvn test` in `wristo-backend`: **110/110 tests green (100% BUILD SUCCESS)**.
+- `npm run build` in `wristo-next`: **105/105 routes compiled cleanly (0 errors)**.
+
+---
 
 

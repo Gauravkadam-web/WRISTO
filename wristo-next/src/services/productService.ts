@@ -120,7 +120,58 @@ export async function getProductById(id: string): Promise<Product | undefined> {
     // Continue to fallback
   }
 
-  // 2. Resilient fallback: locate from master product dataset
+  // 2. Custom watches from Admin Panel override / additions
+  if (typeof window !== 'undefined') {
+    try {
+      const stored = localStorage.getItem('wristo_custom_watches');
+      if (stored) {
+        const customWatches = JSON.parse(stored);
+        const customMatch = customWatches.find(
+          (w: any) => w.id?.toLowerCase() === cleanId.toLowerCase() ||
+                      w.model?.toLowerCase() === cleanId.toLowerCase() ||
+                      w.num === cleanId
+        );
+        if (customMatch && customMatch.isActive !== false) {
+          return {
+            id: customMatch.id,
+            num: customMatch.num,
+            brand: customMatch.brand,
+            model: customMatch.model,
+            price: customMatch.price,
+            originalPrice: customMatch.originalPrice,
+            rating: 5.0,
+            reviewsCount: 12,
+            image: customMatch.imageUrl,
+            category: customMatch.category,
+            gender: customMatch.gender as any,
+            movement: customMatch.movement,
+            style: customMatch.style,
+            caseSize: customMatch.caseSize,
+            strap: customMatch.strap,
+            dial: customMatch.dial,
+            material: customMatch.material,
+            waterResistance: customMatch.waterResistance,
+            badge: customMatch.badge,
+            tagline: customMatch.tagline,
+            description: customMatch.description,
+            aiMatchScore: customMatch.aiMatchScore,
+            aiReason: customMatch.aiReason,
+            occasion: ['Executive', 'Formal', 'Connoisseur'],
+            colors: ['Gold', 'Silver', 'Black'],
+            caseLugToLug: customMatch.dimensions?.lugToLug,
+            caseThickness: customMatch.dimensions?.caseThickness,
+            lugWidth: customMatch.dimensions?.lugWidth,
+            model3dUrl: customMatch.assets3d?.modelUrl,
+            posterImageUrl: customMatch.assets3d?.posterUrl
+          };
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  // 3. Resilient fallback: locate from master product dataset
   const localMatch = PRODUCTS.find(
     p => p.id.toLowerCase() === cleanId.toLowerCase() ||
          p.model.toLowerCase() === cleanId.toLowerCase() ||

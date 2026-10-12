@@ -4,9 +4,10 @@
 **Tagline:** Your Time. Your Style.  
 **Platform:** Ultra-Luxury Multi-Brand Watch E-Commerce Experience  
 **Core Technologies:** Next.js 16+ (App Router, Turbopack, React 19, TypeScript), Vanilla CSS Custom Tokens, Decoupled Service Architecture (Spring Boot-Ready)  
-**Total Production Routes:** 69 Statically Pre-rendered SSG Routes (40 Watches + 6 Journal Articles + Standalone Wishlist, Cart, Brands & Core Pages)  
-**GitHub Remote:** `https://github.com/Gauravkadam-web/WRISTO.git` (Branch: `main`, Latest Push: `4c929c8`)  
-**Last Updated:** October 11, 2026  
+**Total Production Routes:** 105 Statically Pre-rendered SSG & Dynamic Routes (40 Watches + 6 Journal Articles + Standalone Wishlist, Cart, Brands, Full Admin Suite & Core Pages)  
+**Backend Status:** Java 21 + Spring Boot 3.3.4 (110/110 Tests Green) + PostgreSQL Flyway (V1–V11)  
+**GitHub Remote:** `https://github.com/Gauravkadam-web/WRISTO.git` (Branch: `main`)  
+**Last Updated:** October 12, 2026  
 
 ---
 
@@ -583,9 +584,34 @@ WRISTO supports an ultra-luxury checkout sequence where online transactions (Car
    - `wristo-next/src/app/checkout/CheckoutClient.tsx`:
      - Seamless integration in checkout stepper: launches modal, verifies signature with backend upon success, creates order record, clears cart, and redirects to `/checkout/success`.
 
-### Live Verification & Test Report
-- **Backend Tests:** `PaymentControllerTest.java` 3/3 tests passing green; entire Spring Boot test suite 102/102 tests passing.
-- **Frontend Build:** `npm run build` compiled 104/104 static and dynamic routes with 0 errors.
-- **Live Endpoint Test:** Verified live Render endpoint `https://wristo.onrender.com/api/v1/payments/create-intent` successfully creating authentic Razorpay orders (`order_TmZBu8l364r8ZW`, status: `AUTHENTIC_ORDER_CREATED`).
-- **Git Commit:** `4c929c8` pushed to `origin/main`.
+---
+
+## 21. Order Synchronization Bridge & Master Watch Catalog Management (Session 12 — October 12, 2026)
+
+### Architecture & Grounding
+Aligned with WRISTO SRS v1.0 Section 2.2 (Canonical Products vs. Seller Listings), Section 2.9 (Order Lifecycle State Machine), and Section 16 (Admin Panel Governance):
+
+1. **Order Synchronization Bridge:**
+   - Problem Addressed: Previously, storefront customer checkouts stored latest placed orders in `wristo_latest_order`, while `adminService.ts` inspected `wristo_orders`, causing guest/disconnected acquisitions to be omitted from `/admin/orders`.
+   - Resolution: `orderService.ts` appends all completed orders to `wristo_orders` array in `localStorage`.
+   - Bi-directional Synchronization: `adminService.ts` seamlessly merges remote Spring Boot backend orders (`GET /api/v1/admin/orders`) with local `wristo_orders`. When an admin updates an order's fulfillment state (`CONFIRMED` ➔ `PROCESSING_VAULT` ➔ `DISPATCHED` ➔ `DELIVERED`), the change is persisted both remotely and synchronized back to customer-facing localStorage (`wristo_orders` & `wristo_latest_order`), providing instant real-time status reflection across customer accounts and order success screens.
+
+2. **Master Watch Catalog Management (`/admin/watches`):**
+   - Distinction in SRS: `/admin/listings` governs third-party *Seller Submissions* (Vendor marketplace moderation). `/admin/watches` provides curatorial governance over *Canonical Brand Timepieces* (core 40 watches + new additions).
+   - Backend APIs (`AdminCatalogController.java`):
+     - `GET /api/v1/admin/watches`: Paginated listing with search, brand, and active status filters.
+     - `GET /api/v1/admin/watches/{id}`: Single timepiece details with technical specs.
+     - `POST /api/v1/admin/watches`: Create canonical timepiece with auto-generated ID and specifications.
+     - `PUT /api/v1/admin/watches/{id}`: Update timepiece attributes, dimensions, and specs.
+     - `DELETE /api/v1/admin/watches/{id}`: Soft-delete/archive watch.
+     - `PATCH /api/v1/admin/watches/{id}/toggle-status`: Toggle storefront active status.
+     - Security: Enforces `@PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")`.
+   - Frontend UI (`wristo-next/src/app/admin/watches/page.tsx` & `WatchEditorModal.tsx`):
+     - Luxury 4-tab editor: Identity & Positioning, Horological Specifications, 3D CAD & Dimensional Blueprint Assets, and AI Concierge & Inventory.
+     - Zero emojis, 100% Lucide vector icons (`SlidersHorizontal`, `Layers`, `Box`, `Clock`, `Sparkles`).
+     - Real-time catalog fallback and override integration across `productService.ts` and `adminService.ts`.
+
+### Automated Verification Status:
+- **Backend Test Suite:** `AdminCatalogControllerTest.java` (7/7 green), full backend test suite **110/110 tests passing green**.
+- **Frontend Production Build:** `npm run build` compiled **105/105 routes with 0 errors**.
 

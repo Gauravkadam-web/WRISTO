@@ -15,8 +15,11 @@ import {
   AdminOrder,
   AdminSeller,
   AdminListing,
-  AdminServiceRecord
+  AdminServiceRecord,
+  AdminWatch,
+  SaveWatchPayload
 } from '@/types/admin';
+import { PRODUCTS } from '@/data/products';
 
 class AdminService {
   private currentAdmin: AdminUser | null = null;
@@ -484,6 +487,7 @@ class AdminService {
   // Client Orders & Lifecycle Moderation
   // ==========================================
   async getOrders(): Promise<AdminOrder[]> {
+    let apiOrders: AdminOrder[] = [];
     try {
       const res = await apiClient.get<any>('/admin/orders?size=100');
       if (res && res.data) {
@@ -494,7 +498,7 @@ class AdminService {
           : [];
 
         if (list.length > 0) {
-          const mapped: AdminOrder[] = list.map((o: any) => ({
+          apiOrders = list.map((o: any) => ({
             id: o.id || o.orderNumber,
             orderNumber: o.orderNumber,
             customerName: o.customerName || o.address?.name || 'Valued Client',
@@ -517,25 +521,20 @@ class AdminService {
             })),
             createdAt: o.placedAt || o.createdAt || new Date().toISOString()
           }));
-
-          if (typeof window !== 'undefined') {
-            localStorage.setItem('wristo_admin_orders', JSON.stringify(mapped));
-          }
-          return mapped;
         }
       }
     } catch {
-      // Fallback to local
+      // API fallback
     }
 
+    // Merge with storefront customer orders from localStorage
+    let storefrontOrders: AdminOrder[] = [];
     if (typeof window !== 'undefined') {
       try {
-        const stored = localStorage.getItem('wristo_admin_orders');
-        if (stored) return JSON.parse(stored);
-        const storefrontOrders = localStorage.getItem('wristo_orders');
-        if (storefrontOrders) {
-          const parsed: any[] = JSON.parse(storefrontOrders);
-          return parsed.map((o: any) => ({
+        const rawStorefront = localStorage.getItem('wristo_orders');
+        if (rawStorefront) {
+          const parsed: any[] = JSON.parse(rawStorefront);
+          storefrontOrders = parsed.map((o: any) => ({
             id: o.orderId,
             orderNumber: o.orderId,
             customerName: o.address?.fullName || 'Valued Client',
@@ -545,10 +544,10 @@ class AdminService {
             orderStatus: (o.status || 'CONFIRMED').toUpperCase(),
             paymentStatus: 'PAID',
             paymentMethod: o.paymentMethod || 'SECURE_ESCROW',
-            courierName: 'Brinks Luxury Armored Logistics',
-            trackingNumber: 'BRK-88942-CH',
+            courierName: o.courierName || 'Brinks Luxury Armored Logistics',
+            trackingNumber: o.trackingNumber || 'PENDING-DISPATCH',
             items: (o.items || []).map((i: any) => ({
-              id: i.id,
+              id: i.productId || i.id,
               brand: i.brand || 'WRISTO',
               model: i.model || i.name,
               price: i.price,
@@ -559,6 +558,32 @@ class AdminService {
             createdAt: o.createdAt
           }));
         }
+      } catch {
+        // ignore
+      }
+    }
+
+    // Combine API orders and storefront orders, prioritizing API for matching orderNumber
+    const combined: AdminOrder[] = [...apiOrders];
+    storefrontOrders.forEach(so => {
+      const existingIdx = combined.findIndex(co => co.orderNumber === so.orderNumber || co.id === so.id);
+      if (existingIdx === -1) {
+        combined.push(so);
+      }
+    });
+
+    if (combined.length > 0) {
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('wristo_admin_orders', JSON.stringify(combined));
+      }
+      return combined;
+    }
+
+    // Final fallback to cached admin orders if any
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem('wristo_admin_orders');
+        if (stored) return JSON.parse(stored);
       } catch {
         // ignore
       }
@@ -612,8 +637,41 @@ class AdminService {
     }
 
     if (typeof window !== 'undefined') {
+      // 1. Update wristo_admin_orders cache
       const updatedList = existing.map((o) => (o.orderNumber === orderNumber || o.id === orderNumber ? updatedOrder : o));
       localStorage.setItem('wristo_admin_orders', JSON.stringify(updatedList));
+
+      // 2. Synchronize back to storefront wristo_orders so customer portal immediately reflects status
+      try {
+        const rawStorefront = localStorage.getItem('wristo_orders');
+        if (rawStorefront) {
+          const storefrontList: any[] = JSON.parse(rawStorefront);
+          const updatedStorefront = storefrontList.map((so) => {
+            if (so.orderId === orderNumber) {
+              return {
+                ...so,
+                status: (status || '').toLowerCase(),
+                trackingNumber: trackingNumber || so.trackingNumber,
+                courierName: courierName || so.courierName
+              };
+            }
+            return so;
+          });
+          localStorage.setItem('wristo_orders', JSON.stringify(updatedStorefront));
+        }
+
+        // 3. Synchronize wristo_latest_order if matching
+        const rawLatest = localStorage.getItem('wristo_latest_order');
+        if (rawLatest) {
+          const latestOrder = JSON.parse(rawLatest);
+          if (latestOrder.orderId === orderNumber) {
+            latestOrder.status = (status || '').toLowerCase();
+            localStorage.setItem('wristo_latest_order', JSON.stringify(latestOrder));
+          }
+        }
+      } catch {
+        // ignore
+      }
     }
 
     return updatedOrder;
@@ -839,6 +897,435 @@ class AdminService {
     }
 
     return saved;
+  }
+
+  // ==========================================
+  // Master Timepieces & Catalog Governance (/admin/watches)
+  // ==========================================
+  private getInitialLocalWatches(): AdminWatch[] {
+    return PRODUCTS.map((p) => ({
+      id: p.id,
+      num: p.num,
+      brand: p.brand,
+      model: p.model,
+      price: p.price,
+      originalPrice: p.originalPrice,
+      imageUrl: p.image,
+      category: p.category,
+      gender: p.gender,
+      movement: p.movement,
+      style: p.style,
+      caseSize: p.caseSize,
+      strap: p.strap,
+      dial: p.dial,
+      material: p.material,
+      waterResistance: p.waterResistance,
+      badge: p.badge,
+      tagline: p.tagline,
+      description: p.description,
+      aiMatchScore: p.aiMatchScore ?? 95,
+      aiReason: p.aiReason || 'Curated horological masterwork.',
+      stockCount: 10,
+      isActive: true,
+      specifications: {
+        caseDiameter: p.caseSize,
+        caseMaterial: p.material,
+        dialFinish: p.dial,
+        strapMaterial: p.strap,
+        waterResistance: p.waterResistance,
+        powerReserve: '48 Hours',
+        glassCrystal: 'Sapphire Crystal (Anti-Reflective)',
+        claspType: 'Deployant Safety Clasp',
+        warrantyPeriod: '2-Year International Warranty'
+      },
+      dimensions: {
+        lugToLug: p.caseLugToLug,
+        caseThickness: p.caseThickness,
+        lugWidth: p.lugWidth
+      },
+      assets3d: {
+        modelUrl: p.model3dUrl,
+        posterUrl: p.posterImageUrl,
+        has3dModel: Boolean(p.model3dUrl)
+      }
+    }));
+  }
+
+  private getStoredWatches(): AdminWatch[] {
+    if (typeof window === 'undefined') return this.getInitialLocalWatches();
+    try {
+      const stored = localStorage.getItem('wristo_custom_watches');
+      if (stored) {
+        return JSON.parse(stored);
+      }
+    } catch {
+      // fallback
+    }
+    const initial = this.getInitialLocalWatches();
+    try {
+      localStorage.setItem('wristo_custom_watches', JSON.stringify(initial));
+    } catch {
+      // ignore
+    }
+    return initial;
+  }
+
+  private saveStoredWatches(watches: AdminWatch[]): void {
+    if (typeof window === 'undefined') return;
+    try {
+      localStorage.setItem('wristo_custom_watches', JSON.stringify(watches));
+    } catch {
+      // ignore
+    }
+  }
+
+  async getAdminWatches(params?: {
+    search?: string;
+    brand?: string;
+    active?: boolean;
+    page?: number;
+    size?: number;
+  }): Promise<{ items: AdminWatch[]; total: number }> {
+    try {
+      const queryParams = new URLSearchParams();
+      if (params?.search) queryParams.set('search', params.search);
+      if (params?.brand && params.brand !== 'ALL') queryParams.set('brand', params.brand);
+      if (params?.active !== undefined) queryParams.set('active', String(params.active));
+      if (params?.page) queryParams.set('page', String(params.page - 1));
+      if (params?.size) queryParams.set('size', String(params.size));
+
+      const res = await apiClient.get<any>(`/admin/watches?${queryParams.toString()}`);
+      if (res && res.data) {
+        const pageData = res.data;
+        const items = Array.isArray(pageData.items) ? pageData.items : (Array.isArray(pageData.content) ? pageData.content : []);
+        const total = pageData.totalElements ?? items.length;
+
+        const mapped: AdminWatch[] = items.map((w: any) => ({
+          id: w.id,
+          num: w.num || w.id,
+          brand: w.brand || w.brandName || 'WRISTO',
+          model: w.model,
+          price: Number(w.price),
+          originalPrice: Number(w.originalPrice || w.price),
+          imageUrl: w.image || w.imageUrl || '/assets/products/watch-01.png',
+          category: w.category || w.categoryName || 'Luxury',
+          gender: w.gender || 'Men',
+          movement: w.movement || 'Automatic',
+          style: w.style || 'Luxury',
+          caseSize: w.caseSize || '41mm',
+          strap: w.strap || 'Leather',
+          dial: w.dial || 'Sunburst Dial',
+          material: w.material || 'Stainless Steel',
+          waterResistance: w.waterResistance || '50m',
+          badge: w.badge,
+          tagline: w.tagline || '',
+          description: w.description || '',
+          aiMatchScore: w.aiMatchScore || 95,
+          aiReason: w.aiReason || '',
+          stockCount: w.stockCount || 10,
+          isActive: w.isActive !== undefined ? w.isActive : true,
+          specifications: {
+            caseDiameter: w.specs?.caseDiameterMm || w.caseSize,
+            caseMaterial: w.specs?.caseMaterial || w.material,
+            dialFinish: w.specs?.dialFinish || w.dial,
+            strapMaterial: w.specs?.strapMaterial || w.strap,
+            waterResistance: w.specs?.waterResistanceAtm || w.waterResistance,
+            powerReserve: w.specs?.powerReserveHours || '48 Hours',
+            glassCrystal: w.specs?.glassCrystal || 'Sapphire Crystal (Anti-Reflective)',
+            claspType: w.specs?.claspType || 'Deployant Safety Clasp',
+            warrantyPeriod: w.specs?.warrantyPeriod || '2-Year International Warranty'
+          },
+          dimensions: w.dimensions,
+          assets3d: {
+            modelUrl: w.model3dUrl || w.assets3d?.modelUrl,
+            posterUrl: w.posterImageUrl || w.assets3d?.posterUrl,
+            has3dModel: Boolean(w.model3dUrl || w.assets3d?.modelUrl)
+          }
+        }));
+
+        return { items: mapped, total };
+      }
+    } catch {
+      // Local fallback
+    }
+
+    let list = this.getStoredWatches();
+
+    if (params?.search) {
+      const q = params.search.toLowerCase();
+      list = list.filter(w =>
+        w.model.toLowerCase().includes(q) ||
+        w.brand.toLowerCase().includes(q) ||
+        w.id.toLowerCase().includes(q)
+      );
+    }
+    if (params?.brand && params.brand !== 'ALL') {
+      list = list.filter(w => w.brand.toLowerCase() === params.brand?.toLowerCase());
+    }
+    if (params?.active !== undefined) {
+      list = list.filter(w => w.isActive === params.active);
+    }
+
+    return { items: list, total: list.length };
+  }
+
+  async getAdminWatchById(id: string): Promise<AdminWatch | null> {
+    try {
+      const res = await apiClient.get<any>(`/admin/watches/${id}`);
+      if (res && res.data) {
+        const w = res.data;
+        return {
+          id: w.id,
+          num: w.num || w.id,
+          brand: w.brand || w.brandName || 'WRISTO',
+          model: w.model,
+          price: Number(w.price),
+          originalPrice: Number(w.originalPrice || w.price),
+          imageUrl: w.image || w.imageUrl || '/assets/products/watch-01.png',
+          category: w.category || w.categoryName || 'Luxury',
+          gender: w.gender || 'Men',
+          movement: w.movement || 'Automatic',
+          style: w.style || 'Luxury',
+          caseSize: w.caseSize || '41mm',
+          strap: w.strap || 'Leather',
+          dial: w.dial || 'Sunburst Dial',
+          material: w.material || 'Stainless Steel',
+          waterResistance: w.waterResistance || '50m',
+          badge: w.badge,
+          tagline: w.tagline || '',
+          description: w.description || '',
+          aiMatchScore: w.aiMatchScore || 95,
+          aiReason: w.aiReason || '',
+          stockCount: w.stockCount || 10,
+          isActive: w.isActive !== undefined ? w.isActive : true,
+          specifications: {
+            caseDiameter: w.specs?.caseDiameterMm || w.caseSize,
+            caseMaterial: w.specs?.caseMaterial || w.material,
+            dialFinish: w.specs?.dialFinish || w.dial,
+            strapMaterial: w.specs?.strapMaterial || w.strap,
+            waterResistance: w.specs?.waterResistanceAtm || w.waterResistance,
+            powerReserve: w.specs?.powerReserveHours || '48 Hours',
+            glassCrystal: w.specs?.glassCrystal || 'Sapphire Crystal (Anti-Reflective)',
+            claspType: w.specs?.claspType || 'Deployant Safety Clasp',
+            warrantyPeriod: w.specs?.warrantyPeriod || '2-Year International Warranty'
+          },
+          dimensions: w.dimensions,
+          assets3d: {
+            modelUrl: w.model3dUrl || w.assets3d?.modelUrl,
+            posterUrl: w.posterImageUrl || w.assets3d?.posterUrl,
+            has3dModel: Boolean(w.model3dUrl || w.assets3d?.modelUrl)
+          }
+        };
+      }
+    } catch {
+      // Local fallback
+    }
+
+    const localList = this.getStoredWatches();
+    return localList.find(w => w.id === id) || null;
+  }
+
+  async createAdminWatch(payload: SaveWatchPayload): Promise<AdminWatch> {
+    let created: AdminWatch | null = null;
+    try {
+      const res = await apiClient.post<any>('/admin/watches', payload);
+      if (res && res.data) {
+        const w = res.data;
+        created = {
+          id: w.id,
+          num: w.num || w.id,
+          brand: w.brand || w.brandName || payload.brandName,
+          model: w.model,
+          price: Number(w.price),
+          originalPrice: Number(w.originalPrice || payload.originalPrice || w.price),
+          imageUrl: w.image || w.imageUrl || payload.imageUrl || '/assets/products/watch-01.png',
+          category: w.category || w.categoryName || payload.categoryName || 'Luxury',
+          gender: w.gender || payload.gender || 'Men',
+          movement: w.movement || payload.movement || 'Automatic',
+          style: w.style || payload.style || 'Luxury',
+          caseSize: w.caseSize || payload.caseSize || '41mm',
+          strap: w.strap || payload.strap || 'Leather',
+          dial: w.dial || payload.dial || 'Sunburst Dial',
+          material: w.material || payload.material || 'Stainless Steel',
+          waterResistance: w.waterResistance || payload.waterResistance || '50m',
+          badge: w.badge || payload.badge,
+          tagline: w.tagline || payload.tagline || '',
+          description: w.description || payload.description || '',
+          aiMatchScore: w.aiMatchScore || payload.aiMatchScore || 95,
+          aiReason: w.aiReason || payload.aiReason || '',
+          stockCount: w.stockCount || payload.stockCount || 10,
+          isActive: w.isActive !== undefined ? w.isActive : true,
+          specifications: {
+            caseDiameter: payload.caseDiameterMm || payload.caseSize || '41mm',
+            caseMaterial: payload.caseMaterial || payload.material || 'Stainless Steel',
+            dialFinish: payload.dialFinish || payload.dial || 'Sunburst Dial',
+            strapMaterial: payload.strapMaterial || payload.strap || 'Leather',
+            waterResistance: payload.waterResistanceAtm || payload.waterResistance || '50m',
+            powerReserve: payload.powerReserveHours || '48 Hours',
+            glassCrystal: payload.glassCrystal || 'Sapphire Crystal (Anti-Reflective)',
+            claspType: payload.claspType || 'Deployant Safety Clasp',
+            warrantyPeriod: payload.warrantyPeriod || '2-Year International Warranty'
+          },
+          assets3d: {
+            modelUrl: payload.model3dUrl,
+            posterUrl: payload.posterImageUrl,
+            has3dModel: Boolean(payload.model3dUrl)
+          }
+        };
+      }
+    } catch {
+      // Local fallback
+    }
+
+    if (!created) {
+      const id = payload.id || `WRT-${Date.now().toString().slice(-6)}`;
+      created = {
+        id,
+        num: payload.num || id.slice(-2),
+        brand: payload.brandName,
+        model: payload.model,
+        price: payload.price,
+        originalPrice: payload.originalPrice || payload.price * 1.2,
+        imageUrl: payload.imageUrl || '/assets/products/watch-01.png',
+        category: payload.categoryName || 'Luxury',
+        gender: payload.gender || 'Men',
+        movement: payload.movement || 'Automatic',
+        style: payload.style || 'Luxury',
+        caseSize: payload.caseSize || '41mm',
+        strap: payload.strap || 'Leather',
+        dial: payload.dial || 'Sunburst Dial',
+        material: payload.material || 'Stainless Steel',
+        waterResistance: payload.waterResistance || '50m',
+        badge: payload.badge,
+        tagline: payload.tagline || 'Exquisite masterpiece curated for the discerning horologist.',
+        description: payload.description || 'Precision-engineered luxury watch with haute horlogerie finishing.',
+        aiMatchScore: payload.aiMatchScore || 95,
+        aiReason: payload.aiReason || 'Pairs impeccably with black-tie and bespoke tailoring.',
+        stockCount: payload.stockCount || 10,
+        isActive: payload.isActive !== undefined ? payload.isActive : true,
+        specifications: {
+          caseDiameter: payload.caseDiameterMm || payload.caseSize || '41mm',
+          caseMaterial: payload.caseMaterial || payload.material || 'Stainless Steel',
+          dialFinish: payload.dialFinish || payload.dial || 'Sunburst Dial',
+          strapMaterial: payload.strapMaterial || payload.strap || 'Leather',
+          waterResistance: payload.waterResistanceAtm || payload.waterResistance || '50m',
+          powerReserve: payload.powerReserveHours || '48 Hours',
+          glassCrystal: payload.glassCrystal || 'Sapphire Crystal (Anti-Reflective)',
+          claspType: payload.claspType || 'Deployant Safety Clasp',
+          warrantyPeriod: payload.warrantyPeriod || '2-Year International Warranty'
+        },
+        assets3d: {
+          modelUrl: payload.model3dUrl,
+          posterUrl: payload.posterImageUrl,
+          has3dModel: Boolean(payload.model3dUrl)
+        }
+      };
+    }
+
+    const stored = this.getStoredWatches();
+    this.saveStoredWatches([created, ...stored.filter(w => w.id !== created!.id)]);
+    return created;
+  }
+
+  async updateAdminWatch(id: string, payload: Partial<SaveWatchPayload>): Promise<AdminWatch> {
+    try {
+      await apiClient.put(`/admin/watches/${id}`, payload);
+    } catch {
+      // Local fallback
+    }
+
+    const stored = this.getStoredWatches();
+    const existingIndex = stored.findIndex(w => w.id === id);
+    if (existingIndex >= 0) {
+      const existing = stored[existingIndex];
+      const updated: AdminWatch = {
+        ...existing,
+        model: payload.model !== undefined ? payload.model : existing.model,
+        brand: payload.brandName !== undefined ? payload.brandName : existing.brand,
+        price: payload.price !== undefined ? payload.price : existing.price,
+        originalPrice: payload.originalPrice !== undefined ? payload.originalPrice : existing.originalPrice,
+        imageUrl: payload.imageUrl !== undefined ? payload.imageUrl : existing.imageUrl,
+        category: payload.categoryName !== undefined ? payload.categoryName : existing.category,
+        gender: payload.gender !== undefined ? payload.gender : existing.gender,
+        movement: payload.movement !== undefined ? payload.movement : existing.movement,
+        style: payload.style !== undefined ? payload.style : existing.style,
+        caseSize: payload.caseSize !== undefined ? payload.caseSize : existing.caseSize,
+        strap: payload.strap !== undefined ? payload.strap : existing.strap,
+        dial: payload.dial !== undefined ? payload.dial : existing.dial,
+        material: payload.material !== undefined ? payload.material : existing.material,
+        waterResistance: payload.waterResistance !== undefined ? payload.waterResistance : existing.waterResistance,
+        badge: payload.badge !== undefined ? payload.badge : existing.badge,
+        tagline: payload.tagline !== undefined ? payload.tagline : existing.tagline,
+        description: payload.description !== undefined ? payload.description : existing.description,
+        aiMatchScore: payload.aiMatchScore !== undefined ? payload.aiMatchScore : existing.aiMatchScore,
+        aiReason: payload.aiReason !== undefined ? payload.aiReason : existing.aiReason,
+        stockCount: payload.stockCount !== undefined ? payload.stockCount : existing.stockCount,
+        isActive: payload.isActive !== undefined ? payload.isActive : existing.isActive,
+        specifications: {
+          ...existing.specifications,
+          caseDiameter: payload.caseDiameterMm || payload.caseSize || existing.specifications?.caseDiameter,
+          caseMaterial: payload.caseMaterial || payload.material || existing.specifications?.caseMaterial,
+          dialFinish: payload.dialFinish || payload.dial || existing.specifications?.dialFinish,
+          strapMaterial: payload.strapMaterial || payload.strap || existing.specifications?.strapMaterial,
+          waterResistance: payload.waterResistanceAtm || payload.waterResistance || existing.specifications?.waterResistance,
+          powerReserve: payload.powerReserveHours || existing.specifications?.powerReserve,
+          glassCrystal: payload.glassCrystal || existing.specifications?.glassCrystal,
+          claspType: payload.claspType || existing.specifications?.claspType,
+          warrantyPeriod: payload.warrantyPeriod || existing.specifications?.warrantyPeriod
+        },
+        assets3d: {
+          modelUrl: payload.model3dUrl !== undefined ? payload.model3dUrl : existing.assets3d?.modelUrl,
+          posterUrl: payload.posterImageUrl !== undefined ? payload.posterImageUrl : existing.assets3d?.posterUrl,
+          has3dModel: Boolean(payload.model3dUrl !== undefined ? payload.model3dUrl : existing.assets3d?.modelUrl)
+        }
+      };
+
+      stored[existingIndex] = updated;
+      this.saveStoredWatches(stored);
+      return updated;
+    }
+
+    throw new Error(`Timepiece ${id} not found in catalog`);
+  }
+
+  async deleteAdminWatch(id: string): Promise<void> {
+    try {
+      await apiClient.delete(`/admin/watches/${id}`);
+    } catch {
+      // Local fallback
+    }
+
+    const stored = this.getStoredWatches();
+    const updated = stored.map(w => w.id === id ? { ...w, isActive: false } : w);
+    this.saveStoredWatches(updated);
+  }
+
+  async toggleAdminWatchStatus(id: string): Promise<AdminWatch> {
+    try {
+      const res = await apiClient.patch<any>(`/admin/watches/${id}/toggle-status`);
+      if (res && res.data) {
+        const w = res.data;
+        const stored = this.getStoredWatches();
+        const index = stored.findIndex(item => item.id === id);
+        if (index >= 0) {
+          stored[index].isActive = w.isActive;
+          this.saveStoredWatches(stored);
+          return stored[index];
+        }
+      }
+    } catch {
+      // Local fallback
+    }
+
+    const stored = this.getStoredWatches();
+    const target = stored.find(w => w.id === id);
+    if (target) {
+      target.isActive = !target.isActive;
+      this.saveStoredWatches(stored);
+      return target;
+    }
+
+    throw new Error(`Timepiece ${id} not found in catalog`);
   }
 }
 

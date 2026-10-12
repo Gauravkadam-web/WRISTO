@@ -332,6 +332,19 @@ export async function createOrder(payload: CreateOrderPayload): Promise<OrderRec
   if (typeof window !== 'undefined') {
     try {
       localStorage.setItem('wristo_latest_order', JSON.stringify(createdOrderRecord));
+
+      const stored = localStorage.getItem('wristo_orders');
+      let ordersList: OrderRecord[] = [];
+      if (stored) {
+        try {
+          ordersList = JSON.parse(stored);
+        } catch {
+          ordersList = [];
+        }
+      }
+      // Deduplicate by orderId and place newest at front
+      ordersList = [createdOrderRecord, ...ordersList.filter(o => o.orderId !== createdOrderRecord.orderId)];
+      localStorage.setItem('wristo_orders', JSON.stringify(ordersList));
     } catch {
       // Ignore
     }
@@ -341,16 +354,37 @@ export async function createOrder(payload: CreateOrderPayload): Promise<OrderRec
 }
 
 export async function getOrders(): Promise<OrderRecord[]> {
+  let apiOrders: OrderRecord[] = [];
   try {
     const res = await apiClient.get<any>('/orders/my-orders').catch(() => null);
     if (res && res.data && (Array.isArray(res.data) || Array.isArray(res.data.content))) {
       const list = Array.isArray(res.data) ? res.data : res.data.content;
-      return list.map((o: any) => normalizeOrderRecord(o));
+      apiOrders = list.map((o: any) => normalizeOrderRecord(o));
     }
   } catch {
-    return [];
+    // API fallback
   }
-  return [];
+
+  if (typeof window !== 'undefined') {
+    try {
+      const stored = localStorage.getItem('wristo_orders');
+      const localOrders: OrderRecord[] = stored ? JSON.parse(stored) : [];
+      const merged = [...apiOrders];
+      localOrders.forEach(lo => {
+        if (!merged.some(m => m.orderId === lo.orderId)) {
+          merged.push(lo);
+        }
+      });
+      if (merged.length > 0) return merged;
+
+      const latest = localStorage.getItem('wristo_latest_order');
+      if (latest) return [JSON.parse(latest)];
+    } catch {
+      // ignore
+    }
+  }
+
+  return apiOrders;
 }
 
 export async function getOrderById(orderId: string): Promise<OrderRecord | null> {
@@ -360,8 +394,27 @@ export async function getOrderById(orderId: string): Promise<OrderRecord | null>
       return normalizeOrderRecord(res.data);
     }
   } catch {
-    return null;
+    // fallback
   }
+
+  if (typeof window !== 'undefined') {
+    try {
+      const stored = localStorage.getItem('wristo_orders');
+      if (stored) {
+        const list: OrderRecord[] = JSON.parse(stored);
+        const match = list.find(o => o.orderId === orderId);
+        if (match) return match;
+      }
+      const latest = localStorage.getItem('wristo_latest_order');
+      if (latest) {
+        const parsed = JSON.parse(latest);
+        if (parsed.orderId === orderId) return parsed;
+      }
+    } catch {
+      // ignore
+    }
+  }
+
   return null;
 }
 

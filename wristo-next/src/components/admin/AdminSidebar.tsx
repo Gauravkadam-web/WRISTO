@@ -13,12 +13,14 @@ import {
   Award,
   LogOut,
   ShieldCheck,
-  ArrowUpRight
+  ArrowUpRight,
+  SlidersHorizontal
 } from 'lucide-react';
 import { adminService } from '@/services/adminService';
 
 const NAV_ITEMS = [
   { href: '/admin', label: 'Executive Overview', icon: LayoutDashboard, exact: true },
+  { href: '/admin/watches', label: 'Master Timepieces', icon: SlidersHorizontal },
   { href: '/admin/journal', label: 'Editorial Journal CMS', icon: FileText },
   { href: '/admin/coupons', label: 'Coupons & Discounts', icon: Tag },
   { href: '/admin/orders', label: 'Order Fulfillment', icon: PackageCheck },
