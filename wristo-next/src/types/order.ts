@@ -58,6 +58,17 @@ export interface OrderTotals {
   giftPouchUnlocked: boolean;
 }
 
+export type OrderStatus =
+  | 'pending_payment'
+  | 'confirmed'
+  | 'processing'
+  | 'processing_vault'
+  | 'dispatched'
+  | 'shipped'
+  | 'delivered'
+  | 'cancelled'
+  | 'refunded';
+
 export interface OrderRecord {
   orderId: string;
   certificateId: string;
@@ -73,7 +84,7 @@ export interface OrderRecord {
   address: CustomerAddress;
   deliveryTier: DeliveryTier;
   paymentMethod: PaymentMethodType;
-  status: 'confirmed' | 'processing' | 'dispatched';
+  status: OrderStatus;
 }
 
 export interface CreateOrderPayload {

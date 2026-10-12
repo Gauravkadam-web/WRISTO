@@ -615,3 +615,34 @@ Aligned with WRISTO SRS v1.0 Section 2.2 (Canonical Products vs. Seller Listings
 - **Backend Test Suite:** `AdminCatalogControllerTest.java` (7/7 green), full backend test suite **110/110 tests passing green**.
 - **Frontend Production Build:** `npm run build` compiled **105/105 routes with 0 errors**.
 
+---
+
+## 22. Phase 1: Post-Purchase Operations, Cart/Session Synchronization & TD-24 Asset Sanitization (Session 13 — October 12, 2026)
+
+### Architecture & Grounding
+Aligned with WRISTO SRS v1.0 Section 2.9 (Order Lifecycle State Machine), Section 4.3 (Order Management & Status Tracking), and Technical Debt Registry (TD-06, TD-24):
+
+1. **Backend Guest Cart Merge Engine (`CartService.java`):**
+   - Resolves TD-06: Added `mergeGuestCartIntoUserCart(UUID userId, String sessionId)`. When a customer browses and adds items as an anonymous guest with a session ID, then subsequently authenticates via JWT login, the guest items merge into their permanent user cart and the ephemeral guest record is deleted.
+   - Tested & verified with `CartControllerTest.java` (6/6 tests green).
+
+2. **Client-Side Session Tracking (`apiClient.ts`):**
+   - Implemented `getSessionId()` with persistent UUID stored in `localStorage` under key `wristo_session_id`. Automatically injects `X-Session-ID` into every outgoing HTTP request header.
+
+3. **Customer Order Tracking Timeline & Self-Service Cancellation:**
+   - **`OrderCancellationModal.tsx`:** Luxury cancellation dialog featuring structured reason codes (`ACCIDENTAL_ORDER`, `CHANGED_PREFERENCE`, `ALTERNATIVE_FOUND`, `SHIPPING_TIMELINE`), optional bespoke notes, warning regarding vault stock returning to archive, and zero Unicode emojis.
+   - **`OrderTrackingTimeline.tsx`:** 4-stage luxury stepper (`Confirmed` ➔ `Vault Inspection` ➔ `Armored Courier` ➔ `Custody Transferred`) with amber/red restocked banner if cancelled.
+   - **`OrdersTab.tsx`:** Mounted timeline into each order card in `/account`, dynamic status pill badges (`Cancelled & Restocked`, `Delivered & Verified`, `Armored Transit`, `Vault Inspection`), and integrated `[ Cancel Acquisition ]` triggers for orders in `confirmed` or `pending_payment` states.
+   - **`orderService.ts`:** Added `cancelOrder(orderId, reason)` dispatching to `POST /api/v1/orders/{orderNumber}/cancel` and synchronously updating local `wristo_orders` and `wristo_latest_order`.
+   - **`src/types/order.ts`:** Exported canonical `OrderStatus` union (`'pending_payment' | 'confirmed' | 'processing' | 'processing_vault' | 'dispatched' | 'shipped' | 'delivered' | 'cancelled' | 'refunded'`) and aligned case-insensitive checks across components.
+
+4. **TD-24 Asset Sanitization (Watches 26–37):**
+   - Generated 12 brand-new bespoke AI horological watch photographs for watches 26 through 37 using exact horology prompts from `watch_prompts.json` (replacing duplicate files from watch-12 and watch-13).
+   - High-quality conversion via `sharp` saved directly to `wristo-next/public/assets/products/watch-26.png` through `watch-37.png`.
+   - Watches 38–40 (PULSE smartwatch models) are queued for image generation upon API quota reset.
+
+### Automated Verification Status:
+- **Backend Test Suite:** `mvn test` in `wristo-backend` passed **110/110 tests green (100% BUILD SUCCESS)**.
+- **Frontend Production Build:** `npm run build` in `wristo-next` passed **105/105 routes compiled cleanly with 0 TypeScript/Turbopack errors**.
+
+

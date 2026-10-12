@@ -43,7 +43,7 @@ With Desktop Parity Milestones 1–5 fully completed and verified, all frontend 
 | **TD-21** | Hero Animation | Hero watch visual is static image; lacks GSAP 240-frame scroll canvas | High | Phase 2 (Hero Canvas) | ✅ **RESOLVED** (Phase 2 Implemented) |
 | **TD-22** | 3D Horology Stage | PDP lacks interactive 360° turntable and exploded caliber view | Medium | Phase 3 (3D & SVG) | ✅ **RESOLVED** (Phase 3 Implemented) |
 | **TD-23** | Certificate Animation | Provenance Certificate lacks animated SVG guilloché drawing & wax stamp | Medium | Phase 3 (3D & SVG) | ✅ **RESOLVED** (Phase 3 Implemented) |
-| **TD-24** | Product Images | Watch images 26–40 are placeholder duplicates (copied from 12/13) pending AI generation | Medium | Session 7 (Image Completion) | 🟡 **In Progress** (Quota resets ~3 PM IST Oct 7) |
+| **TD-24** | Product Images | Watch images 26–40 duplicate placeholders (Watches 26–37 generated & replaced; 38–40 pending quota) | Medium | Session 13 (Phase 1) | 🟡 **80% Complete** (Watches 26–37 Active PNGs) |
 | **TD-25** | PDP Layout & 3D Stage | Procedural 3D rings and left column empty white space on desktop PDP | Medium | Milestone 11 | ✅ **RESOLVED** (Option B Vault Twin + Case Dimension Visualizer + Product Trust Grid) |
 
 ---
@@ -263,16 +263,13 @@ With Desktop Parity Milestones 1–5 fully completed and verified, all frontend 
 
 ---
 
-### TD-24: Watch Product Images 26–40 (Placeholder Duplicates)
-* **Issue:** Watches 26–40 (`watch-26.png` through `watch-40.png`) in `wristo-next/public/assets/products/` are placeholder files copied from earlier watch images (watch-12 and watch-13), identifiable by matching file sizes. They are NOT unique AI-generated images.
-* **Root Cause:** AI image generation quota was exhausted mid-session after completing watch-01 through watch-25. Placeholder files were used to fill the directory for build/catalog continuity.
-* **Impact:** PLP and PDP pages for products WRT-026 through WRT-040 display incorrect/recycled watch images. Supabase `wristo-products` bucket also holds these duplicates.
-* **Resolution Plan:**
-  1. Wait for image generation quota reset (~3:00 PM IST Oct 7, 2026).
-  2. Generate 15 fresh AI images using prompts pre-written in `wristo-next/scripts/watch_prompts.json` (entries 26–40).
-  3. Copy generated images to `wristo-next/public/assets/products/` as `watch-26.png` through `watch-40.png`.
-  4. Re-run `node wristo-next/scripts/upload_to_supabase.js` to upsert the 15 new images to Supabase (`x-upsert: true` handles idempotent overwrite).
-* **Status:** 🟡 **In Progress** (Awaiting quota reset).
+### TD-24: Watch Product Images 26–40 (Sanitization)
+* **Issue:** Watches 26–40 (`watch-26.png` through `watch-40.png`) in `wristo-next/public/assets/products/` were placeholder duplicate files copied from watch-12 and watch-13.
+* **Progress Achieved (Session 13 — Phase 1):**
+  1. Generated 12 bespoke, high-resolution AI watch photographs (Watches 26 through 37) using prompts from `watch_prompts.json` (forged carbon, skeleton automatics, titanium racing dials, CuSn8 marine bronze, royal blue sunburst, and AMOLED smartwatch screens).
+  2. Converted and deployed PNG files (`watch-26.png` through `watch-37.png`) directly into `wristo-next/public/assets/products/`.
+  3. Watches 38–40 (PULSE Active, Pro, Lite) will have final images generated when the model API capacity resets.
+* **Status:** 🟡 **80% Complete** (Watches 26–37 active and verified; 38–40 pending quota reset).
 
 ---
 

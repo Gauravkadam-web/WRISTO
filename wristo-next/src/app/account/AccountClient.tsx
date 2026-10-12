@@ -183,6 +183,7 @@ export default function AccountClient({ initialTab = 'overview', initialCert }: 
             <OrdersTab
               orders={orders}
               onViewCertificate={setSelectedCertOrder}
+              onOrderUpdated={loadAccountData}
             />
           )}
 

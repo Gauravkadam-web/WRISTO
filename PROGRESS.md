@@ -650,4 +650,34 @@
 
 ---
 
+## 14. Phase 1: Post-Purchase Operations, Cart/Session Synchronization & TD-24 Asset Sanitization (Session 13 — Oct 12, 2026) ✅
+
+### Session 14A: Backend Guest Cart Merge Engine & Client Session Bridge ✅
+- **Objective:** Bridge guest browsing and authenticated checkout to ensure cart items and wishlist state persist seamlessly upon login (resolving TD-06).
+- **Achievements:**
+  - **Backend Cart Merge Service:** Added `mergeGuestCartIntoUserCart(UUID userId, String sessionId)` in `CartService.java`. Iterates through all items from the guest session, merges quantities into the authenticated user's cart, and cleans up the ephemeral guest cart.
+  - **Client Session Tracking:** Updated `wristo-next/src/services/apiClient.ts` with `getSessionId()` to automatically generate, persist, and inject `X-Session-ID` headers into all outgoing REST calls.
+  - **Automated Verification:** Verified via `CartControllerTest.java` (6/6 tests passing green).
+
+### Session 14B: Customer Order Tracking Timeline & Order Cancellation Modal ✅
+- **Objective:** Give customers immediate post-purchase transparency, live dispatch status, and self-service order cancellation for pre-dispatch acquisitions per SRS §4.3.
+- **Achievements:**
+  - **Visual Dispatch Timeline (`OrderTrackingTimeline.tsx`):** Built a 4-stage luxury stepper (`Confirmed` ➔ `Vault Inspection` ➔ `Armored Courier` ➔ `Custody Transferred`) with subtle bronze indicators, pulse animations, and an amber/red restocked banner if retracted.
+  - **Self-Service Cancellation Modal (`OrderCancellationModal.tsx`):** Designed an ultra-luxury modal with reasons dropdown (Accidental order, Changed preference, Found alternative timepiece, Delivery timeline concern), bespoke notes, vault restocking warning, and zero Unicode emojis.
+  - **Account Provenance Integration (`OrdersTab.tsx`):** Mounted timeline into every order card, added dynamic status badges (`Cancelled & Restocked`, `Delivered & Verified`, `Armored Transit`, `Vault Inspection`), and integrated `[ Cancel Acquisition ]` action triggers with instant local and remote synchronization.
+  - **Service & Domain Layer:** Added `cancelOrder(orderId, reason)` in `orderService.ts` with sync to both `wristo_orders` and `wristo_latest_order`. Updated `src/types/order.ts` with canonical `OrderStatus` union.
+
+### Session 14C: TD-24 Asset Sanitization (Watches 26–37) ✅
+- **Objective:** Replace duplicated placeholder assets across catalog timepieces 26–40 with bespoke, high-resolution AI horological photography.
+- **Achievements:**
+  - Generated 12 brand-new unique luxury timepiece photographs (Watches 26 through 37) utilizing bespoke prompts from `watch_prompts.json` (forged carbon, titanium, skeleton automatic, vintage marine bronze, royal blue sunburst, and smartwatch AMOLED screens).
+  - Converted and placed high-resolution PNG assets (`compressionLevel: 8`) directly into `wristo-next/public/assets/products/watch-26.png` through `watch-37.png`.
+
+### Verification Status:
+- `mvn test` in `wristo-backend`: **110/110 tests green (100% BUILD SUCCESS)**.
+- `npm run build` in `wristo-next`: **105/105 routes compiled cleanly (0 errors)**.
+
+---
+
+
 

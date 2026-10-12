@@ -60,7 +60,14 @@ public class CartService {
         if (userId != null) {
             Optional<Cart> userCart = cartRepository.findByUserId(userId);
             if (userCart.isPresent()) {
-                return userCart.get();
+                Cart cart = userCart.get();
+                if (sessionId != null && !sessionId.isBlank()) {
+                    Optional<Cart> guestCart = cartRepository.findBySessionId(sessionId);
+                    if (guestCart.isPresent() && !guestCart.get().getId().equals(cart.getId())) {
+                        mergeGuestCartIntoUserCart(cart, guestCart.get());
+                    }
+                }
+                return cart;
             }
 
             // If user previously had a guest session cart, associate it
@@ -370,5 +377,32 @@ public class CartService {
                 deliveryDescription,
                 estimatedDelivery
         );
+    }
+
+    private void mergeGuestCartIntoUserCart(Cart userCart, Cart guestCart) {
+        try {
+            List<CartItem> guestItems = cartItemRepository.findByCartId(guestCart.getId());
+            for (CartItem guestItem : guestItems) {
+                Optional<CartItem> existing = cartItemRepository.findByCartIdAndWatchId(userCart.getId(), guestItem.getWatch().getId());
+                if (existing.isPresent()) {
+                    CartItem item = existing.get();
+                    item.setQuantity(item.getQuantity() + guestItem.getQuantity());
+                    cartItemRepository.save(item);
+                } else {
+                    CartItem newItem = new CartItem();
+                    newItem.setId(UUID.randomUUID().toString());
+                    newItem.setCart(userCart);
+                    newItem.setWatch(guestItem.getWatch());
+                    newItem.setQuantity(guestItem.getQuantity());
+                    newItem.setUnitPrice(guestItem.getUnitPrice());
+                    cartItemRepository.save(newItem);
+                }
+            }
+            cartItemRepository.deleteByCartId(guestCart.getId());
+            cartRepository.delete(guestCart);
+            log.info("Successfully merged guest cart {} into user cart {}", guestCart.getId(), userCart.getId());
+        } catch (Exception e) {
+            log.warn("Failed to merge guest cart into user cart: {}", e.getMessage());
+        }
     }
 }

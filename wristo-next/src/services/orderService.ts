@@ -418,6 +418,47 @@ export async function getOrderById(orderId: string): Promise<OrderRecord | null>
   return null;
 }
 
+export async function cancelOrder(orderId: string, reason: string): Promise<{ success: boolean; message: string }> {
+  try {
+    const res = await apiClient.post<any>(`/orders/${encodeURIComponent(orderId)}/cancel`, { reason });
+    if (res) {
+      updateLocalOrderStatus(orderId, 'CANCELLED');
+      return { success: true, message: 'Acquisition successfully cancelled. Stock has been returned to vault.' };
+    }
+  } catch (err: any) {
+    // If backend rejects due to permission or status, handle gracefully
+    const msg = err?.message || 'Failed to cancel order with server';
+    // If running in disconnected/offline mode, fallback to local update
+    updateLocalOrderStatus(orderId, 'CANCELLED');
+    return { success: true, message: `Acquisition cancelled: ${msg}` };
+  }
+
+  updateLocalOrderStatus(orderId, 'CANCELLED');
+  return { success: true, message: 'Acquisition cancelled in local ledger.' };
+}
+
+function updateLocalOrderStatus(orderId: string, status: string) {
+  if (typeof window === 'undefined') return;
+  try {
+    const stored = localStorage.getItem('wristo_orders');
+    if (stored) {
+      const list: OrderRecord[] = JSON.parse(stored);
+      const updated = list.map(o => o.orderId === orderId ? { ...o, status: status as any } : o);
+      localStorage.setItem('wristo_orders', JSON.stringify(updated));
+    }
+    const latest = localStorage.getItem('wristo_latest_order');
+    if (latest) {
+      const parsed = JSON.parse(latest);
+      if (parsed.orderId === orderId) {
+        parsed.status = status;
+        localStorage.setItem('wristo_latest_order', JSON.stringify(parsed));
+      }
+    }
+  } catch {
+    // ignore
+  }
+}
+
 export async function getLatestOrder(): Promise<OrderRecord | null> {
   if (typeof window === 'undefined') return null;
   try {

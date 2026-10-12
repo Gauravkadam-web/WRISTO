@@ -51,6 +51,20 @@ function getAuthToken(): string | null {
   return null;
 }
 
+function getSessionId(): string | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    let sid = localStorage.getItem('wristo_session_id');
+    if (!sid) {
+      sid = 'sess_' + Math.random().toString(36).substring(2, 12) + Date.now().toString(36);
+      localStorage.setItem('wristo_session_id', sid);
+    }
+    return sid;
+  } catch {
+    return null;
+  }
+}
+
 async function fetchWithTimeout(
   url: string,
   options: RequestInit = {},
@@ -82,6 +96,7 @@ export async function apiRequest<T>(
   const fullUrl = `${API_BASE_URL}${cleanEndpoint}`;
 
   const token = getAuthToken();
+  const sessionId = getSessionId();
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     Accept: 'application/json',
@@ -90,6 +105,10 @@ export async function apiRequest<T>(
 
   if (token && !headers['Authorization']) {
     headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  if (sessionId && !headers['X-Session-ID']) {
+    headers['X-Session-ID'] = sessionId;
   }
 
   const startTime = Date.now();

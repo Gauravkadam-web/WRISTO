@@ -3,18 +3,33 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { FileText, Check, Gift, ArrowRight, ShieldCheck } from 'lucide-react';
+import { FileText, Check, Gift, ArrowRight, ShieldCheck, XCircle, Clock, Truck } from 'lucide-react';
 import { OrderRecord } from '@/types/order';
+import OrderTrackingTimeline from './OrderTrackingTimeline';
+import OrderCancellationModal from './OrderCancellationModal';
 
 interface OrdersTabProps {
   orders: OrderRecord[];
   onViewCertificate: (order: OrderRecord) => void;
+  onOrderUpdated?: () => void;
 }
 
-export default function OrdersTab({ orders, onViewCertificate }: OrdersTabProps) {
+export default function OrdersTab({ orders, onViewCertificate, onOrderUpdated }: OrdersTabProps) {
+  const [ordersList, setOrdersList] = useState<OrderRecord[]>(orders);
   const [statusFilter, setStatusFilter] = useState<'all' | 'confirmed' | 'dispatched'>('all');
+  const [cancelModalOrder, setCancelModalOrder] = useState<OrderRecord | null>(null);
 
-  const filteredOrders = orders.filter(o => {
+  // Sync if prop changes
+  React.useEffect(() => {
+    setOrdersList(orders);
+  }, [orders]);
+
+  const handleOrderCancelled = (orderId: string) => {
+    setOrdersList(prev => prev.map(o => o.orderId === orderId ? { ...o, status: 'cancelled' as any } : o));
+    if (onOrderUpdated) onOrderUpdated();
+  };
+
+  const filteredOrders = ordersList.filter(o => {
     if (statusFilter === 'all') return true;
     return o.status === statusFilter;
   });
@@ -95,10 +110,47 @@ export default function OrdersTab({ orders, onViewCertificate }: OrdersTabProps)
                       year: 'numeric'
                     })}
                   </span>
-                  <span className="account-order-status confirmed" style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
-                    <Check size={12} strokeWidth={2.5} />
-                    <span>Secured &amp; Inspected</span>
-                  </span>
+                  {(() => {
+                    const s = (order.status || '').toLowerCase();
+                    if (s === 'cancelled') {
+                      return (
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', background: 'rgba(239, 68, 68, 0.12)', color: '#f87171', border: '1px solid rgba(239, 68, 68, 0.25)', padding: '4px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 600 }}>
+                          <XCircle size={12} strokeWidth={2} />
+                          <span>Cancelled &amp; Restocked</span>
+                        </span>
+                      );
+                    }
+                    if (s === 'delivered') {
+                      return (
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', background: 'rgba(34, 197, 94, 0.12)', color: '#4ade80', border: '1px solid rgba(34, 197, 94, 0.25)', padding: '4px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 600 }}>
+                          <ShieldCheck size={12} strokeWidth={2} />
+                          <span>Delivered &amp; Verified</span>
+                        </span>
+                      );
+                    }
+                    if (s === 'dispatched' || s === 'shipped') {
+                      return (
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', background: 'rgba(234, 179, 8, 0.12)', color: '#facc15', border: '1px solid rgba(234, 179, 8, 0.25)', padding: '4px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 600 }}>
+                          <Truck size={12} strokeWidth={2} />
+                          <span>Armored Transit</span>
+                        </span>
+                      );
+                    }
+                    if (s === 'processing' || s === 'processing_vault') {
+                      return (
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', background: 'rgba(59, 130, 246, 0.12)', color: '#60a5fa', border: '1px solid rgba(59, 130, 246, 0.25)', padding: '4px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 600 }}>
+                          <Clock size={12} strokeWidth={2} />
+                          <span>Vault Inspection</span>
+                        </span>
+                      );
+                    }
+                    return (
+                      <span className="account-order-status confirmed" style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                        <Check size={12} strokeWidth={2.5} />
+                        <span>Secured &amp; Inspected</span>
+                      </span>
+                    );
+                  })()}
                 </div>
               </div>
 
@@ -157,9 +209,12 @@ export default function OrdersTab({ orders, onViewCertificate }: OrdersTabProps)
                 </div>
               </div>
 
+              {/* Interactive Dispatch Tracking Timeline */}
+              <OrderTrackingTimeline order={order} />
+
               {/* Gift message banner if present */}
               {order.isGiftWrapped && order.giftMessage && (
-                <div className="account-order-gift-banner" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div className="account-order-gift-banner" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '14px' }}>
                   <Gift size={15} strokeWidth={1.5} color="var(--brand-bronze)" />
                   <span>
                     <strong>Bespoke Gift Note:</strong> &ldquo;{order.giftMessage}&rdquo;
@@ -169,15 +224,36 @@ export default function OrdersTab({ orders, onViewCertificate }: OrdersTabProps)
 
               {/* Card Footer Actions */}
               <div className="account-order-actions">
-                <button
-                  type="button"
-                  className="btn btn-outline btn-sm"
-                  onClick={() => onViewCertificate(order)}
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-                >
-                  <FileText size={13} strokeWidth={1.5} />
-                  <span>View Provenance Certificate</span>
-                </button>
+                {(order.status || '').toLowerCase() !== 'cancelled' && (
+                  <button
+                    type="button"
+                    className="btn btn-outline btn-sm"
+                    onClick={() => onViewCertificate(order)}
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                  >
+                    <FileText size={13} strokeWidth={1.5} />
+                    <span>View Provenance Certificate</span>
+                  </button>
+                )}
+
+                {((order.status || '').toLowerCase() === 'confirmed' || (order.status || '').toLowerCase() === 'pending_payment' || !order.status) && (
+                  <button
+                    type="button"
+                    className="btn btn-outline btn-sm"
+                    onClick={() => setCancelModalOrder(order)}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      color: '#f87171',
+                      borderColor: 'rgba(239, 68, 68, 0.35)'
+                    }}
+                  >
+                    <XCircle size={13} strokeWidth={1.5} />
+                    <span>Cancel Acquisition</span>
+                  </button>
+                )}
+
                 <Link
                   href={`/checkout/success?orderId=${order.orderId}`}
                   className="btn btn-primary btn-sm"
@@ -190,6 +266,16 @@ export default function OrdersTab({ orders, onViewCertificate }: OrdersTabProps)
             </div>
           ))}
         </div>
+      )}
+
+      {/* Order Cancellation Modal */}
+      {cancelModalOrder && (
+        <OrderCancellationModal
+          order={cancelModalOrder}
+          isOpen={!!cancelModalOrder}
+          onClose={() => setCancelModalOrder(null)}
+          onCancelled={handleOrderCancelled}
+        />
       )}
     </div>
   );
